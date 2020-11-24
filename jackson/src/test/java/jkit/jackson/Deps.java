@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 
 public interface Deps {
 
-    JacksonMain jacksonMain = JacksonMain.create(
+    JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(
         ValidatorImpl.of()
     );
 

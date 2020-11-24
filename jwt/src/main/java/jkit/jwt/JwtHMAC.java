@@ -9,27 +9,29 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
+import jkit.core.iface.IObjMapper;
 import jkit.core.model.UserError;
 import lombok.*;
 
 import java.util.List;
 
-import static jkit.core.CoreDefault.json;
-
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class JwtHMAC {
 
+    IObjMapper objMapper;
     Algorithm algorithm;
     JWTVerifier verifier;
 
     public static JwtHMAC create(
+        IObjMapper objMapper,
         String secretPhrase
     ) {
         val alg = Algorithm.HMAC256(secretPhrase);
         val verifier = JWT.require(alg)
             .build();
         return JwtHMAC.of(
+            objMapper,
             alg,
             verifier
         );
@@ -55,7 +57,7 @@ public class JwtHMAC {
     }
 
     public Either<UserError, String> embedMapAndSign(Object obj) {
-        return json.nodeToMap(obj)
+        return objMapper.objToMap(obj)
             .flatMap(map -> sign(b -> b.withClaim("data", map.toJavaMap())));
     }
 

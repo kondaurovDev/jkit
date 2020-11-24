@@ -3,7 +3,6 @@ package jkit.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.vavr.control.Either;
 import jkit.core.ext.TimeExt;
-import jkit.core.iface.ObjSerde;
 import jkit.core.model.UserError;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -12,14 +11,14 @@ import lombok.Value;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class JwtModel<A> {
 
-    ObjSerde<A> serde;
+    Class<A> aClass;
     JwtHMAC jwtHMAC;
     String issuer;
     String claimName;
 
     public Either<UserError, String> sign(A obj) {
 
-        return serde.serialize(obj)
+        return getJwtHMAC().getObjMapper().serialize(obj)
             .flatMap(map ->
                 jwtHMAC.sign(builder ->
                     builder
@@ -36,8 +35,7 @@ public class JwtModel<A> {
         return getJwtHMAC()
             .verify(token)
             .map(t -> t.getClaim(claimName).as(JsonNode.class))
-            .map()
-            .flatMap(s -> serde.deserialize(s));
+            .flatMap(jsonNode -> getJwtHMAC().getObjMapper().deserialize(jsonNode, aClass));
 
     }
 

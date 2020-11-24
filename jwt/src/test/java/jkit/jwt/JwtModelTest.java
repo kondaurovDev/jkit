@@ -1,9 +1,14 @@
 package jkit.jwt;
 
+import jkit.jackson.JacksonMain;
+import jkit.jackson.ObjectMapperExt;
+import jkit.validate.ValidatorImpl;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class JwtModelTest {
 
@@ -14,9 +19,12 @@ class JwtModelTest {
         String email;
     }
 
-    JwtHMAC hmac = JwtHMAC.create("test");
+    JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(ValidatorImpl.of());
+    ObjectMapperExt json = jacksonMain.getJson();
+
+    JwtHMAC hmac = JwtHMAC.create(json, "test");
     JwtModel<User> model = JwtModel.of(
-        hmac, User.class, "arr", "jcUser"
+        User.class, hmac, "arr", "jcUser"
     );
 
     @Test

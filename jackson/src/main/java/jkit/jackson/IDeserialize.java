@@ -54,7 +54,7 @@ public interface IDeserialize {
         Class<C> clazz
     ) {
         return IOExt.readFileContent(filePath)
-            .flatMap(s -> deserialize(s, clazz))
+            .flatMap(s -> deserializeFromString(s, clazz))
             .flatMap(a -> getValidator().validate(a));
     }
 
@@ -84,7 +84,7 @@ public interface IDeserialize {
         ).map(HashMap::ofAll);
     }
 
-    default <C> Either<UserError, C> deserialize(String s, Class<C> clazz) {
+    default <C> Either<UserError, C> deserializeFromString(String s, Class<C> clazz) {
         return TryExt.get(
             () -> getObjectMapper().readValue(s, clazz),
             "Can't deserialize from json node"
@@ -94,10 +94,10 @@ public interface IDeserialize {
 
     default <C> Either<UserError, C> deserializeFromBase64(String s, Class<C> clazz) {
         return parseBase64(s)
-            .flatMap(j -> deserialize(j, clazz));
+            .flatMap(j -> deserializeFromNode(j, clazz));
     }
 
-    default <C> Either<UserError, C> deserialize(JsonNode json, Class<C> clazz) {
+    default <C> Either<UserError, C> deserializeFromNode(JsonNode json, Class<C> clazz) {
         return TryExt.get(
             () -> getObjectMapper().treeToValue(json, clazz),
             "Can't deserialize from json node"
@@ -112,7 +112,7 @@ public interface IDeserialize {
         return ListExt
             .applyToEach(list, e -> {
                 val input = transform.apply(e);
-                return deserialize(
+                return deserializeFromNode(
                     input,
                     clazz
                 );

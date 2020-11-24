@@ -6,7 +6,7 @@
 
     <groupId>jkit</groupId>
     <artifactId>root</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
         <module>db</module>
         <module>jackson</module>
@@ -18,7 +18,24 @@
 
     <packaging>pom</packaging>
 
+    <scm>
+        <connection>scm:git:https://github.com/kondaurovDev/jkit.git</connection>
+        <url>https://github.com/kondaurovDev/jkit.git</url>
+    </scm>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-jkit-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/jkit/maven</url>
+        </repository>
+    </repositories>
+
     <properties>
+        <bintray.package>jkit-root</bintray.package>
         <lombok.version>1.18.12</lombok.version>
         <java.version>1.8</java.version>
         <vavr.version>0.10.3</vavr.version>
@@ -28,13 +45,17 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <outputDirectory>${parent.dir}/target/jar</outputDirectory>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -67,6 +88,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-jkit-maven</id>
+            <name>jkit-maven</name>
+            <url>https://api.bintray.com/maven/jkit/maven/${bintray.package}/;publish=0</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>

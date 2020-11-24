@@ -1,12 +1,11 @@
 package jkit.jackson;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.StringExt;
+import jkit.core.model.UserError;
 import lombok.*;
 import org.joda.time.LocalTime;
 import org.junit.jupiter.api.Test;
@@ -175,7 +174,7 @@ class JsonExtTest implements Deps {
             .put("num", 5);
 
         val actual = json
-            .nodeToMap(node);
+            .objToMap(node);
 
         val a = 1;
 
@@ -210,7 +209,7 @@ class JsonExtTest implements Deps {
     @Test
     void parseEnum() {
 
-        val d = json.deserialize("\"create\"", CrudAction.class);
+        Either<UserError, CrudAction> d = json.deserialize("\"create\"", CrudAction.class);
 
         val _d = 1;
 

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>root</artifactId>
         <groupId>jkit</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
 
     <properties>
@@ -38,13 +38,13 @@
         <dependency>
             <groupId>jkit</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>jkit</groupId>
             <artifactId>jackson</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 

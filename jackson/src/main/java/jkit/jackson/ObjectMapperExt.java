@@ -29,6 +29,18 @@ public class ObjectMapperExt
             .createObjectNode();
     }
 
+    public <C> Either<UserError, C> deserialize(Object input, Class<C> clazz) {
+        if (input instanceof String) {
+            return deserializeFromString((String)input, clazz);
+        }
+
+        if (input instanceof JsonNode) {
+            return deserializeFromNode((JsonNode) input, clazz);
+        }
+
+        return Either.left(UserError.create("Unknown input. Supported JsonNode, String"));
+    }
+
     public <C> Either<UserError, C> convert(Object obj, Class<C> clazz, String... fields) {
         return TryExt.get(
             () -> {
@@ -56,10 +68,10 @@ public class ObjectMapperExt
         );
     }
 
-    public Either<UserError, Map<String, Object>> nodeToMap(Object node) {
+    public Either<UserError, Map<String, Object>> objToMap(Object node) {
         return TryExt.get(
             () -> objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {}),
-            "node to Map"
+            "object to Map"
         );
     }
 
