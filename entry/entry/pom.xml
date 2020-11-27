@@ -6,19 +6,15 @@
         <artifactId>root</artifactId>
         <groupId>jkit</groupId>
         <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jwt</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.11.0</version>
-        </dependency>
+    <artifactId>entry</artifactId>
 
+    <dependencies>
         <dependency>
             <groupId>jkit</groupId>
             <artifactId>core</artifactId>
@@ -27,9 +23,8 @@
 
         <dependency>
             <groupId>jkit</groupId>
-            <artifactId>jackson</artifactId>
+            <artifactId>jwt</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

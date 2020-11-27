@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
@@ -40,7 +40,7 @@ public class JwtHMAC {
     public Either<UserError, String> sign(
         Function1<JWTCreator.Builder, JWTCreator.Builder> create
     ) {
-        var builder = JWT.create();
+        val builder = JWT.create();
         return TryExt
             .get(() -> create.apply(builder).sign(getAlgorithm()), "sign jwt");
     }
@@ -61,14 +61,14 @@ public class JwtHMAC {
             .flatMap(map -> sign(b -> b.withClaim("data", map.toJavaMap())));
     }
 
-    public Either<UserError, JsonNode> verifyAndExtract(String token) {
+    public Either<UserError, Claim> verifyAndExtract(String token) {
         return verify(token)
             .flatMap(t -> {
-                var claim = t.getClaim("data");
+                val claim = t.getClaim("data");
                 if (claim.isNull()) {
                     return Either.left(UserError.create("No 'data' claim"));
                 }
-                return Either.right(claim.as(JsonNode.class));
+                return Either.right(claim);
             });
     }
 

@@ -1,0 +1,68 @@
+package jkit.entry;
+
+import io.vavr.Tuple;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.Map;
+import io.vavr.control.Either;
+import jkit.core.ext.ListExt;
+import jkit.core.model.UserError;
+import lombok.*;
+
+import java.util.Collections;
+import java.util.List;
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder @Value
+public class CommandDef {
+
+    @EqualsAndHashCode.Include
+    String name;
+    @Builder.Default
+    CommandFlag flag = CommandFlag.simpleTask;
+    @Singular
+    List<CommandParam<?>> params;
+
+    public static CommandDef of(String name) {
+        return new CommandDef(
+            name,
+            CommandFlag.simpleTask,
+            Collections.emptyList()
+        );
+    }
+
+    public <U> Command<U> register(
+        CommandMap<U> commandMap,
+        IApi.AccessChecker<U> accessChecker,
+        IApi.Executor<U> executor
+    ) {
+        val cmd = Command.of(
+            this,
+            accessChecker,
+            executor
+        );
+        commandMap.register(cmd);
+        return cmd;
+    }
+
+    public Either<UserError, Map<CommandParam<?>, ?>> processParams(
+        Map<String, Object> map
+    ) {
+        return ListExt.applyToEach(
+            params,
+            p -> map.get(p.getName()).fold(
+                () -> Either.left(UserError.create(String.format("Missing property '%s' ", p.getName()))),
+                o -> p.processInput(o).map(v -> Tuple.of(p, v))
+            ),
+            "validate",
+            true
+        ).map(HashMap::ofEntries);
+    }
+
+    public ReadyCommand createReadyCommand(Map<CommandParam<?>, Object> params) {
+        return ReadyCommand.of(params, getName());
+    }
+//    public Either<UserError, ReadyCommand> createReadyCommandFromObject(Object params) {
+//        return ReadyCommand.fromObject(getName(), params);
+//    }
+
+}

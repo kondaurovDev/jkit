@@ -30,15 +30,13 @@ public class ObjectMapperExt
     }
 
     public <C> Either<UserError, C> deserialize(Object input, Class<C> clazz) {
-        if (input instanceof String) {
+        if (input instanceof String)
             return deserializeFromString((String)input, clazz);
-        }
 
-        if (input instanceof JsonNode) {
+        if (input instanceof JsonNode)
             return deserializeFromNode((JsonNode) input, clazz);
-        }
 
-        return Either.left(UserError.create("Unknown input. Supported JsonNode, String"));
+        return convert(input, clazz);
     }
 
     public <C> Either<UserError, C> convert(Object obj, Class<C> clazz, String... fields) {

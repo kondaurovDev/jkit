@@ -1,52 +1,31 @@
 package jkit.jwt;
 
-import jkit.jackson.JacksonMain;
-import jkit.jackson.ObjectMapperExt;
-import jkit.validate.ValidatorImpl;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.val;
+import io.vavr.control.Either;
+import lombok.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JwtModelTest {
+class JwtModelTest implements Deps {
 
-    @Value(staticConstructor = "of")
-    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    static class User {
-        String name;
-        String email;
-    }
-
-    JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(ValidatorImpl.of());
-    ObjectMapperExt json = jacksonMain.getJson();
-
-    JwtHMAC hmac = JwtHMAC.create(json, "test");
-    JwtModel<User> model = JwtModel.of(
-        User.class, hmac, "arr", "jcUser"
-    );
+    User user = User.of("alex", "alex@gmail.com");
+    String jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhbGV4IiwidXNlciI6eyJuYW1lIjoiYWxleCIsImVtYWlsIjoiYWxleEBnbWFpbC5jb20ifX0.R1nXw41V9ffrs-sGUvTBBJmVE5M07KZSj0og8bOE53I";
 
     @Test
     void sign() {
 
-        val obj = json.createEmptyObject()
-            .put("name", "alex");
+        val actual = model.sign(user);
 
-        val actual = model.sign(new User("Alex", ""));
-
-        assertTrue(actual.isRight());
+        assertEquals(Either.right(jwt), actual);
 
     }
 
     @Test
     void verify() {
 
-        val input = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwIjp7Im5hbWUiOiJhbGV4In0sImlzcyI6ImpjIn0.OzI-CWFCyznXERFCycMGoj877w6JIE8MtLStgf3hJE0";
+        val actual = model.decode(jwt);
 
-        val actual = model.decode(input);
-
-        assertTrue(actual.isRight());
+        assertEquals(Either.right(User.of("alex", "")), actual);
 
     }
 

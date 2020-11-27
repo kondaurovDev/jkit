@@ -13,7 +13,10 @@
         <module>core</module>
         <module>validate</module>
         <module>jwt</module>
-        <module>http</module>
+        <module>http-client</module>
+        <module>graphql</module>
+        <module>entry/entry</module>
+        <module>akka-http</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -63,7 +66,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <useFile>true</useFile>
                 </configuration>
             </plugin>
 
