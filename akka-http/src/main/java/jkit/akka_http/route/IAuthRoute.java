@@ -4,9 +4,8 @@ import akka.http.javadsl.server.Route;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.vavr.Function1;
-import jkit.core.model.UserError;
 import jkit.jwt.JwtHMAC;
-import lombok.val;
+import lombok.*;
 
 public interface IAuthRoute<U> extends IRouter {
 
@@ -52,7 +51,7 @@ public interface IAuthRoute<U> extends IRouter {
             }
 
             return withRight(
-                json.deserialize(claim.as(JsonNode.class), getUserClass()),
+                getJacksonMain().getJson().deserialize(claim.as(JsonNode.class), getUserClass()),
                 inner
             );
         });

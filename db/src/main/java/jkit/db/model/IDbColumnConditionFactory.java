@@ -28,9 +28,9 @@ public interface IDbColumnConditionFactory extends IDb.IDbColumnHolder {
         Object value
     ) {
         return ISql.WhereValue.createIn(
-                getColumn(),
-                value
-            );
+            getColumn(),
+            value
+        );
     }
 
 }

@@ -1,7 +1,6 @@
 package jkit.db.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 @Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

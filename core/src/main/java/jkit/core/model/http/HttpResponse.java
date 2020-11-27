@@ -1,9 +1,8 @@
-package jkit.core.model;
+package jkit.core.model.http;
 
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 @Value(staticConstructor = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

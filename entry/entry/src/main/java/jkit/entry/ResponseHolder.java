@@ -1,11 +1,7 @@
 package jkit.entry;
 
-import akka.http.javadsl.model.HttpResponse;
-import akka.http.javadsl.model.headers.HttpCookie;
-import akka.http.javadsl.server.Route;
+import io.vavr.collection.Stream;
 import io.vavr.control.Option;
-import jkit.entry.route.IRouter;
-import jkit.entry.api.IApi;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -17,8 +13,7 @@ public class ResponseHolder implements IApi.IResponse {
     HttpResponse response;
     HttpCookie cookie;
 
-    public Route getRoute(
-        IRouter router,
+    public Stream<?> getResponse(
         Consumer<CommandEvent> onSave
     ) {
         return router.d().setCookie(Option.of(cookie), () ->

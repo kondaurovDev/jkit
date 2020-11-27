@@ -4,12 +4,10 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import io.vavr.Function1;
 import io.vavr.collection.HashMap;
+import io.vavr.collection.Map;
 import io.vavr.control.Option;
-import jc.server.api.IApi;
 import jkit.core.ext.*;
-import jc.server.model.RequestPayload;
-
-import static jc.core.CoreDefault.*;
+import jkit.core.model.DataFormat;
 
 public interface IPayloadRoute extends IRouter {
 
@@ -36,12 +34,12 @@ public interface IPayloadRoute extends IRouter {
     }
 
     default Route withPayloadFormat(
-        Function1<IApi.DataFormat, Route> inner
+        Function1<DataFormat, Route> inner
     ) {
         return withOptionalParam("payloadFormat", opt ->
             opt.fold(
-                () -> inner.apply(IApi.DataFormat.json),
-                pt -> withRight(EnumExt.getByName(pt, IApi.DataFormat.class), inner)
+                () -> inner.apply(DataFormat.json),
+                pt -> withRight(EnumExt.getByName(pt, DataFormat.class), inner)
             )
         );
     }
@@ -51,7 +49,7 @@ public interface IPayloadRoute extends IRouter {
     ) {
         return d().parameterMap(params ->
             withRight(
-                yaml.mapToYamlAndParse(HashMap.ofAll(params)),
+                getJacksonMain().getYaml().mapToYamlAndParse(HashMap.ofAll(params)),
                 r -> inner.apply(r.toPrettyString())
             )
         );
@@ -77,14 +75,18 @@ public interface IPayloadRoute extends IRouter {
     }
 
     default Route withPayload(
-        Function1<RequestPayload, Route> inner
+        Function1<HashMap<String, Object>, Route> inner
     ) {
 
         return withPayloadString(payload ->
             withPayloadFormat(df ->
-                inner.apply(RequestPayload.of(
-                    payload, df
-                ))
+                withRight(
+                    getJacksonMain().readPayload(
+                        payload,
+                        df
+                    ),
+                    inner
+                )
             )
         );
     }
@@ -93,7 +95,11 @@ public interface IPayloadRoute extends IRouter {
         Class<A> clazz,
         Function1<A, Route> inner
     ) {
-        return withPayload(p -> withRight(p.deserialize(clazz), inner));
+        return withPayload(p -> withRight(
+                getJacksonMain().getJson().deserialize(p, clazz),
+                inner
+            )
+        );
     }
 
 }

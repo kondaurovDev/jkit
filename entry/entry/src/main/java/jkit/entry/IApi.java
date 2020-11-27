@@ -10,9 +10,7 @@ public interface IApi {
 
     interface IResponse {
 
-        default Route getResponse(
-            IRouter router
-        ) {
+        default Stream<?> getResponse() {
            return this.getRoute(router, e -> {});
         }
 
@@ -42,11 +40,6 @@ public interface IApi {
         ResponseType(Function1<AkkaModule, UserLog.IUserLog> createLog) {
             this.createLog = createLog;
         }
-    }
-
-    enum DataFormat {
-        json,
-        yaml;
     }
 
     interface Name {

@@ -10,17 +10,20 @@ import akka.http.javadsl.server.Route;
 import akka.stream.javadsl.Source;
 import io.vavr.Function0;
 import io.vavr.Function1;
+import io.vavr.collection.HashMap;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import jkit.akka_http.AkkaPredef;
+import jkit.akka_http.util.IResponseFactory;
 import jkit.core.ext.*;
-import jkit.core.iface.IObjMapper;
 import jkit.core.model.UserError;
-import lombok.val;
+import jkit.jackson.JacksonMain;
+import jkit.jackson.ObjectMapperExt;
+import lombok.*;
 
-public interface IRouter {
+public interface IRouter extends IResponseFactory {
 
-    IObjMapper getObjMapper();
+    JacksonMain<ObjectMapperExt> getJacksonMain();
 
     AllDirectives d();
 
@@ -33,7 +36,7 @@ public interface IRouter {
 
     default ExceptionHandler createExceptionHandler() {
         return ExceptionHandler.newBuilder()
-            .match(Throwable.class, (x) -> {
+            .match(Throwable.class, x -> {
                 IOExt.log(l -> l.error("Request error", x));
                 return completeError(UserError.create("Internal error"), 500);
             })
@@ -53,36 +56,34 @@ public interface IRouter {
                 err
             );
             IOExt.log(l -> l.error(msg));
-            return IUserResponse.plainText(err, code).getRoute(this);
+            return d().complete(plainText(err, code));
         });
     }
 
     default Route completeError(String error) {
         return withRight(
-            IUserResponse
-                .jsonResponse(getObjMapper().newObj().put("error", error), 400)
-                .map(r -> r.getRoute(this)),
-            r -> r
+            jsonResponse(HashMap.of("error", error), 400),
+            r -> d().complete(r)
         );
     }
 
     default Route completeHtml(String html, Integer status) {
-        return withRight(IUserResponse.html(html, status), r -> r.getRoute(this));
+        return withRight(html(html, status), r -> d().complete(r));
     }
 
     default Route completeJson(Object json, Integer status) {
-        return IUserResponse.json(json, status).getRoute(this);
+        return d().complete(jsonResponseOrThrow(json, status));
     }
 
     default Route completeSuccess(Function0<Either<UserError, ?>> factory) {
         return withRight(
-            factory.apply().map(IUserResponse::json),
-            r -> r.getRoute(this)
+            factory.apply().map(this::jsonResponse),
+            r -> d().complete(r)
         );
     }
 
     default Route completeJson(Object json) {
-        return IUserResponse.json(json).getRoute(this);
+        return d().complete(jsonResponse(json));
     }
 
     default Route completeSse(

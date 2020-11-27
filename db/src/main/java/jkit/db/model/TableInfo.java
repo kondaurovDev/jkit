@@ -3,8 +3,7 @@ package jkit.db.model;
 import io.vavr.Tuple;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Value(staticConstructor = "of")

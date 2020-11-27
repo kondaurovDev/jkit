@@ -1,6 +1,7 @@
 package jkit.entry;
 
 import io.vavr.control.Option;
+import jkit.core.model.http.HttpRequestFull;
 import lombok.*;
 import org.junit.jupiter.api.Test;
 

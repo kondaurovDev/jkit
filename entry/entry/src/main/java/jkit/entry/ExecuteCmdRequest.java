@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import jkit.core.model.http.RequestPayload;
 import lombok.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

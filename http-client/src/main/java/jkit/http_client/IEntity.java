@@ -6,12 +6,13 @@ import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
 import jkit.core.iface.IObjMapper;
 import jkit.core.model.UserError;
-import lombok.val;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+
+import lombok.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

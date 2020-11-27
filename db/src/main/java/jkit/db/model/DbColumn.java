@@ -1,14 +1,11 @@
 package jkit.db.model;
 
 import jkit.core.ext.StringExt;
-import jkit.core.model.FieldMap;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Value(staticConstructor = "of")
 public class DbColumn implements
-    FieldMap.Key,
     IDbColumnConditionFactory,
     IDb.IDbColumn,
     DbColumnWithValue.Factory {
@@ -17,10 +14,6 @@ public class DbColumn implements
     String columnName;
     String jsonKeyName;
     Boolean isJson;
-
-    public String getKey() {
-        return jsonKeyName;
-    }
 
     public DbColumn getColumn() {
         return this;
