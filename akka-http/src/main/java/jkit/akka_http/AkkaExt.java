@@ -32,14 +32,13 @@ public interface AkkaExt {
         });
     }
 
-    static <C extends IServiceConfig> Either<UserError, ?> runServer(
-        ServiceFilePath serviceFilePath,
+    static <C extends IHttpConfig> Either<UserError, ?> runServer(
         Function1<AkkaModule, Route> createRoute,
-        C serviceConfig
+        C config
     ) {
-        return serviceConfig._getPort()
+        return config.getHttpPort()
             .flatMap(port -> AkkaExt.listenHttp(
-                serviceFilePath.getServiceName(),
+                config.getServiceName(),
                 createRoute,
                 port
             ));

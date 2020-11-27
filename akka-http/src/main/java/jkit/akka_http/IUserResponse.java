@@ -1,4 +1,4 @@
-package jkit.entry;
+package jkit.akka_http;
 
 import akka.http.javadsl.model.ContentType;
 import akka.http.javadsl.model.ContentTypes;
@@ -6,11 +6,8 @@ import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.headers.Location;
 import io.vavr.control.Either;
-import jkit.entry.ResponseHolder;
-import jc.core.model.UserError;
-import jc.core.ext.*;
-
-import static jc.core.CoreDefault.*;
+import jkit.core.model.UserError;
+import jkit.core.ext.*;
 
 public interface IUserResponse {
 
