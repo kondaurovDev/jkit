@@ -1,13 +1,29 @@
 package jkit.akka_http;
 
+import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.IOExt;
 import jkit.core.model.UserError;
+import jkit.core.model.http.IHttpConfig;
 import lombok.*;
 
 public interface AkkaExt {
+
+    class Router extends AllDirectives {}
+
+    static Either<UserError, AkkaHttpServer> buildAndListen(
+        String serviceName,
+        Function1<AllDirectives, Route> createRouter,
+        int port
+    ) {
+        return listenHttp(
+            serviceName,
+            d -> createRouter.apply(new Router()),
+            port
+        );
+    }
 
     static Either<UserError, AkkaHttpServer> listenHttp(
         String serviceName,
@@ -33,12 +49,13 @@ public interface AkkaExt {
     }
 
     static <C extends IHttpConfig> Either<UserError, ?> runServer(
+        String serviceName,
         Function1<AkkaModule, Route> createRoute,
         C config
     ) {
         return config.getHttpPort()
             .flatMap(port -> AkkaExt.listenHttp(
-                config.getServiceName(),
+                serviceName,
                 createRoute,
                 port
             ));
