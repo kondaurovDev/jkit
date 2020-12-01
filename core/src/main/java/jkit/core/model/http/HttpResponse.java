@@ -22,7 +22,4 @@ public class HttpResponse<A> {
         );
     }
 
-    public String toString() {
-        return List.of(code, codePhrase, body).mkString(":");
-    }
 }

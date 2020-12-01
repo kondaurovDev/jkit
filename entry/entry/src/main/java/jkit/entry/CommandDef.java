@@ -5,6 +5,7 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import io.vavr.control.Either;
 import jkit.core.ext.ListExt;
+import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder @Value
-public class CommandDef {
+public class CommandDef implements Entry.ICommandDef {
 
     @EqualsAndHashCode.Include
     String name;
@@ -32,8 +33,8 @@ public class CommandDef {
 
     public <U> Command<U> register(
         CommandMap<U> commandMap,
-        IApi.AccessChecker<U> accessChecker,
-        IApi.Executor<U> executor
+        Entry.AccessChecker<U> accessChecker,
+        Entry.Executor<U> executor
     ) {
         val cmd = Command.of(
             this,

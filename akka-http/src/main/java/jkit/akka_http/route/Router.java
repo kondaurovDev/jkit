@@ -6,6 +6,6 @@ public interface Router {
 
     abstract class Slim extends AllDirectives implements IRouter, IPayloadRoute {}
 
-//    abstract class Full<U> extends Slim implements ICommandRoute<U> {}
+    abstract class Full<U> extends Slim implements ICommandRoute<U> {}
 
 }

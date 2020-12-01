@@ -1,16 +1,14 @@
 package jkit.entry.api.response;
 
-import akka.http.javadsl.server.Route;
+import jkit.core.iface.Entry;
 import jkit.entry.CommandEvent;
-import jkit.entry.route.IRouter;
+import jkit.entry.IApi;
 import jkit.entry.Command;
-import jkit.entry.api.IApi;
-import jkit.entry.api.IUserResponse;
 import jkit.entry.MethodContext;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Value(staticConstructor = "of")
@@ -18,9 +16,9 @@ public class StrictResponse<U> implements IApi.IResponse {
 
     Command<U> command;
     MethodContext<U> methodContext;
-    IApi.DataFormat responseFormat;
+    Entry.DataFormat responseFormat;
 
-    public Route getResponse(
+    public Stream<?> getResponse(
         Consumer<CommandEvent> onSave
     ) {
         return router.withRight(

@@ -3,7 +3,9 @@ package jkit.entry;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import jkit.core.ext.*;
+import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
+import jkit.entry.response.StreamResponse;
 import lombok.*;
 
 import java.util.HashSet;
@@ -11,22 +13,22 @@ import java.util.function.Consumer;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Command<U> {
+public class Command<U> implements Entry.ICommand<U> {
 
     CommandDef commandDef;
-    IApi.AccessChecker<U> accessChecker;
-    IApi.Executor<U> executor;
+    Entry.AccessChecker<U> accessChecker;
+    Entry.Executor<U> executor;
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
     public Either<UserError, ?> execute(
-        MethodContext<U> methodContext
+        Entry.IMethodContext<U> methodContext
     ) {
        return this.execute(methodContext, c -> {});
     }
 
     public Either<UserError, ?> execute(
-        MethodContext<U> methodContext,
+        Entry.IMethodContext<U> methodContext,
         Consumer<CommandEvent> onSave
     ) {
 
@@ -80,9 +82,9 @@ public class Command<U> {
         return result;
     }
 
-    public Either<UserError, MethodContext<U>> createContext(
+    public Either<UserError, Entry.IMethodContext<U>> createContext(
         ExecuteCmdRequest<U> userRequest,
-        UserLog.IUserLog userLog
+        Entry.IUserLog userLog
     ) {
         return userRequest.getPayload().getMap().flatMap(payload ->
             commandDef.processParams(payload).map(payloadProcessed ->
@@ -95,15 +97,19 @@ public class Command<U> {
         );
     }
 
-    public IApi.IResponse createResponse(
+    public IResponse createResponse(
         ExecuteCmdRequest<U> rawUserRequest,
         MethodContext<U> context
     ) {
-        return switch (rawUserRequest.getResponseType()) {
-            case stream: yield SseResponse.of(
-                this,
+
+        if (rawUserRequest.getResponseType() == Entry.ResponseType.STREAM) {
+            return StreamResponse.of(
                 context
             );
+        }
+
+        return switch (rawUserRequest.getResponseType()) {
+            case stream: yield ;
             case strict: yield StrictResponse.of(
                 this,
                 context,

@@ -1,10 +1,9 @@
 package jkit.jackson;
 
 import io.vavr.collection.HashMap;
-import io.vavr.collection.Map;
 import io.vavr.control.Either;
+import jkit.core.iface.Entry;
 import jkit.core.iface.Validator;
-import jkit.core.model.DataFormat;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -24,15 +23,15 @@ public class JacksonMain<A extends ObjectMapperExt> {
         );
     }
 
-    public A getDataMapper(DataFormat dataFormat) {
-        if (dataFormat == DataFormat.json) return json;
-        if (dataFormat == DataFormat.yaml) return yaml;
+    public A getDataMapper(Entry.DataFormat dataFormat) {
+        if (dataFormat == Entry.DataFormat.JSON) return json;
+        if (dataFormat == Entry.DataFormat.YAML) return yaml;
         throw new Error("Unknown data format");
     }
 
     public Either<UserError, HashMap<String, Object>> readPayload(
         String body,
-        DataFormat dataFormat
+        Entry.DataFormat dataFormat
     ) {
         return getDataMapper(dataFormat)
             .deserializeToMap(body, Object.class);

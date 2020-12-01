@@ -10,7 +10,7 @@ public interface EnumExt {
         String name,
         Class<A> clazz
     ) {
-        return Try.of(() -> Enum.valueOf(clazz, name))
+        return Try.of(() -> Enum.valueOf(clazz, name.toUpperCase()))
             .toEither(UserError.create(String.format("Unknown enum %s", name)));
     }
 

@@ -4,10 +4,9 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import io.vavr.Function1;
 import io.vavr.collection.HashMap;
-import io.vavr.collection.Map;
 import io.vavr.control.Option;
 import jkit.core.ext.*;
-import jkit.core.model.DataFormat;
+import jkit.core.iface.Entry;
 
 public interface IPayloadRoute extends IRouter {
 
@@ -34,12 +33,12 @@ public interface IPayloadRoute extends IRouter {
     }
 
     default Route withPayloadFormat(
-        Function1<DataFormat, Route> inner
+        Function1<Entry.DataFormat, Route> inner
     ) {
         return withOptionalParam("payloadFormat", opt ->
             opt.fold(
-                () -> inner.apply(DataFormat.json),
-                pt -> withRight(EnumExt.getByName(pt, DataFormat.class), inner)
+                () -> inner.apply(Entry.DataFormat.JSON),
+                pt -> withRight(EnumExt.getByName(pt, Entry.DataFormat.class), inner)
             )
         );
     }

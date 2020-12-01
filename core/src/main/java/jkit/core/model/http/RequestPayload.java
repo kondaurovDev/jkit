@@ -1,13 +1,20 @@
 package jkit.core.model.http;
 
-import jkit.core.model.DataFormat;
+import io.vavr.collection.HashMap;
+import io.vavr.control.Either;
+import jkit.core.iface.Entry;
+import jkit.core.model.UserError;
 import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class RequestPayload {
+public class RequestPayload implements Entry.IRequestPayload {
 
     String value;
-    DataFormat dataFormat;
+    Entry.DataFormat dataFormat;
 
+    @Override
+    public Either<UserError, HashMap<String, Object>> getMap() {
+        return null;
+    }
 }

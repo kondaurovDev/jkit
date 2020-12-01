@@ -20,16 +20,6 @@ public interface UserLog  {
 
     Integer bufferSize = 100;
 
-    interface IUserLog {
-        void end();
-
-        void add(String msg);
-
-        default Source<ServerSentEvent, NotUsed> getSseSource() {
-            throw new Error("SSE not supported");
-        }
-    }
-
     @Value
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     class UserLogActor implements IUserLog {

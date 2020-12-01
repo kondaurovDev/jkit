@@ -1,12 +1,10 @@
 package jkit.entry.response;
 
-import akka.http.javadsl.server.Route;
 import io.vavr.Function0;
 import io.vavr.concurrent.Future;
+import jkit.core.iface.Entry;
 import jkit.entry.CommandEvent;
-import jkit.entry.route.IRouter;
 import jkit.entry.Command;
-import jkit.entry.api.IApi;
 import jkit.core.ext.IOExt;
 import jkit.entry.MethodContext;
 import lombok.*;
@@ -15,7 +13,7 @@ import java.util.function.Consumer;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Value(staticConstructor = "of")
-public class StreamResponse<U> implements IApi.IResponse {
+public class StreamResponse<U> implements Entry.ICommandResult {
 
     Command<U> command;
     MethodContext<U> methodContext;
