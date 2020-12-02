@@ -1,29 +1,23 @@
 package jkit.entry;
 
 import io.vavr.collection.HashMap;
-import jkit.jackson.JacksonModule;
-import jkit.jackson.ObjectMapperExt;
-import jkit.validate.Validator;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import lombok.*;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CommandDefTest implements Deps {
-
-    @BeforeAll
-    static void init() {
-        val mapper = ObjectMapperExt.of(JacksonModule.createJsonMapper(), Validator.of());
-        EntryGlobal.$.setObjectMapper(mapper);
-    }
 
     @Test
     void processParams() {
 
         val a = Def.test.parseMap(
-            HashMap.of("name", true)
+            PropMap.builder()
+                .param("namee", true)
+                .build()
         );
 
         assertTrue(a.isRight());
@@ -33,10 +27,12 @@ class CommandDefTest implements Deps {
     @Test
     void createReadyCommand() {
 
-        val a = Def.test.createReadyCommand(HashMap.of(
-            Prop.num.getName(), 1,
-            Prop.name.getName(), "alex"
-        ));
+        val a = Def.test.createReadyCommand(
+            PropMap.builder()
+                .param(Prop.num.getName(), 1)
+                .param(Prop.name.getName(), "alex")
+                .build()
+        );
 
         val b = 1;
     }

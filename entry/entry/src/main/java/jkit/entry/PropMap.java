@@ -1,21 +1,23 @@
 package jkit.entry;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Map;
 import io.vavr.control.Either;
+import jkit.core.ext.MapExt;
 import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
 @Value(staticConstructor = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder
 public class PropMap implements Entry.IPropMap {
 
-    Map<String, Object> params;
+    @Singular("param")
+    java.util.Map<String, Object> params;
 
     public <A> Either<UserError, A> paramValueOpt(Entry.IPropDef<A> param) {
-        return params.get(param.getName())
-            .toEither(UserError.create("Param not found"))
+        return MapExt
+            .get(param.getName(), params,"Param not found")
             .flatMap(v -> {
                 if (!param.getParamClass().isInstance(v))
                     return Either.left(UserError.create("Wrong class"));

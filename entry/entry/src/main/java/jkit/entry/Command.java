@@ -12,22 +12,22 @@ import java.util.function.Consumer;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Command<U> implements Entry.ICommand<U> {
+public class Command implements Entry.ICommand {
 
     CommandDef commandDef;
-    Entry.AccessChecker<U> accessChecker;
-    Entry.Executor<U> executor;
+    Entry.AccessChecker accessChecker;
+    Entry.Executor executor;
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
     public Either<UserError, ?> executeBlocking(
-        Entry.IMethodContext<U> methodContext
+        Entry.IMethodContext methodContext
     ) {
        return this.executeBlocking(methodContext, c -> {});
     }
 
     public Either<UserError, ?> executeBlocking(
-        Entry.IMethodContext<U> methodContext,
+        Entry.IMethodContext methodContext,
         Consumer<CommandEvent> onSave
     ) {
 
@@ -81,19 +81,19 @@ public class Command<U> implements Entry.ICommand<U> {
         return result;
     }
 
-    public Either<UserError, Entry.IMethodContext<U>> createContext(
-        ExecuteCmdRequest<U> userRequest,
+    public Either<UserError, Entry.IMethodContext> createContext(
+        ExecuteCmdRequest userRequest,
         Entry.IUserLog userLog
     ) {
-        return userRequest.getPayload().getMap().flatMap(payload ->
-            commandDef.parseMap(payload).map(payloadProcessed ->
+        return commandDef
+            .parseMap(userRequest.getPayload())
+            .map(payloadProcessed ->
                 MethodContext.of(
                     payloadProcessed,
                     userRequest.getUser(),
                     userLog
                 )
-            )
-        );
+            );
     }
 
 //    public IResponse createResponse(

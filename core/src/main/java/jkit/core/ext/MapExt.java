@@ -7,7 +7,19 @@ import jkit.core.model.UserError;
 
 public interface MapExt {
 
-    static <A> Either<UserError, A> get(String key, Map<String, A> map, String error) {
+    static <A> Either<UserError, A> get(
+        String key,
+        java.util.Map<String, A> map,
+        String error
+    ) {
+        return VavrExt.checkNull(map.get(key), error);
+    }
+
+    static <A> Either<UserError, A> get(
+        String key,
+        Map<String, A> map,
+        String error
+    ) {
         return map.get(key)
             .toEither(() -> UserError.create(error));
     }

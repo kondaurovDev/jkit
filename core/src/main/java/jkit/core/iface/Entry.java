@@ -27,24 +27,23 @@ public interface Entry {
         Either<UserError, HashMap<String, Object>> getMap();
     }
 
-    interface IExecuteCmdRequest<U> {
-        IRequestPayload getPayload();
-        U getUser();
+    interface IExecuteCmdRequest {
+        IPropMap getPayload();
+        IPropMap getUser();
         ResponseType getResponseType();
-        DataFormat getResponseFormat();
     }
 
-    interface ICommandMap<U> {
-        HashMap<String, ICommand<U>> getMap();
-        Either<UserError, ICommand<U>> getCommand(String commandName);
+    interface ICommandMap {
+        HashMap<String, ICommand> getMap();
+        Either<UserError, ICommand> getCommand(String commandName);
     }
 
-    interface ICommand<U> {
+    interface ICommand {
         ICommandDef getCommandDef();
-        Entry.AccessChecker<U> getAccessChecker();
-        Entry.Executor<U> getExecutor();
+        Entry.AccessChecker getAccessChecker();
+        Entry.Executor getExecutor();
 
-        Either<UserError, ?> executeBlocking(IMethodContext<U> methodContext);
+        Either<UserError, ?> executeBlocking(IMethodContext methodContext);
     }
 
     interface ICommandFlag {
@@ -74,12 +73,12 @@ public interface Entry {
 
     }
 
-    interface Executor<U> {
-        Either<UserError, ?> execute(IMethodContext<U> methodContext);
+    interface Executor {
+        Either<UserError, ?> execute(IMethodContext methodContext);
     }
 
-    interface AccessChecker<U> {
-        Boolean check(IMethodContext<U> ctx);
+    interface AccessChecker {
+        Boolean check(IMethodContext ctx);
     }
 
     interface Name {
@@ -98,9 +97,9 @@ public interface Entry {
         <A> Either<UserError, A> paramValueOpt(IPropDef<A> param);
     }
 
-    interface IMethodContext<U> {
+    interface IMethodContext {
         IPropMap getParams();
-        U getUser();
+        IPropMap getUser();
         IUserLog getUserLog();
         ArrayList<String> getLogHistory();
     }

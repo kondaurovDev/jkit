@@ -9,20 +9,20 @@ import java.util.HashMap;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandMap<U> {
+public class CommandMap {
 
-    HashMap<String, Command<U>> map;
+    HashMap<String, Command> map;
 
-    public static <U> CommandMap<U> create() {
+    public static CommandMap create() {
         return CommandMap.of(
             new HashMap<>()
         );
     }
 
-    public Command<U> create(
+    public Command create(
         CommandDef commandDef,
-        Entry.AccessChecker<U> accessChecker,
-        Entry.Executor<U> executor
+        Entry.AccessChecker accessChecker,
+        Entry.Executor executor
     ) {
         val cmd = Command.of(
             commandDef,
@@ -33,7 +33,7 @@ public class CommandMap<U> {
         return cmd;
     }
 
-    public void register(Command<U> command) {
+    public void register(Command command) {
         if (map.containsKey(command.getCommandDef().getName())) {
             throw new Error("Command '" + command.getCommandDef().getName() + "' has been registered already");
         } else {
@@ -41,7 +41,7 @@ public class CommandMap<U> {
         }
     }
 
-    public Either<UserError, Command<U>> getCommand(
+    public Either<UserError, Command> getCommand(
         String commandName
     ) {
         val cmd = this.map.get(commandName);
@@ -51,16 +51,15 @@ public class CommandMap<U> {
         return Either.right(cmd);
     }
 
-//    public Either<UserError, IApi.IResponse> execute(
-//        String commandName,
-//        ExecuteCmdRequest<U> request
-//    ) {
-//        return getCommand(commandName)
-//            .flatMap(cmd -> cmd
-//                .createResponse(
-//                    request
-//                )
-//            );
-//    }
+    public Either<UserError, Object> execute(
+        String commandName,
+        ExecuteCmdRequest request
+    ) {
+        return getCommand(commandName)
+            .flatMap(cmd -> cmd
+                .createContext(request, UserLog.stub)
+                .flatMap(cmd::executeBlocking)
+            );
+    }
 
 }

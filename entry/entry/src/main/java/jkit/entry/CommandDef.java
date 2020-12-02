@@ -1,10 +1,9 @@
 package jkit.entry;
 
 import io.vavr.Tuple;
-import io.vavr.collection.HashMap;
-import io.vavr.collection.Map;
 import io.vavr.control.Either;
 import jkit.core.ext.ListExt;
+import jkit.core.ext.MapExt;
 import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
@@ -35,10 +34,10 @@ public class CommandDef implements Entry.ICommandDef {
         );
     }
 
-    public <U> Command<U> register(
-        CommandMap<U> commandMap,
-        Entry.AccessChecker<U> accessChecker,
-        Entry.Executor<U> executor
+    public Command register(
+        CommandMap commandMap,
+        Entry.AccessChecker accessChecker,
+        Entry.Executor executor
     ) {
         val cmd = Command.of(
             this,
@@ -50,12 +49,12 @@ public class CommandDef implements Entry.ICommandDef {
     }
 
     public Either<UserError, PropMap> parseMap(
-        Map<String, Object> map
+        PropMap propMap
     ) {
         return ListExt.applyToEach(
             params,
-            p -> map.get(p.getName()).fold(
-                () -> {
+            p -> MapExt.get(p.getName(), propMap.getParams(), "Missing prop").fold(
+                err -> {
                     if (requiredParams.contains(p.getName()))
                         return Either.left(UserError.create(String.format("Missing property '%s' ", p.getName())));
                     return Either.right(null);
@@ -64,11 +63,11 @@ public class CommandDef implements Entry.ICommandDef {
             ),
             "validate",
             true
-        ).map(lst -> PropMap.create(HashMap.ofEntries(lst)));
+        ).map(lst -> new PropMap(lst.toJavaMap(t -> t)));
     }
 
-    public ReadyCommand createReadyCommand(Map<String, Object> params) {
-        return ReadyCommand.of(PropMap.create(params), getName());
+    public ReadyCommand createReadyCommand(PropMap propMap) {
+        return ReadyCommand.of(propMap, getName());
     }
 //    public Either<UserError, ReadyCommand> createReadyCommandFromObject(Object params) {
 //        return ReadyCommand.fromObject(getName(), params);

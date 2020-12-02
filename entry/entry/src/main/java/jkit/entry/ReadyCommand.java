@@ -1,6 +1,7 @@
 package jkit.entry;
 
 import io.vavr.control.Either;
+import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -12,8 +13,8 @@ public class ReadyCommand {
     String commandName;
 
     public <U> Either<UserError, Object> execute(
-        U user,
-        CommandMap<U> commandMap
+        Entry.IPropMap user,
+        CommandMap commandMap
     ) {
 
         return commandMap
