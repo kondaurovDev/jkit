@@ -13,6 +13,7 @@ public interface Deps {
         CommandDef test = CommandDef.builder()
             .name("test")
             .param(Prop.name)
+            .required(Prop.name.getName())
             .build();
     }
 

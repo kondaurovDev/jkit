@@ -11,6 +11,7 @@ import lombok.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder @Value
@@ -22,12 +23,15 @@ public class CommandDef implements Entry.ICommandDef {
     CommandFlag flag = CommandFlag.simpleTask;
     @Singular
     List<Entry.IPropDef<?>> params;
+    @Singular(value = "required")
+    Set<String> requiredParams;
 
     public static CommandDef of(String name) {
         return new CommandDef(
             name,
             CommandFlag.simpleTask,
-            Collections.emptyList()
+            Collections.emptyList(),
+            Collections.emptySet()
         );
     }
 
@@ -45,13 +49,17 @@ public class CommandDef implements Entry.ICommandDef {
         return cmd;
     }
 
-    public Either<UserError, PropMap> processParams(
+    public Either<UserError, PropMap> parseMap(
         Map<String, Object> map
     ) {
         return ListExt.applyToEach(
             params,
             p -> map.get(p.getName()).fold(
-                () -> Either.left(UserError.create(String.format("Missing property '%s' ", p.getName()))),
+                () -> {
+                    if (requiredParams.contains(p.getName()))
+                        return Either.left(UserError.create(String.format("Missing property '%s' ", p.getName())));
+                    return Either.right(null);
+                },
                 o -> p.processInput(o).map(v -> Tuple.of(p.getName(), v))
             ),
             "validate",

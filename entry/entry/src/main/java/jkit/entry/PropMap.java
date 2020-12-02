@@ -13,10 +13,6 @@ public class PropMap implements Entry.IPropMap {
 
     Map<String, Object> params;
 
-    public static PropMap create() {
-        return PropMap.create();
-    }
-
     public <A> Either<UserError, A> paramValueOpt(Entry.IPropDef<A> param) {
         return params.get(param.getName())
             .toEither(UserError.create("Param not found"))

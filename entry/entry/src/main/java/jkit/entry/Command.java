@@ -86,7 +86,7 @@ public class Command<U> implements Entry.ICommand<U> {
         Entry.IUserLog userLog
     ) {
         return userRequest.getPayload().getMap().flatMap(payload ->
-            commandDef.processParams(payload).map(payloadProcessed ->
+            commandDef.parseMap(payload).map(payloadProcessed ->
                 MethodContext.of(
                     payloadProcessed,
                     userRequest.getUser(),

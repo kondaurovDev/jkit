@@ -22,8 +22,8 @@ class CommandDefTest implements Deps {
     @Test
     void processParams() {
 
-        val a = Def.test.processParams(
-            HashMap.of("namee", true)
+        val a = Def.test.parseMap(
+            HashMap.of("name", true)
         );
 
         assertTrue(a.isRight());

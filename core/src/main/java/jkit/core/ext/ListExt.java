@@ -49,7 +49,11 @@ public interface ListExt {
             }
             handle.apply(i).fold(
                 errors::add,
-                success::add
+                r -> {
+                    if (r == null) return null;
+                    success.add(r);
+                    return null;
+                }
             );
         });
 
