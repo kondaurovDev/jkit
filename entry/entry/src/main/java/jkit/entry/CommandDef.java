@@ -21,7 +21,7 @@ public class CommandDef implements Entry.ICommandDef {
     @Builder.Default
     CommandFlag flag = CommandFlag.simpleTask;
     @Singular
-    List<Entry.ICommandParam<?>> params;
+    List<Entry.IPropDef<?>> params;
 
     public static CommandDef of(String name) {
         return new CommandDef(
@@ -45,7 +45,7 @@ public class CommandDef implements Entry.ICommandDef {
         return cmd;
     }
 
-    public Either<UserError, ParamMap> processParams(
+    public Either<UserError, PropMap> processParams(
         Map<String, Object> map
     ) {
         return ListExt.applyToEach(
@@ -56,11 +56,11 @@ public class CommandDef implements Entry.ICommandDef {
             ),
             "validate",
             true
-        ).map(lst -> ParamMap.create(HashMap.ofEntries(lst)));
+        ).map(lst -> PropMap.create(HashMap.ofEntries(lst)));
     }
 
-    public ReadyCommand createReadyCommand(Map<String, ?> params) {
-        return ReadyCommand.of(ParamMap.create(params), getName());
+    public ReadyCommand createReadyCommand(Map<String, Object> params) {
+        return ReadyCommand.of(PropMap.create(params), getName());
     }
 //    public Either<UserError, ReadyCommand> createReadyCommandFromObject(Object params) {
 //        return ReadyCommand.fromObject(getName(), params);

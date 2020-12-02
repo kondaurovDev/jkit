@@ -2,17 +2,17 @@ package jkit.entry;
 
 public interface Deps {
 
-    interface Param {
-        CommandParam<?> name = CommandParam.of("name", String.class);
-        CommandParam<?> flag = CommandParam.of("flag", CommandFlag.class);
-        CommandParam<?> num = CommandParam.of("num", Integer.class);
-        CommandParam<?> arr = CommandParam.of("likes", Integer.class, true);
+    interface Prop {
+        PropDef<?> name = PropDef.of("name", String.class);
+        PropDef<?> flag = PropDef.of("flag", CommandFlag.class);
+        PropDef<?> num = PropDef.of("num", Integer.class);
+        PropDef<?> arr = PropDef.of("likes", Integer.class, true);
     }
 
     interface Def {
         CommandDef test = CommandDef.builder()
             .name("test")
-            .param(Param.name)
+            .param(Prop.name)
             .build();
     }
 

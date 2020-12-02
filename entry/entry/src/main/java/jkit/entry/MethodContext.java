@@ -8,7 +8,7 @@ import java.util.ArrayList;
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MethodContext<U> implements Entry.IMethodContext<U> {
-    Entry.IParamsMap params;
+    Entry.IPropMap params;
     U user;
     Entry.IUserLog userLog;
     ArrayList<String> logHistory = new ArrayList<>();

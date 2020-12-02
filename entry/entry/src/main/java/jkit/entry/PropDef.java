@@ -9,29 +9,29 @@ import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandParam<A> implements Entry.ICommandParam<A> {
+public class PropDef<A> implements Entry.IPropDef<A> {
 
     @EqualsAndHashCode.Include
     String name;
     Class<A> paramClass;
     Boolean isList;
 
-    public static <A> CommandParam<A> of(
+    public static <A> PropDef<A> of(
         String name,
         Class<A> paramClass
     ) {
-        return CommandParam.of(
+        return PropDef.of(
             name,
             paramClass,
             false
         );
     }
 
-    public static <A> CommandParam<A> list(
+    public static <A> PropDef<A> list(
         String name,
         Class<A> aClass
     ) {
-        return CommandParam.of(
+        return PropDef.of(
             name,
             aClass,
             true

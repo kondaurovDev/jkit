@@ -15,16 +15,15 @@ class CommandDefTest implements Deps {
 
     @BeforeAll
     static void init() {
-        EntryGlobal.$.setObjectMapper(
-            ObjectMapperExt.of(JacksonModule.createJsonMapper(), Validator.of())
-        );
+        val mapper = ObjectMapperExt.of(JacksonModule.createJsonMapper(), Validator.of());
+        EntryGlobal.$.setObjectMapper(mapper);
     }
 
     @Test
     void processParams() {
 
         val a = Def.test.processParams(
-            HashMap.of("name", true)
+            HashMap.of("namee", true)
         );
 
         assertTrue(a.isRight());
@@ -35,8 +34,8 @@ class CommandDefTest implements Deps {
     void createReadyCommand() {
 
         val a = Def.test.createReadyCommand(HashMap.of(
-            Param.num.getName(), 1,
-            Param.name.getName(), "alex"
+            Prop.num.getName(), 1,
+            Prop.name.getName(), "alex"
         ));
 
         val b = 1;

@@ -3,7 +3,6 @@ package jkit.core.iface;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Stream;
 import io.vavr.control.Either;
-import io.vavr.control.Option;
 import jkit.core.model.UserError;
 
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public interface Entry {
     interface ICommandDef {
         String getName();
         ICommandFlag getFlag();
-        java.util.List<ICommandParam<?>> getParams();
+        java.util.List<IPropDef<?>> getParams();
     }
 
     interface ICommandResult {
@@ -87,7 +86,7 @@ public interface Entry {
         String getName();
     }
 
-    interface ICommandParam<A> {
+    interface IPropDef<A> {
         String getName();
         Class<A> getParamClass();
         Boolean getIsList();
@@ -95,12 +94,12 @@ public interface Entry {
         Either<UserError, ?> processInput(Object obj);
     }
 
-    interface IParamsMap {
-        Option<?> paramValueOpt(ICommandParam<?> param);
+    interface IPropMap {
+        <A> Either<UserError, A> paramValueOpt(IPropDef<A> param);
     }
 
     interface IMethodContext<U> {
-        IParamsMap getParams();
+        IPropMap getParams();
         U getUser();
         IUserLog getUserLog();
         ArrayList<String> getLogHistory();

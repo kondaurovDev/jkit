@@ -8,7 +8,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ReadyCommand {
 
-    ParamMap input;
+    PropMap input;
     String commandName;
 
     public <U> Either<UserError, Object> execute(
