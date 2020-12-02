@@ -12,12 +12,12 @@ import io.vavr.control.Option;
 import jkit.core.ext.*;
 import jkit.core.model.UserError;
 import lombok.val;
-import jkit.core.iface.Validator;
+import jkit.core.iface.IValidator;
 
 public interface IDeserialize {
 
     ObjectMapper getObjectMapper();
-    Validator getValidator();
+    IValidator getValidator();
 
     static Option<String> nonEmptyJsonString(String raw) {
         if (raw.isEmpty()) {

@@ -1,6 +1,7 @@
 package jkit.entry;
 
 import io.vavr.control.Either;
+import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -20,8 +21,8 @@ public class CommandMap<U> {
 
     public Command<U> create(
         CommandDef commandDef,
-        IApi.AccessChecker<U> accessChecker,
-        IApi.Executor<U> executor
+        Entry.AccessChecker<U> accessChecker,
+        Entry.Executor<U> executor
     ) {
         val cmd = Command.of(
             commandDef,
@@ -50,16 +51,16 @@ public class CommandMap<U> {
         return Either.right(cmd);
     }
 
-    public Either<UserError, IApi.IResponse> execute(
-        String commandName,
-        ExecuteCmdRequest<U> request
-    ) {
-        return getCommand(commandName)
-            .flatMap(cmd -> cmd
-                .createResponse(
-                    request
-                )
-            );
-    }
+//    public Either<UserError, IApi.IResponse> execute(
+//        String commandName,
+//        ExecuteCmdRequest<U> request
+//    ) {
+//        return getCommand(commandName)
+//            .flatMap(cmd -> cmd
+//                .createResponse(
+//                    request
+//                )
+//            );
+//    }
 
 }

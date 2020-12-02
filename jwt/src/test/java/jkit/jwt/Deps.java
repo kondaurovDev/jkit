@@ -2,7 +2,7 @@ package jkit.jwt;
 
 import jkit.jackson.JacksonMain;
 import jkit.jackson.ObjectMapperExt;
-import jkit.validate.ValidatorImpl;
+import jkit.validate.Validator;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -15,7 +15,7 @@ public interface Deps {
         String email;
     }
 
-    JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(ValidatorImpl.of());
+    JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(Validator.of());
     ObjectMapperExt json = jacksonMain.getJson();
 
     JwtHMAC hmac = JwtHMAC.create(json, "test");

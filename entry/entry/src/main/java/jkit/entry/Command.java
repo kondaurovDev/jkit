@@ -5,7 +5,6 @@ import io.vavr.control.Option;
 import jkit.core.ext.*;
 import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
-import jkit.entry.response.StreamResponse;
 import lombok.*;
 
 import java.util.HashSet;
@@ -21,13 +20,13 @@ public class Command<U> implements Entry.ICommand<U> {
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
-    public Either<UserError, ?> execute(
+    public Either<UserError, ?> executeBlocking(
         Entry.IMethodContext<U> methodContext
     ) {
-       return this.execute(methodContext, c -> {});
+       return this.executeBlocking(methodContext, c -> {});
     }
 
-    public Either<UserError, ?> execute(
+    public Either<UserError, ?> executeBlocking(
         Entry.IMethodContext<U> methodContext,
         Consumer<CommandEvent> onSave
     ) {
@@ -55,7 +54,7 @@ public class Command<U> implements Entry.ICommand<U> {
         }
 
         val startTime = TimeExt.getCurrent();
-        methodContext.log("Execute command: " + commandDef.getName());
+        methodContext.getUserLog().add("Execute command: " + commandDef.getName());
         val result = this.executor.execute(methodContext)
             .mapLeft(e -> e.withError("Can't execute: " + commandDef.getName()));
 
@@ -73,7 +72,7 @@ public class Command<U> implements Entry.ICommand<U> {
                 TimeExt.getTimestamp(startTime.toDateTime()),
                 TimeExt.getTimestamp(TimeExt.getCurrent().toDateTime()),
                 commandDef.getName(),
-                methodContext.getLogs(),
+                methodContext.getUserLog().getLogs(),
                 error
             );
             onSave.accept(ev);
@@ -97,40 +96,40 @@ public class Command<U> implements Entry.ICommand<U> {
         );
     }
 
-    public IResponse createResponse(
-        ExecuteCmdRequest<U> rawUserRequest,
-        MethodContext<U> context
-    ) {
-
-        if (rawUserRequest.getResponseType() == Entry.ResponseType.STREAM) {
-            return StreamResponse.of(
-                context
-            );
-        }
-
-        return switch (rawUserRequest.getResponseType()) {
-            case stream: yield ;
-            case strict: yield StrictResponse.of(
-                this,
-                context,
-                rawUserRequest.getResponseFormat()
-            );
-        };
-
-    }
-
-    public Either<UserError, IApi.IResponse> createResponse(
-        ExecuteCmdRequest<U> request,
-        AkkaModule akkaModule
-    ) {
-        val userLog = request.getResponseType().createLog.apply(akkaModule);
-        return createContext(request, userLog)
-            .map(methodContext ->
-                createResponse(
-                    request,
-                    methodContext
-                )
-            );
-    }
+//    public IResponse createResponse(
+//        ExecuteCmdRequest<U> rawUserRequest,
+//        MethodContext<U> context
+//    ) {
+//
+//        if (rawUserRequest.getResponseType() == Entry.ResponseType.STREAM) {
+//            return StreamResponse.of(
+//                context
+//            );
+//        }
+//
+//        return switch (rawUserRequest.getResponseType()) {
+//            case stream: yield ;
+//            case strict: yield StrictResponse.of(
+//                this,
+//                context,
+//                rawUserRequest.getResponseFormat()
+//            );
+//        };
+//
+//    }
+//
+//    public Either<UserError, IApi.IResponse> createResponse(
+//        ExecuteCmdRequest<U> request,
+//        AkkaModule akkaModule
+//    ) {
+//        val userLog = request.getResponseType().createLog.apply(akkaModule);
+//        return createContext(request, userLog)
+//            .map(methodContext ->
+//                createResponse(
+//                    request,
+//                    methodContext
+//                )
+//            );
+//    }
 
 }

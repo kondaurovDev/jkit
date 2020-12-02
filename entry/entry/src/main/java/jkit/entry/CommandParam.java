@@ -3,25 +3,26 @@ package jkit.entry;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.ListExt;
+import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandParam<A> implements IApi.Name {
+public class CommandParam<A> implements Entry.ICommandParam<A> {
 
     @EqualsAndHashCode.Include
     String name;
-    Class<A> aClass;
+    Class<A> paramClass;
     Boolean isList;
 
     public static <A> CommandParam<A> of(
         String name,
-        Class<A> aClass
+        Class<A> paramClass
     ) {
         return CommandParam.of(
             name,
-            aClass,
+            paramClass,
             false
         );
     }
@@ -51,7 +52,8 @@ public class CommandParam<A> implements IApi.Name {
             }
         }
 
-        return json.convert(obj, aClass);
+        return EntryGlobal.$.getObjectMapper()
+            .flatMap(mapper -> mapper.convert(obj, paramClass));
 
     }
 
@@ -64,10 +66,11 @@ public class CommandParam<A> implements IApi.Name {
         return ListExt.applyToEach(
             (java.util.List<?>)object,
             v -> {
-                if (aClass.isInstance(v)) {
+                if (paramClass.isInstance(v)) {
                     return Either.left(UserError.create("Wrong element type: " + v.getClass().getSimpleName()));
                 }
-                return json.convert(v, aClass);
+                return EntryGlobal.$.getObjectMapper()
+                    .flatMap(mapper -> mapper.convert(v, paramClass));
             },
             "to list",
             true

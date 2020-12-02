@@ -3,7 +3,7 @@ package jkit.jackson;
 import com.fasterxml.jackson.databind.JavaType;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
-import jkit.validate.ValidatorImpl;
+import jkit.validate.Validator;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public interface Deps {
 
     JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(
-        ValidatorImpl.of()
+        Validator.of()
     );
 
     ObjectMapperExt json = jacksonMain.getJson();

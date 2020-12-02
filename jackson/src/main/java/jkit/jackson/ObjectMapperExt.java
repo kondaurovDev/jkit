@@ -8,7 +8,7 @@ import io.vavr.collection.*;
 import io.vavr.control.Either;
 import jkit.core.ext.*;
 import jkit.core.iface.IObjMapper;
-import jkit.core.iface.Validator;
+import jkit.core.iface.IValidator;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -18,7 +18,7 @@ public class ObjectMapperExt
     implements IObjMapper, IDeserialize, ITransform {
 
     ObjectMapper objectMapper;
-    Validator validator;
+    IValidator validator;
 
     public JacksonModule.IJsonFactory getFactory(Object o) {
         return () -> toJsonNode(o);

@@ -1,10 +1,9 @@
 package jkit.core.iface;
 
 import io.vavr.collection.HashMap;
-import io.vavr.collection.List;
-import io.vavr.collection.Map;
 import io.vavr.collection.Stream;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import jkit.core.model.UserError;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public interface Entry {
         Entry.AccessChecker<U> getAccessChecker();
         Entry.Executor<U> getExecutor();
 
-        Either<UserError, ?> execute(IMethodContext<U> methodContext);
+        Either<UserError, ?> executeBlocking(IMethodContext<U> methodContext);
     }
 
     interface ICommandFlag {
@@ -57,7 +56,7 @@ public interface Entry {
     interface ICommandDef {
         String getName();
         ICommandFlag getFlag();
-        List<ICommandParam<?>> getParams();
+        java.util.List<ICommandParam<?>> getParams();
     }
 
     interface ICommandResult {
@@ -92,10 +91,16 @@ public interface Entry {
         String getName();
         Class<A> getParamClass();
         Boolean getIsList();
+
+        Either<UserError, ?> processInput(Object obj);
+    }
+
+    interface IParamsMap {
+        Option<?> paramValueOpt(ICommandParam<?> param);
     }
 
     interface IMethodContext<U> {
-        Map<ICommandParam<?>, ?> getParams();
+        IParamsMap getParams();
         U getUser();
         IUserLog getUserLog();
         ArrayList<String> getLogHistory();

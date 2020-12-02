@@ -3,7 +3,7 @@ package jkit.jackson;
 import io.vavr.collection.HashMap;
 import io.vavr.control.Either;
 import jkit.core.iface.Entry;
-import jkit.core.iface.Validator;
+import jkit.core.iface.IValidator;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -15,7 +15,7 @@ public class JacksonMain<A extends ObjectMapperExt> {
     A json;
     A yaml;
 
-    public static JacksonMain<ObjectMapperExt> create(Validator validator) {
+    public static JacksonMain<ObjectMapperExt> create(IValidator validator) {
         return JacksonMain.of(
             new IDsl() {},
             ObjectMapperExt.of(JacksonModule.createJsonMapper(), validator),

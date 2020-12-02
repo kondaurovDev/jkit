@@ -21,7 +21,7 @@ public class CommandDef implements Entry.ICommandDef {
     @Builder.Default
     CommandFlag flag = CommandFlag.simpleTask;
     @Singular
-    List<CommandParam<?>> params;
+    List<Entry.ICommandParam<?>> params;
 
     public static CommandDef of(String name) {
         return new CommandDef(
@@ -45,22 +45,22 @@ public class CommandDef implements Entry.ICommandDef {
         return cmd;
     }
 
-    public Either<UserError, Map<CommandParam<?>, ?>> processParams(
+    public Either<UserError, ParamMap> processParams(
         Map<String, Object> map
     ) {
         return ListExt.applyToEach(
             params,
             p -> map.get(p.getName()).fold(
                 () -> Either.left(UserError.create(String.format("Missing property '%s' ", p.getName()))),
-                o -> p.processInput(o).map(v -> Tuple.of(p, v))
+                o -> p.processInput(o).map(v -> Tuple.of(p.getName(), v))
             ),
             "validate",
             true
-        ).map(HashMap::ofEntries);
+        ).map(lst -> ParamMap.create(HashMap.ofEntries(lst)));
     }
 
-    public ReadyCommand createReadyCommand(Map<CommandParam<?>, Object> params) {
-        return ReadyCommand.of(params, getName());
+    public ReadyCommand createReadyCommand(Map<String, ?> params) {
+        return ReadyCommand.of(ParamMap.create(params), getName());
     }
 //    public Either<UserError, ReadyCommand> createReadyCommandFromObject(Object params) {
 //        return ReadyCommand.fromObject(getName(), params);
