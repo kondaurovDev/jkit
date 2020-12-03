@@ -57,7 +57,7 @@ public class CommandMap {
     ) {
         return getCommand(commandName)
             .flatMap(cmd -> cmd
-                .createContext(request, UserLog.stub)
+                .createContext(request, new UserLog())
                 .flatMap(cmd::executeBlocking)
             );
     }

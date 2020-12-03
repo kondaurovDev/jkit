@@ -6,7 +6,6 @@ import jkit.core.ext.*;
 import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
-import org.reactivestreams.Publisher;
 
 import java.util.HashSet;
 import java.util.function.Consumer;
@@ -20,12 +19,6 @@ public class Command implements Entry.ICommand {
     Entry.Executor executor;
 
     private static final HashSet<String> inProgress = new HashSet<>();
-
-    public Either<UserError, Publisher<Object>> executeStreaming(
-        Entry.IMethodContext methodContext
-    ) {
-       return this.executeBlocking(methodContext, c -> {});
-    }
 
     public Either<UserError, ?> executeBlocking(
         Entry.IMethodContext methodContext
@@ -48,7 +41,6 @@ public class Command implements Entry.ICommand {
 
         if (!accessChecker.check(methodContext))
             return Either.left(UserError.create("No rights to execute command"));
-
 
         if (!commandDef.getFlag().getParallelRun())
             synchronized (this) {
@@ -78,7 +70,7 @@ public class Command implements Entry.ICommand {
                 TimeExt.getTimestamp(startTime.toDateTime()),
                 TimeExt.getTimestamp(TimeExt.getCurrent().toDateTime()),
                 commandDef.getName(),
-                methodContext.getUserLog().getLogs(),
+                "",
                 error
             );
             onSave.accept(ev);

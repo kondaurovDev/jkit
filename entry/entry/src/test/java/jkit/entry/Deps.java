@@ -42,9 +42,11 @@ public interface Deps {
             ctx
                 .getParams()
                 .propOpt(Prop.name)
-                .map(name ->
-                    String.format("Hello %s!", name)
-                )
+                .map(name -> {
+                    var res = String.format("Hello %s!", name);
+                    ctx.getUserLog().add("Finishing");
+                    return res;
+                })
         );
         return commandMap;
     });

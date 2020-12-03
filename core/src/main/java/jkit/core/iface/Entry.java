@@ -6,7 +6,6 @@ import io.vavr.control.Either;
 import jkit.core.model.UserError;
 import org.reactivestreams.Publisher;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public interface Entry {
@@ -103,7 +102,11 @@ public interface Entry {
         IPropMap getParams();
         IPropMap getUser();
         IUserLog getUserLog();
-        ArrayList<String> getLogHistory();
+
+        default void log(String msg) {
+            this.getUserLog().add(msg);
+        }
+
     }
 
     interface IUserLog {
@@ -114,7 +117,6 @@ public interface Entry {
 
         void add(String msg);
 
-        String getLogs();
     }
 
 }

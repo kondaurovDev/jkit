@@ -1,29 +1,31 @@
 package jkit.entry;
 
 import jkit.core.iface.Entry;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
 import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-public interface UserLog  {
+import java.util.ArrayList;
 
-//    UserLogStub stub = new UserLogStub(
-//
-//    );
+class UserLog implements Entry.IUserLog, Publisher<String> {
 
-    @Value
-    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    class UserLogStub implements Entry.IUserLog {
+    private final ArrayList<Subscriber<? super String>> subscribers =
+        new ArrayList<>();
 
-        Publisher<String> publisher;
+    public void subscribe(Subscriber<? super String> s) {
+        subscribers.add(s);
+    }
 
-        public void end() { }
+    public Publisher<String> getPublisher() {
+        return this;
+    }
 
-        public void add(String msg) {}
+    public void end() {
+        subscribers.forEach(Subscriber::onComplete);
+        subscribers.clear();
+    }
 
-        public String getLogs() {
-            return "";
-        }
+    public void add(String msg) {
+        subscribers.forEach(s -> s.onNext(msg));
     }
 
 }

@@ -24,7 +24,7 @@ public class ReadyCommand {
                     MethodContext.of(
                         input,
                         user,
-                        UserLog.stub
+                        new UserLog()
                     )
                 )
             );

@@ -8,11 +8,14 @@ import akka.http.javadsl.model.sse.ServerSentEvent;
 import akka.japi.Pair;
 import akka.stream.CompletionStrategy;
 import akka.stream.OverflowStrategy;
+import akka.stream.javadsl.AsPublisher;
+import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import jkit.akka_http.AkkaModule;
 import jkit.core.ext.IOExt;
 import jkit.core.iface.Entry;
 import lombok.*;
+import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
@@ -21,20 +24,23 @@ import java.util.Optional;
 class UserLogActor implements Entry.IUserLog {
 
     private static Integer bufferSize = 100;
-    private static String empty = "";
 
     Source<Object, ActorRef> src;
     Pair<ActorRef, Source<Object, NotUsed>> actorRefSourcePair;
+    AkkaModule akkaModule;
 
-    public String getLogs() {
-        return empty;
+    public Publisher<String> getPublisher() {
+        return this.actorRefSourcePair.second()
+            .map(o -> ((ServerSentEvent)o).getData())
+            .runWith(Sink.asPublisher(AsPublisher.WITHOUT_FANOUT), akkaModule.getMaterializer());
     }
 
     public static UserLogActor create(AkkaModule akkaModule) {
         val source = createSource();
         val res =  new UserLogActor(
             source,
-            source.preMaterialize(akkaModule.getMaterializer())
+            source.preMaterialize(akkaModule.getMaterializer()),
+            akkaModule
         );
         res.getSseSource()
             .map(e -> {
