@@ -1,13 +1,10 @@
 package jkit.entry;
 
-import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
 import jkit.jackson.JacksonModule;
 import jkit.jackson.ObjectMapperExt;
 import jkit.validate.Validator;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.val;
+import lombok.*;
 import org.junit.jupiter.api.BeforeAll;
 
 public interface Deps {
@@ -41,7 +38,14 @@ public interface Deps {
 
     CommandMap commandMap = TryExt.get(() -> {
         val commandMap = CommandMap.create();
-        commandMap.create(Def.test, u -> true, e -> Either.right("Hey"));
+        commandMap.create(Def.test, u -> true, ctx ->
+            ctx
+                .getParams()
+                .propOpt(Prop.name)
+                .map(name ->
+                    String.format("Hello %s!", name)
+                )
+        );
         return commandMap;
     });
 

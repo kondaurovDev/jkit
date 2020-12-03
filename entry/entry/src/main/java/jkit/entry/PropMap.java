@@ -15,9 +15,9 @@ public class PropMap implements Entry.IPropMap {
     @Singular("param")
     java.util.Map<String, Object> params;
 
-    public <A> Either<UserError, A> paramValueOpt(Entry.IPropDef<A> param) {
+    public <A> Either<UserError, A> propOpt(Entry.IPropDef<A> param) {
         return MapExt
-            .get(param.getName(), params,"Param not found")
+            .get(param.getName(), params,String.format("Param '%s'  not found", param.getName()))
             .flatMap(v -> {
                 if (!param.getParamClass().isInstance(v))
                     return Either.left(UserError.create("Wrong class"));
@@ -25,38 +25,24 @@ public class PropMap implements Entry.IPropMap {
             });
     }
 
-    public <A> A paramValue(PropDef<A> param) {
-        val v = paramValueOpt(param);
+    public <A> A prop(Entry.IPropDef<A> param) {
+        val v = propOpt(param);
 
-        if (v.isEmpty()) {
-            throw CommandError.ParamError.of(param, "Not found");
-        }
+        if (v.isEmpty())
+            throw UserError.create(
+                String.format(
+                    "Param '%s' not found",
+                    param.getName()
+                )
+            ).toError();
 
         return v.get();
     }
 
-    public <A> Either<UserError, A> paramOpt(PropDef<A> commandParam) {
-        return paramValueOpt(commandParam)
-            .toEither(() -> UserError.create(String.format("Param '%s' not found", commandParam.getName())))
-            .map(v -> commandParam.getParamClass().cast(v));
-    }
-
-    public <A> A param(PropDef<A> commandParam) {
-        return paramOpt(commandParam)
+    public <A> List<A> paramList(PropDef<A> propDef) {
+        return propDef
+            .validateList(prop(propDef))
             .getOrElseThrow(UserError::toError);
     }
-
-    public <A> List<A> paramList(PropDef<A> commandParam) {
-        return commandParam
-            .getList(paramValue(commandParam))
-            .getOrElseThrow(UserError::toError);
-    }
-
-//    public <A> Either<UserError, A> params(
-//        Class<A> aClass,
-//        String... fields
-//    ) {
-//        return json.convert(params, aClass, fields);
-//    }
 
 }

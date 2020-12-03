@@ -10,15 +10,15 @@ import lombok.*;
 public class ReadyCommand {
 
     PropMap input;
-    String commandName;
+    Entry.ICommandDef commandDef;
 
-    public <U> Either<UserError, Object> execute(
+    public Either<UserError, Object> execute(
         Entry.IPropMap user,
         CommandMap commandMap
     ) {
 
         return commandMap
-            .getCommand(commandName)
+            .getCommand(commandDef.getName())
             .flatMap(command ->
                 command.executeBlocking(
                     MethodContext.of(
@@ -30,16 +30,5 @@ public class ReadyCommand {
             );
 
     }
-
-//    public static Either<UserError, ReadyCommand> fromObject(
-//        String commandName,
-//        Object params
-//    ) {
-//
-//        return json.nodeToMap(params)
-//            .map(map -> ReadyCommand.of(map, commandName));
-//
-//    }
-
 
 }

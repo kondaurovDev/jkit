@@ -59,7 +59,7 @@ public class CommandDef implements Entry.ICommandDef {
                         return Either.left(UserError.create(String.format("Missing property '%s' ", p.getName())));
                     return Either.right(null);
                 },
-                o -> p.processInput(o).map(v -> Tuple.of(p.getName(), v))
+                o -> p.validateObj(o).map(v -> Tuple.of(p.getName(), v))
             ),
             "validate",
             true
@@ -67,7 +67,7 @@ public class CommandDef implements Entry.ICommandDef {
     }
 
     public ReadyCommand createReadyCommand(PropMap propMap) {
-        return ReadyCommand.of(propMap, getName());
+        return ReadyCommand.of(propMap, this);
     }
 //    public Either<UserError, ReadyCommand> createReadyCommandFromObject(Object params) {
 //        return ReadyCommand.fromObject(getName(), params);

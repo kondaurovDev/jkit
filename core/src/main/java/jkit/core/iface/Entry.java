@@ -4,6 +4,7 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.Stream;
 import io.vavr.control.Either;
 import jkit.core.model.UserError;
+import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -90,11 +91,12 @@ public interface Entry {
         Class<A> getParamClass();
         Boolean getIsList();
 
-        Either<UserError, ?> processInput(Object obj);
+        Either<UserError, ?> validateObj(Object obj);
     }
 
     interface IPropMap {
-        <A> Either<UserError, A> paramValueOpt(IPropDef<A> param);
+        <A> Either<UserError, A> propOpt(IPropDef<A> prop);
+        <A> A prop(IPropDef<A> prop);
     }
 
     interface IMethodContext {
@@ -105,6 +107,9 @@ public interface Entry {
     }
 
     interface IUserLog {
+
+        Publisher<String> getPublisher();
+
         void end();
 
         void add(String msg);

@@ -38,26 +38,33 @@ public class PropDef<A> implements Entry.IPropDef<A> {
         );
     }
 
-    public Either<UserError, ?> processInput(Object obj) {
+    UserError wrongType(Object obj, String expected) {
+        return UserError.create(String.format(
+            "'%s' not a %s but %s",
+            name,
+            expected,
+            obj.getClass().getSimpleName()
+        ));
+    }
+
+    public Either<UserError, ?> validateObj(Object obj) {
 
         if (Boolean.TRUE.equals(isList)) {
             if (obj instanceof java.util.List<?>) {
-                return getList(obj);
+                return validateList(obj);
             } else {
-                return Either.left(UserError.create(String.format(
-                    "'%s' not a list but %s",
-                    name,
-                    obj.getClass().getSimpleName()
-                )));
+                return Either.left(wrongType(obj, "List"));
             }
         }
 
-        return EntryGlobal.$.getObjectMapper()
-            .flatMap(mapper -> mapper.convert(obj, paramClass));
+        if (!paramClass.isInstance(obj))
+            return Either.left(wrongType(obj, paramClass.getCanonicalName()));
+
+        return Either.right(obj);
 
     }
 
-    public Either<UserError, List<A>> getList(Object object) {
+    public Either<UserError, List<A>> validateList(Object object) {
 
         if (!(object instanceof java.util.List<?>)) {
             return Either.left(UserError.create("Must be list"));
@@ -69,8 +76,7 @@ public class PropDef<A> implements Entry.IPropDef<A> {
                 if (paramClass.isInstance(v)) {
                     return Either.left(UserError.create("Wrong element type: " + v.getClass().getSimpleName()));
                 }
-                return EntryGlobal.$.getObjectMapper()
-                    .flatMap(mapper -> mapper.convert(v, paramClass));
+                return Either.right(paramClass.cast(v));
             },
             "to list",
             true

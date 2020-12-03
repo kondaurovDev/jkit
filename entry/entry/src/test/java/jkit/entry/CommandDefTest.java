@@ -1,6 +1,5 @@
 package jkit.entry;
 
-import io.vavr.collection.HashMap;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +15,7 @@ class CommandDefTest implements Deps {
 
         val a = Def.test.parseMap(
             PropMap.builder()
-                .param("namee", true)
+                .param("name", "alex")
                 .build()
         );
 

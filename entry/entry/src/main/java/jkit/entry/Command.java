@@ -6,6 +6,7 @@ import jkit.core.ext.*;
 import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
+import org.reactivestreams.Publisher;
 
 import java.util.HashSet;
 import java.util.function.Consumer;
@@ -19,6 +20,12 @@ public class Command implements Entry.ICommand {
     Entry.Executor executor;
 
     private static final HashSet<String> inProgress = new HashSet<>();
+
+    public Either<UserError, Publisher<Object>> executeStreaming(
+        Entry.IMethodContext methodContext
+    ) {
+       return this.executeBlocking(methodContext, c -> {});
+    }
 
     public Either<UserError, ?> executeBlocking(
         Entry.IMethodContext methodContext
@@ -39,11 +46,11 @@ public class Command implements Entry.ICommand {
 
         IOExt.log(l -> l.debug(msg));
 
-        if (!accessChecker.check(methodContext)) {
+        if (!accessChecker.check(methodContext))
             return Either.left(UserError.create("No rights to execute command"));
-        }
 
-        if (!commandDef.getFlag().getParallelRun()) {
+
+        if (!commandDef.getFlag().getParallelRun())
             synchronized (this) {
                 if (inProgress.contains(commandDef.getName())) {
                     return Either.left(UserError.create("Already in progress"));
@@ -51,7 +58,6 @@ public class Command implements Entry.ICommand {
                     inProgress.add(commandDef.getName());
                 }
             }
-        }
 
         val startTime = TimeExt.getCurrent();
         methodContext.getUserLog().add("Execute command: " + commandDef.getName());
@@ -95,41 +101,5 @@ public class Command implements Entry.ICommand {
                 )
             );
     }
-
-//    public IResponse createResponse(
-//        ExecuteCmdRequest<U> rawUserRequest,
-//        MethodContext<U> context
-//    ) {
-//
-//        if (rawUserRequest.getResponseType() == Entry.ResponseType.STREAM) {
-//            return StreamResponse.of(
-//                context
-//            );
-//        }
-//
-//        return switch (rawUserRequest.getResponseType()) {
-//            case stream: yield ;
-//            case strict: yield StrictResponse.of(
-//                this,
-//                context,
-//                rawUserRequest.getResponseFormat()
-//            );
-//        };
-//
-//    }
-//
-//    public Either<UserError, IApi.IResponse> createResponse(
-//        ExecuteCmdRequest<U> request,
-//        AkkaModule akkaModule
-//    ) {
-//        val userLog = request.getResponseType().createLog.apply(akkaModule);
-//        return createContext(request, userLog)
-//            .map(methodContext ->
-//                createResponse(
-//                    request,
-//                    methodContext
-//                )
-//            );
-//    }
 
 }
