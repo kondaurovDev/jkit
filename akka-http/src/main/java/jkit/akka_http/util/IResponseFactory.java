@@ -9,7 +9,7 @@ import jkit.core.ext.*;
 
 public interface IResponseFactory {
 
-    JKitData.IObjMapperMain<?, JKitData.IObjMapper<?>> getObjMapperMain();
+    JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> getObjMapperMain();
 
     default HttpResponse plainText(String text, Integer status) {
         return Response.text.getHttpResponse(text, status);

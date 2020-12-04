@@ -14,8 +14,6 @@ import java.util.function.Consumer;
 
 public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
 
-    abstract class Router implements ICommandRoute {}
-
     JKitEntry.ICommandMap getCommandMap();
 
     Consumer<JKitEntry.ICommandEvent> onCommandExecute();
