@@ -21,9 +21,9 @@ public class CommandDef implements JKitEntry.ICommandDef {
     @Builder.Default
     CommandFlag flag = CommandFlag.simpleTask;
     @Singular
-    List<JKitEntry.IPropDef<?>> params;
+    List<JKitEntry.IPropDef<?>> props;
     @Singular(value = "required")
-    Set<String> requiredParams;
+    Set<String> requiredProps;
 
     public static CommandDef of(String name) {
         return new CommandDef(
@@ -49,13 +49,13 @@ public class CommandDef implements JKitEntry.ICommandDef {
     }
 
     public Either<UserError, PropMap> parseMap(
-        PropMap propMap
+        JKitEntry.IPropMap propMap
     ) {
         return ListExt.applyToEach(
-            params,
+            props,
             p -> MapExt.get(p.getName(), propMap.getParams(), "Missing prop").fold(
                 err -> {
-                    if (requiredParams.contains(p.getName()))
+                    if (requiredProps.contains(p.getName()))
                         return Either.left(UserError.create(String.format("Missing property '%s' ", p.getName())));
                     return Either.right(null);
                 },
@@ -66,9 +66,9 @@ public class CommandDef implements JKitEntry.ICommandDef {
         ).map(lst -> PropMap.create().params(lst.toJavaMap(t -> t)).build());
     }
 
-    public Either<UserError, ReadyCommand> createReadyCommand(
-        PropMap payload,
-        PropMap user
+    public Either<UserError, JKitEntry.IMethodContext> createContext(
+        JKitEntry.IPropMap payload,
+        JKitEntry.IPropMap user
     ) {
         return this
             .parseMap(payload)
@@ -78,6 +78,17 @@ public class CommandDef implements JKitEntry.ICommandDef {
                     user,
                     UserLog.create()
                 )
+            );
+    }
+
+    public Either<UserError, JKitEntry.IReadyCommand> createReadyCommand(
+        JKitEntry.IPropMap payload,
+        JKitEntry.IPropMap user
+    ) {
+        return this
+            .createContext(
+                payload,
+                user
             )
             .map(ctx -> ReadyCommand.of(this, ctx));
     }

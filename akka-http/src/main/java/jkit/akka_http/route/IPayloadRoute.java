@@ -49,9 +49,9 @@ public interface IPayloadRoute extends IRouter {
     ) {
         return d().parameterMap(params ->
             withRight(
-                getObjMapperSet()
+                getObjMapperMain()
                     .mapToYmlAndParse(params)
-                    .flatMap(o -> getObjMapperSet().getYml().serialize(o)),
+                    .flatMap(o -> getObjMapperMain().getYml().serialize(o)),
                 inner
             )
         );
@@ -83,7 +83,7 @@ public interface IPayloadRoute extends IRouter {
         return withPayloadString(payload ->
             withPayloadFormat(df ->
                 withRight(
-                    getObjMapperSet()
+                    getObjMapperMain()
                         .readPayload(
                             payload,
                             df
@@ -99,7 +99,7 @@ public interface IPayloadRoute extends IRouter {
         Function1<A, Route> inner
     ) {
         return withPayload(p -> withRight(
-            getObjMapperSet().getJson().deserialize(p, clazz),
+            getObjMapperMain().getJson().deserialize(p, clazz),
             inner
         ));
     }

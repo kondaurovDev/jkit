@@ -16,7 +16,7 @@ public interface Deps {
     interface CmdDef {
         CommandDef test = CommandDef.builder()
             .name("test")
-            .param(Prop.name)
+            .prop(Prop.name)
             .required(Prop.name.getName())
             .build();
     }
@@ -29,17 +29,19 @@ public interface Deps {
 
     CommandMap commandMap = TryExt.get(() -> {
         val commandMap = CommandMap.create();
-        commandMap.create(CmdDef.test, u -> true, ctx ->
-            ctx
+        CmdDef.test.register(
+            commandMap,
+            u -> true,
+            ctx -> ctx
                 .getParams()
                 .propOpt(Prop.name)
                 .map(name -> {
                     IOExt.out("starting job");
                     var res = String.format("Hello %s!", name);
                     ctx.getUserLog().add("log event 1");
-                    IOExt.sleepSec(3);
+//                    IOExt.sleepSec(3);
                     ctx.getUserLog().add("log event 2");
-                    IOExt.sleepSec(3);
+//                    IOExt.sleepSec(3);
                     ctx.getUserLog().add("log event 3");
                     return res;
                 })

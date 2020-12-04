@@ -1,25 +1,28 @@
 package jkit.core;
 
-import io.vavr.collection.HashMap;
 import io.vavr.collection.Stream;
 import io.vavr.control.Either;
 import jkit.core.model.UserError;
 import org.reactivestreams.Publisher;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public interface JKitEntry {
 
-    interface IExecuteCmdRequest {
+    interface ICommandRequest {
         String getCommandName();
         IPropMap getPayload();
         IPropMap getUser();
     }
 
     interface ICommandMap {
-        HashMap<String, ICommand> getMap();
+        Map<String, ICommand> getMap();
         Either<UserError, ICommand> getCommand(String commandName);
+        Either<UserError, JKitEntry.IReadyCommand> getReadyCommand(
+            JKitEntry.ICommandRequest commandRequest
+        );
     }
 
     interface ICommand {
@@ -38,8 +41,16 @@ public interface JKitEntry {
     interface ICommandDef {
         String getName();
         ICommandFlag getFlag();
-        java.util.List<IPropDef<?>> getParams();
-        Set<String> getRequiredParams();
+        java.util.List<IPropDef<?>> getProps();
+        Set<String> getRequiredProps();
+        Either<UserError, JKitEntry.IMethodContext> createContext(
+            IPropMap payload,
+            IPropMap user
+        );
+        Either<UserError, IReadyCommand> createReadyCommand(
+            IPropMap payload,
+            IPropMap user
+        );
     }
 
     interface ICommandResult {
@@ -75,6 +86,7 @@ public interface JKitEntry {
     }
 
     interface IPropMap {
+        Map<String, Object> getParams();
         <A> Either<UserError, A> propOpt(IPropDef<A> prop);
         <A> A prop(IPropDef<A> prop);
     }
@@ -87,7 +99,11 @@ public interface JKitEntry {
         default void log(String msg) {
             this.getUserLog().add(msg);
         }
+    }
 
+    interface IReadyCommand {
+        JKitEntry.ICommandDef getCommandDef();
+        JKitEntry.IMethodContext getMethodContext();
     }
 
     interface IUserLog {

@@ -9,7 +9,7 @@ import jkit.core.ext.*;
 
 public interface IResponseFactory {
 
-    JKitData.IObjMapperMain<?, JKitData.IObjMapper<?>> getObjMapperSet();
+    JKitData.IObjMapperMain<?, JKitData.IObjMapper<?>> getObjMapperMain();
 
     default HttpResponse plainText(String text, Integer status) {
         return Response.text.getHttpResponse(text, status);
@@ -33,7 +33,7 @@ public interface IResponseFactory {
 
     default Either<UserError, HttpResponse> jsonResponse(Object obj, int code) {
         return toResponse(
-            getObjMapperSet().getJson().serialize(obj),
+            getObjMapperMain().getJson().serialize(obj),
             Response.json,
             code
         );
@@ -41,7 +41,7 @@ public interface IResponseFactory {
 
     default Either<UserError, HttpResponse> yamlResponse(Object obj, int code) {
         return toResponse(
-            getObjMapperSet().getJson().serialize(obj),
+            getObjMapperMain().getJson().serialize(obj),
             Response.text,
             code
         );

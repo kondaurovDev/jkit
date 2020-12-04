@@ -2,7 +2,7 @@ package jkit.validate;
 
 import io.vavr.collection.List;
 import io.vavr.control.Either;
-import jkit.core.iface.IValidator;
+import jkit.core.JKitValidate;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -11,7 +11,7 @@ import javax.validation.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Validator implements IValidator {
+public class Validator implements JKitValidate.IValidator {
 
     ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
     javax.validation.Validator validator = validatorFactory.getValidator();

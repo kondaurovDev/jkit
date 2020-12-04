@@ -17,6 +17,7 @@
         <module>graphql</module>
         <module>entry/entry</module>
         <module>akka-http</module>
+        <module>entry/akka-http</module>
     </modules>
 
     <packaging>pom</packaging>

@@ -21,6 +21,15 @@ public class Command implements JKitEntry.ICommand {
     private static final HashSet<String> inProgress = new HashSet<>();
 
     public Either<UserError, ?> executeBlocking(
+        PropMap payload,
+        PropMap user
+    ) {
+        return this
+            .commandDef.createContext(payload, user)
+            .flatMap(this::executeBlocking);
+    }
+
+    public Either<UserError, ?> executeBlocking(
         JKitEntry.IMethodContext methodContext
     ) {
        return this.executeBlocking(methodContext, c -> {});

@@ -6,31 +6,18 @@ import jkit.core.model.UserError;
 import lombok.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandMap {
+public class CommandMap implements JKitEntry.ICommandMap {
 
-    HashMap<String, Command> map;
+    Map<String, JKitEntry.ICommand> map;
 
     public static CommandMap create() {
         return CommandMap.of(
             new HashMap<>()
         );
-    }
-
-    public Command create(
-        CommandDef commandDef,
-        JKitEntry.AccessChecker accessChecker,
-        JKitEntry.Executor executor
-    ) {
-        val cmd = Command.of(
-            commandDef,
-            accessChecker,
-            executor
-        );
-        this.register(cmd);
-        return cmd;
     }
 
     public void register(Command command) {
@@ -41,7 +28,7 @@ public class CommandMap {
         }
     }
 
-    public Either<UserError, Command> getCommand(
+    public Either<UserError, JKitEntry.ICommand> getCommand(
         String commandName
     ) {
         val cmd = this.map.get(commandName);
@@ -51,8 +38,18 @@ public class CommandMap {
         return Either.right(cmd);
     }
 
+    public Either<UserError, JKitEntry.IReadyCommand> getReadyCommand(
+        JKitEntry.ICommandRequest commandRequest
+    ) {
+        return getCommand(commandRequest.getCommandName())
+            .flatMap(cmd -> cmd.getCommandDef().createReadyCommand(
+                commandRequest.getPayload(),
+                commandRequest.getUser()
+            ));
+    }
+
     public Either<UserError, Object> execute(
-        ReadyCommand readyCommand
+        JKitEntry.IReadyCommand readyCommand
     ) {
         return getCommand(readyCommand.getCommandDef().getName())
             .flatMap(cmd -> cmd

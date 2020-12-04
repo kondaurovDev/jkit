@@ -1,45 +1,46 @@
-package jkit.akka_http.route;
+package jkit.entry.akka_http;
 
 import akka.http.javadsl.server.Route;
 import io.vavr.Function1;
-import io.vavr.Function2;
-import io.vavr.collection.HashMap;
+import jkit.akka_http.route.IAuthRoute;
+import jkit.akka_http.route.IPayloadRoute;
 import jkit.core.CorePredef;
 import jkit.core.ext.EnumExt;
-import jkit.akka_http.AkkaModule;
 import jkit.core.JKitEntry;
+import jkit.entry.CommandRequest;
+import jkit.entry.PropMap;
 
 import java.util.function.Consumer;
 
 public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
 
-    AkkaModule getAkkaModule();
-
-    Function1<Router.Full, Route> getRoute();
+    abstract class Router implements ICommandRoute {}
 
     JKitEntry.ICommandMap getCommandMap();
 
     Consumer<JKitEntry.ICommandEvent> onCommandExecute();
 
-    default Route withCommand(
-        Function1<JKitEntry.ICommand, Route> inner
+    default Route withCommandName(
+        Function1<String, Route> inner
     ) {
-        return d().parameter("command", commandName  ->
-            withRight(
-                getCommandMap().getCommand(commandName),
-                inner
-            )
+        return d().parameter("command", inner);
+    }
+
+    default Route withReadyCommand(
+        Function1<JKitEntry.IReadyCommand, Route> inner
+    ) {
+        return withCommandRequest(commandRequest ->
+            withRight(getCommandMap().getReadyCommand(commandRequest), inner)
         );
     }
 
     default Route executeCommand() {
-        return withCommand(cmd ->
-            withRequest(request ->
-                withRight(cmd.createResponse(
-                    request,
-                    getAkkaModule()
-                ), r -> r.getRoute(this, onCommandExecute())
-                )
+        return withReadyCommand(readyCommand ->
+            withRight(
+                getCommandMap()
+                    .getCommand(readyCommand.getCommandDef().getName())
+                    .flatMap(cmd -> cmd.executeBlocking(readyCommand.getMethodContext())),
+                this::completeJson
             )
         );
     }
@@ -69,24 +70,17 @@ public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
         );
     }
 
-
-    default Route withRequest(
-        Function1<JKitEntry.IExecuteCmdRequest, Route> inner,
-        Function2<JKitEntry.IPropMap, JKitEntry.IExecuteCmdRequest> build
+    default Route withCommandRequest(
+        Function1<CommandRequest, Route> inner
     ) {
         return withUser("auth", user ->
-            withCommand(command ->
+            withCommandName(commandName ->
                 withPayload(payload ->
-                    withResponseType(responseType ->
-                        withResponseFormat(responseFormat ->
-                            inner.apply(build.apply(
-                                payload,
-                                user,
-                                responseType,
-                                responseFormat
-                            ))
-                        )
-                    )
+                    inner.apply(CommandRequest.of(
+                        commandName,
+                        PropMap.create().params(payload).build(),
+                        PropMap.create().params(user).build()
+                    ))
                 )
             )
         );
