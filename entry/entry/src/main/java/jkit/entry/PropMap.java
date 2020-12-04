@@ -7,13 +7,30 @@ import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
-@Value(staticConstructor = "create")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder
+import java.util.HashMap;
+import java.util.Map;
+
 public class PropMap implements Entry.IPropMap {
 
-    @Singular("param")
-    java.util.Map<String, Object> params;
+    HashMap<String, Object> params = new HashMap<>();
+
+    public static PropMap create() {
+        return new PropMap();
+    }
+
+    public PropMap param(String key, Object value) {
+        params.put(key, value);
+        return this;
+    }
+
+    public PropMap params(Map<String, Object> all) {
+        params.putAll(all);
+        return this;
+    }
+
+    public Map<String, Object> getParams() {
+        return this.params;
+    }
 
     public <A> Either<UserError, A> propOpt(Entry.IPropDef<A> param) {
         return MapExt

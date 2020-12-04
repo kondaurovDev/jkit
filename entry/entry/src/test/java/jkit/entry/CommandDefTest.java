@@ -13,10 +13,9 @@ class CommandDefTest implements Deps {
     @Test
     void processParams() {
 
-        val a = Def.test.parseMap(
-            PropMap.builder()
+        val a = CmdDef.test.parseMap(
+            PropMap.create()
                 .param("name", "alex")
-                .build()
         );
 
         assertTrue(a.isRight());
@@ -26,11 +25,11 @@ class CommandDefTest implements Deps {
     @Test
     void createReadyCommand() {
 
-        val a = Def.test.createReadyCommand(
-            PropMap.builder()
+        val a = CmdDef.test.createReadyCommand(
+            PropMap.create()
                 .param(Prop.num.getName(), 1)
-                .param(Prop.name.getName(), "alex")
-                .build()
+                .param(Prop.name.getName(), "alex"),
+            PropMap.create()
         );
 
         val b = 1;

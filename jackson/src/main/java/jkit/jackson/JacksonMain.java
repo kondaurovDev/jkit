@@ -1,10 +1,6 @@
 package jkit.jackson;
 
-import io.vavr.collection.HashMap;
-import io.vavr.control.Either;
-import jkit.core.iface.Entry;
 import jkit.core.iface.IValidator;
-import jkit.core.model.UserError;
 import lombok.*;
 
 @Value(staticConstructor = "of")
@@ -21,20 +17,6 @@ public class JacksonMain<A extends ObjectMapperExt> {
             ObjectMapperExt.of(JacksonModule.createJsonMapper(), validator),
             ObjectMapperExt.of(JacksonModule.createYamlMapper(), validator)
         );
-    }
-
-    public A getDataMapper(Entry.DataFormat dataFormat) {
-        if (dataFormat == Entry.DataFormat.JSON) return json;
-        if (dataFormat == Entry.DataFormat.YAML) return yaml;
-        throw new Error("Unknown data format");
-    }
-
-    public Either<UserError, HashMap<String, Object>> readPayload(
-        String body,
-        Entry.DataFormat dataFormat
-    ) {
-        return getDataMapper(dataFormat)
-            .deserializeToMap(body, Object.class);
     }
 
 }

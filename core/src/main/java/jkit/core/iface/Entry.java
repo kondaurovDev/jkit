@@ -6,31 +6,15 @@ import io.vavr.control.Either;
 import jkit.core.model.UserError;
 import org.reactivestreams.Publisher;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 public interface Entry {
 
-    enum DataFormat {
-        JSON,
-        YAML;
-    }
-
-    enum ResponseType {
-        STREAM,
-        STRICT;
-    }
-
-    interface IRequestPayload {
-        String getValue();
-        DataFormat getDataFormat();
-
-        Either<UserError, HashMap<String, Object>> getMap();
-    }
-
     interface IExecuteCmdRequest {
+        String getCommandName();
         IPropMap getPayload();
         IPropMap getUser();
-        ResponseType getResponseType();
     }
 
     interface ICommandMap {
@@ -55,6 +39,7 @@ public interface Entry {
         String getName();
         ICommandFlag getFlag();
         java.util.List<IPropDef<?>> getParams();
+        Set<String> getRequiredParams();
     }
 
     interface ICommandResult {
@@ -79,10 +64,6 @@ public interface Entry {
 
     interface AccessChecker {
         Boolean check(IMethodContext ctx);
-    }
-
-    interface Name {
-        String getName();
     }
 
     interface IPropDef<A> {

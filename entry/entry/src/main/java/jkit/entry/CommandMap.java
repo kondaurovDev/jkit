@@ -52,13 +52,11 @@ public class CommandMap {
     }
 
     public Either<UserError, Object> execute(
-        String commandName,
-        ExecuteCmdRequest request
+        ReadyCommand readyCommand
     ) {
-        return getCommand(commandName)
+        return getCommand(readyCommand.getCommandDef().getName())
             .flatMap(cmd -> cmd
-                .createContext(request, new UserLog())
-                .flatMap(cmd::executeBlocking)
+                .executeBlocking(readyCommand.getMethodContext())
             );
     }
 

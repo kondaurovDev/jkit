@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import jkit.core.ext.IOExt;
 import jkit.core.ext.TryExt;
 import jkit.jackson.JacksonModule;
 import jkit.jackson.ObjectMapperExt;
@@ -22,7 +23,7 @@ public interface Deps {
         PropDef<?> arr = PropDef.of("likes", Integer.class, true);
     }
 
-    interface Def {
+    interface CmdDef {
         CommandDef test = CommandDef.builder()
             .name("test")
             .param(Prop.name)
@@ -38,13 +39,18 @@ public interface Deps {
 
     CommandMap commandMap = TryExt.get(() -> {
         val commandMap = CommandMap.create();
-        commandMap.create(Def.test, u -> true, ctx ->
+        commandMap.create(CmdDef.test, u -> true, ctx ->
             ctx
                 .getParams()
                 .propOpt(Prop.name)
                 .map(name -> {
+                    IOExt.out("starting job");
                     var res = String.format("Hello %s!", name);
-                    ctx.getUserLog().add("Finishing");
+                    ctx.getUserLog().add("log event 1");
+                    IOExt.sleepSec(3);
+                    ctx.getUserLog().add("log event 2");
+                    IOExt.sleepSec(3);
+                    ctx.getUserLog().add("log event 3");
                     return res;
                 })
         );

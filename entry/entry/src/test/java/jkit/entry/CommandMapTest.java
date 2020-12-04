@@ -1,9 +1,9 @@
 package jkit.entry;
 
-import jkit.core.iface.Entry;
+import jkit.core.ext.IOExt;
 import lombok.val;
 import org.junit.jupiter.api.*;
-
+import reactor.core.publisher.Flux;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,18 +14,23 @@ class CommandMapTest implements Deps {
     @Test
     void executeTestCommand() {
 
-        val actual = commandMap.execute(
-            "test",
-            ExecuteCmdRequest.of(
-                PropMap.builder()
-                    .param("name", "alex")
-                    .build(),
-                PropMap.builder().build(),
-                Entry.ResponseType.STRICT
-            )
+        val actual = CmdDef.test.createReadyCommand(
+            PropMap.create()
+                .param("name", "Alex"),
+            PropMap.create()
         );
 
         assertTrue(actual.isRight());
+
+        val readyCommand = actual.get();
+
+        val flux = Flux.from(readyCommand.getMethodContext().getUserLog().getPublisher());
+
+        flux.subscribe(IOExt::out);
+
+        val res = commandMap.execute(readyCommand);
+
+        assertTrue(res.isRight());
 
     }
 

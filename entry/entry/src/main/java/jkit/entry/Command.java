@@ -52,7 +52,7 @@ public class Command implements Entry.ICommand {
             }
 
         val startTime = TimeExt.getCurrent();
-        methodContext.getUserLog().add("Execute command: " + commandDef.getName());
+        methodContext.log("Execute command: " + commandDef.getName());
         val result = this.executor.execute(methodContext)
             .mapLeft(e -> e.withError("Can't execute: " + commandDef.getName()));
 
@@ -77,21 +77,6 @@ public class Command implements Entry.ICommand {
         }
 
         return result;
-    }
-
-    public Either<UserError, Entry.IMethodContext> createContext(
-        ExecuteCmdRequest userRequest,
-        Entry.IUserLog userLog
-    ) {
-        return commandDef
-            .parseMap(userRequest.getPayload())
-            .map(payloadProcessed ->
-                MethodContext.of(
-                    payloadProcessed,
-                    userRequest.getUser(),
-                    userLog
-                )
-            );
     }
 
 }

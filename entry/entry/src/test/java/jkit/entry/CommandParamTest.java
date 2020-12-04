@@ -11,7 +11,7 @@ class CommandParamTest implements Deps {
     @Test
     void processInput() {
 
-        val a = Def.test;
+        val a = CmdDef.test;
 
         val b = 1;
 

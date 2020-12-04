@@ -2,8 +2,7 @@ package jkit.core.model;
 
 import io.vavr.collection.List;
 import io.vavr.control.Option;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

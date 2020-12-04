@@ -63,14 +63,23 @@ public class CommandDef implements Entry.ICommandDef {
             ),
             "validate",
             true
-        ).map(lst -> new PropMap(lst.toJavaMap(t -> t)));
+        ).map(lst -> new PropMap().params(lst.toJavaMap(t -> t)));
     }
 
-    public ReadyCommand createReadyCommand(PropMap propMap) {
-        return ReadyCommand.of(propMap, this);
+    public Either<UserError, ReadyCommand> createReadyCommand(
+        PropMap payload,
+        PropMap user
+    ) {
+        return this
+            .parseMap(payload)
+            .map(payloadProcessed ->
+                MethodContext.of(
+                    payloadProcessed,
+                    user,
+                    UserLog.create()
+                )
+            )
+            .map(ctx -> ReadyCommand.of(this, ctx));
     }
-//    public Either<UserError, ReadyCommand> createReadyCommandFromObject(Object params) {
-//        return ReadyCommand.fromObject(getName(), params);
-//    }
 
 }

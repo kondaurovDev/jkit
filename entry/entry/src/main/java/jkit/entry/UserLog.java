@@ -8,6 +8,10 @@ import java.util.ArrayList;
 
 class UserLog implements Entry.IUserLog, Publisher<String> {
 
+    public static UserLog create() {
+        return new UserLog();
+    }
+
     private final ArrayList<Subscriber<? super String>> subscribers =
         new ArrayList<>();
 
