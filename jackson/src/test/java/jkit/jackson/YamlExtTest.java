@@ -5,6 +5,8 @@ import io.vavr.collection.HashMap;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class YamlExtTest implements Deps {
@@ -12,11 +14,11 @@ class YamlExtTest implements Deps {
     @Test
     void parse() {
 
-        val actual = yaml.mapToYamlAndParse(HashMap.ofEntries(
+        val actual = jacksonMain.mapToYmlAndParse(HashMap.ofEntries(
             Tuple.of("someBool", "true"),
             Tuple.of("arr", "[1,2,3]"),
             Tuple.of("str", "Hey")
-        ));
+        ).toJavaMap());
 
         assertTrue(actual.isRight());
 
@@ -25,7 +27,8 @@ class YamlExtTest implements Deps {
     @Test
     void parse2() {
 
-        val actual = yaml.mapToYamlAndParse(HashMap.empty());
+        val actual = jacksonMain
+            .mapToYmlAndParse(Collections.emptyMap());
 
         assertTrue(actual.isRight());
 

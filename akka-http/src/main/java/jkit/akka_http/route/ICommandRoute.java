@@ -1,26 +1,28 @@
 package jkit.akka_http.route;
 
 import akka.http.javadsl.server.Route;
-import io.vavr.*;
+import io.vavr.Function1;
+import io.vavr.Function2;
 import io.vavr.collection.HashMap;
+import jkit.core.CorePredef;
 import jkit.core.ext.EnumExt;
 import jkit.akka_http.AkkaModule;
-import jkit.core.iface.Entry;
+import jkit.core.JKitEntry;
 
 import java.util.function.Consumer;
 
-public interface ICommandRoute<U> extends IPayloadRoute, IAuthRoute<U> {
+public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
 
     AkkaModule getAkkaModule();
 
-    Function1<Router.Full<U>, Route> getRoute();
+    Function1<Router.Full, Route> getRoute();
 
-    Entry.ICommandMap<U> getCommandMap();
+    JKitEntry.ICommandMap getCommandMap();
 
-    Consumer<Entry.ICommandEvent> onCommandExecute();
+    Consumer<JKitEntry.ICommandEvent> onCommandExecute();
 
     default Route withCommand(
-        Function1<Entry.ICommand<U>, Route> inner
+        Function1<JKitEntry.ICommand, Route> inner
     ) {
         return d().parameter("command", commandName  ->
             withRight(
@@ -43,13 +45,13 @@ public interface ICommandRoute<U> extends IPayloadRoute, IAuthRoute<U> {
     }
 
     default Route withResponseFormat(
-        Function1<Entry.DataFormat, Route> inner
+        Function1<CorePredef.DataFormat, Route> inner
     ) {
         return withOptionalParam("responseFormat", formatOpt ->
             formatOpt.fold(
-                () -> inner.apply(Entry.DataFormat.JSON),
+                () -> inner.apply(CorePredef.DataFormat.JSON),
                 format -> withRight(
-                    EnumExt.getByName(format, Entry.DataFormat.class),
+                    EnumExt.getByName(format, CorePredef.DataFormat.class),
                     inner
                 )
             )
@@ -57,20 +59,20 @@ public interface ICommandRoute<U> extends IPayloadRoute, IAuthRoute<U> {
     }
 
     default Route withResponseType(
-        Function1<Entry.ResponseType, Route> inner
+        Function1<CorePredef.ResponseType, Route> inner
     ) {
         return withOptionalParam(
             "responseType", paramOpt -> paramOpt.fold(
-                () -> inner.apply(Entry.ResponseType.STRICT),
-                param -> withRight(EnumExt.getByName(param, Entry.ResponseType.class), inner)
+                () -> inner.apply(CorePredef.ResponseType.STRICT),
+                param -> withRight(EnumExt.getByName(param, CorePredef.ResponseType.class), inner)
             )
         );
     }
 
 
     default Route withRequest(
-        Function1<Entry.IExecuteCmdRequest<U>, Route> inner,
-        Function4<HashMap<String, Object>, U, Entry.ResponseType, Entry.DataFormat, Entry.IExecuteCmdRequest<U>> build
+        Function1<JKitEntry.IExecuteCmdRequest, Route> inner,
+        Function2<JKitEntry.IPropMap, JKitEntry.IExecuteCmdRequest> build
     ) {
         return withUser("auth", user ->
             withCommand(command ->

@@ -16,12 +16,6 @@
 
         <dependency>
             <groupId>jkit</groupId>
-            <artifactId>jackson</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>jkit</groupId>
             <artifactId>jwt</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

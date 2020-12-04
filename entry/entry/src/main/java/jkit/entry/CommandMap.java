@@ -1,7 +1,7 @@
 package jkit.entry;
 
 import io.vavr.control.Either;
-import jkit.core.iface.Entry;
+import jkit.core.JKitEntry;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -21,8 +21,8 @@ public class CommandMap {
 
     public Command create(
         CommandDef commandDef,
-        Entry.AccessChecker accessChecker,
-        Entry.Executor executor
+        JKitEntry.AccessChecker accessChecker,
+        JKitEntry.Executor executor
     ) {
         val cmd = Command.of(
             commandDef,

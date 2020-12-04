@@ -3,10 +3,11 @@ package jkit.akka_http.route;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import io.vavr.Function1;
-import io.vavr.collection.HashMap;
 import io.vavr.control.Option;
+import jkit.core.CorePredef;
 import jkit.core.ext.*;
-import jkit.core.iface.Entry;
+
+import java.util.Map;
 
 public interface IPayloadRoute extends IRouter {
 
@@ -33,12 +34,12 @@ public interface IPayloadRoute extends IRouter {
     }
 
     default Route withPayloadFormat(
-        Function1<Entry.DataFormat, Route> inner
+        Function1<CorePredef.DataFormat, Route> inner
     ) {
         return withOptionalParam("payloadFormat", opt ->
             opt.fold(
-                () -> inner.apply(Entry.DataFormat.JSON),
-                pt -> withRight(EnumExt.getByName(pt, Entry.DataFormat.class), inner)
+                () -> inner.apply(CorePredef.DataFormat.JSON),
+                pt -> withRight(EnumExt.getByName(pt, CorePredef.DataFormat.class), inner)
             )
         );
     }
@@ -48,8 +49,10 @@ public interface IPayloadRoute extends IRouter {
     ) {
         return d().parameterMap(params ->
             withRight(
-                getJacksonMain().getYaml().mapToYamlAndParse(HashMap.ofAll(params)),
-                r -> inner.apply(r.toPrettyString())
+                getObjMapperSet()
+                    .mapToYmlAndParse(params)
+                    .flatMap(o -> getObjMapperSet().getYml().serialize(o)),
+                inner
             )
         );
     }
@@ -74,16 +77,17 @@ public interface IPayloadRoute extends IRouter {
     }
 
     default Route withPayload(
-        Function1<HashMap<String, Object>, Route> inner
+        Function1<Map<String, Object>, Route> inner
     ) {
 
         return withPayloadString(payload ->
             withPayloadFormat(df ->
                 withRight(
-                    getJacksonMain().readPayload(
-                        payload,
-                        df
-                    ),
+                    getObjMapperSet()
+                        .readPayload(
+                            payload,
+                            df
+                        ),
                     inner
                 )
             )
@@ -95,10 +99,9 @@ public interface IPayloadRoute extends IRouter {
         Function1<A, Route> inner
     ) {
         return withPayload(p -> withRight(
-                getJacksonMain().getJson().deserialize(p, clazz),
-                inner
-            )
-        );
+            getObjMapperSet().getJson().deserialize(p, clazz),
+            inner
+        ));
     }
 
 }

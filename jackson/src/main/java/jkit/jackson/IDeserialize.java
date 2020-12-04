@@ -4,22 +4,23 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
-import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
-import io.vavr.collection.Map;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
+import jkit.core.JKitValidate;
 import jkit.core.ext.*;
+import jkit.core.JKitData;
 import jkit.core.model.UserError;
 import lombok.val;
-import jkit.core.iface.IValidator;
 
-public interface IDeserialize {
+import java.util.Map;
+
+public interface IDeserialize extends JKitData.IParser<JsonNode> {
 
     ObjectMapper getObjectMapper();
-    IValidator getValidator();
+    JKitValidate.IValidator getValidator();
 
-    static Option<String> nonEmptyJsonString(String raw) {
+    default Option<String> nonEmptyJsonString(String raw) {
         if (raw.isEmpty()) {
             return Option.none();
         } else {
@@ -67,7 +68,7 @@ public interface IDeserialize {
     }
 
     default <C> JavaType getMapType(Class<C> cClass) {
-        return getObjectMapper().getTypeFactory().constructMapType(java.util.Map.class, String.class, cClass);
+        return getObjectMapper().getTypeFactory().constructMapType(Map.class, String.class, cClass);
     }
 
     default <T> Either<UserError, List<T>> deserializeToList(String s, Class<T> tClass) {
@@ -77,11 +78,11 @@ public interface IDeserialize {
         ).map(List::ofAll);
     }
 
-    default <T> Either<UserError, HashMap<String, T>> deserializeToMap(String s, Class<T> tClass) {
+    default <T> Either<UserError, Map<String, T>> deserializeToMap(String s, Class<T> tClass) {
         return TryExt.get(
             () -> getObjectMapper().<java.util.Map<String, T>>readValue(s, getMapType(tClass)),
             "Can't deserialize to Map from json string"
-        ).map(HashMap::ofAll);
+        );
     }
 
     default <C> Either<UserError, C> deserializeFromString(String s, Class<C> clazz) {
@@ -117,14 +118,6 @@ public interface IDeserialize {
                     clazz
                 );
             }, "Deserialize list");
-    }
-
-    default Either<UserError, JsonNode> mapToYamlAndParse(Map<String, String> map) {
-        return parseRaw(
-            map
-                .map(t -> String.format("%s: %s", t._1, t._2))
-                .mkString("\n")
-        );
     }
 
 }

@@ -1,9 +1,11 @@
 package jkit.core;
 
+import jkit.core.ext.IOExt;
+
 public interface Main {
 
     static void main(String[] args) {
-        System.out.println(hello());
+        IOExt.out(hello());
     }
 
     static String hello() {

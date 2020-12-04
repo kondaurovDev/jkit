@@ -17,13 +17,9 @@ import jkit.akka_http.AkkaPredef;
 import jkit.akka_http.util.IResponseFactory;
 import jkit.core.ext.*;
 import jkit.core.model.UserError;
-import jkit.jackson.JacksonMain;
-import jkit.jackson.ObjectMapperExt;
 import lombok.*;
 
 public interface IRouter extends IResponseFactory {
-
-    JacksonMain<ObjectMapperExt> getJacksonMain();
 
     AllDirectives d();
 

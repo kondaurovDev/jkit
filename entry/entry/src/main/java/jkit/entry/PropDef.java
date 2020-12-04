@@ -3,13 +3,13 @@ package jkit.entry;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.ListExt;
-import jkit.core.iface.Entry;
+import jkit.core.JKitEntry;
 import jkit.core.model.UserError;
 import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PropDef<A> implements Entry.IPropDef<A> {
+public class PropDef<A> implements JKitEntry.IPropDef<A> {
 
     @EqualsAndHashCode.Include
     String name;

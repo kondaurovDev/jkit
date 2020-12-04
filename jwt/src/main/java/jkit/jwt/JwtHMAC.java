@@ -9,7 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
-import jkit.core.iface.IObjMapper;
+import jkit.core.JKitData;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -19,12 +19,12 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class JwtHMAC {
 
-    IObjMapper objMapper;
+    JKitData.IObjMapper<?> objMapper;
     Algorithm algorithm;
     JWTVerifier verifier;
 
     public static JwtHMAC create(
-        IObjMapper objMapper,
+        JKitData.IObjMapper<?> objMapper,
         String secretPhrase
     ) {
         val alg = Algorithm.HMAC256(secretPhrase);
@@ -58,7 +58,7 @@ public class JwtHMAC {
 
     public Either<UserError, String> embedMapAndSign(Object obj) {
         return objMapper.objToMap(obj)
-            .flatMap(map -> sign(b -> b.withClaim("data", map.toJavaMap())));
+            .flatMap(map -> sign(b -> b.withClaim("data", map)));
     }
 
     public Either<UserError, Claim> verifyAndExtract(String token) {

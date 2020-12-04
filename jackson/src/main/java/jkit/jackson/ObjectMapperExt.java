@@ -4,21 +4,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.Tuple2;
-import io.vavr.collection.*;
 import io.vavr.control.Either;
+import jkit.core.JKitValidate;
 import jkit.core.ext.*;
-import jkit.core.iface.IObjMapper;
-import jkit.core.iface.IValidator;
+import jkit.core.JKitData;
 import jkit.core.model.UserError;
 import lombok.*;
+
+import java.util.Map;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class ObjectMapperExt
-    implements IObjMapper, IDeserialize, ITransform {
+    implements JKitData.IObjMapper<JsonNode>, IDeserialize, ITransform {
 
     ObjectMapper objectMapper;
-    IValidator validator;
+    JKitValidate.IValidator validator;
 
     public JacksonModule.IJsonFactory getFactory(Object o) {
         return () -> toJsonNode(o);

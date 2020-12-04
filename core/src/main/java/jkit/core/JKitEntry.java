@@ -1,4 +1,4 @@
-package jkit.core.iface;
+package jkit.core;
 
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Stream;
@@ -9,7 +9,7 @@ import org.reactivestreams.Publisher;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface Entry {
+public interface JKitEntry {
 
     interface IExecuteCmdRequest {
         String getCommandName();
@@ -24,8 +24,8 @@ public interface Entry {
 
     interface ICommand {
         ICommandDef getCommandDef();
-        Entry.AccessChecker getAccessChecker();
-        Entry.Executor getExecutor();
+        JKitEntry.AccessChecker getAccessChecker();
+        JKitEntry.Executor getExecutor();
 
         Either<UserError, ?> executeBlocking(IMethodContext methodContext);
     }

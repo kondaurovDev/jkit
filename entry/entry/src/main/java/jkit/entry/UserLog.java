@@ -1,12 +1,12 @@
 package jkit.entry;
 
-import jkit.core.iface.Entry;
+import jkit.core.JKitEntry;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 
 import java.util.ArrayList;
 
-class UserLog implements Entry.IUserLog, Publisher<String> {
+class UserLog implements JKitEntry.IUserLog, Publisher<String> {
 
     public static UserLog create() {
         return new UserLog();

@@ -4,7 +4,7 @@ import io.vavr.Tuple;
 import io.vavr.control.Either;
 import jkit.core.ext.ListExt;
 import jkit.core.ext.MapExt;
-import jkit.core.iface.Entry;
+import jkit.core.JKitEntry;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -14,14 +14,14 @@ import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder @Value
-public class CommandDef implements Entry.ICommandDef {
+public class CommandDef implements JKitEntry.ICommandDef {
 
     @EqualsAndHashCode.Include
     String name;
     @Builder.Default
     CommandFlag flag = CommandFlag.simpleTask;
     @Singular
-    List<Entry.IPropDef<?>> params;
+    List<JKitEntry.IPropDef<?>> params;
     @Singular(value = "required")
     Set<String> requiredParams;
 
@@ -36,8 +36,8 @@ public class CommandDef implements Entry.ICommandDef {
 
     public Command register(
         CommandMap commandMap,
-        Entry.AccessChecker accessChecker,
-        Entry.Executor executor
+        JKitEntry.AccessChecker accessChecker,
+        JKitEntry.Executor executor
     ) {
         val cmd = Command.of(
             this,

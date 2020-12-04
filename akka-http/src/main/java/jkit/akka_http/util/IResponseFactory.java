@@ -3,14 +3,13 @@ package jkit.akka_http.util;
 import akka.http.javadsl.model.*;
 import akka.http.javadsl.model.headers.Location;
 import io.vavr.control.Either;
+import jkit.core.JKitData;
 import jkit.core.model.UserError;
 import jkit.core.ext.*;
-import jkit.jackson.JacksonMain;
-import jkit.jackson.ObjectMapperExt;
 
 public interface IResponseFactory {
 
-    JacksonMain<ObjectMapperExt> getJacksonMain();
+    JKitData.IObjMapperMain<?, JKitData.IObjMapper<?>> getObjMapperSet();
 
     default HttpResponse plainText(String text, Integer status) {
         return Response.text.getHttpResponse(text, status);
@@ -34,7 +33,7 @@ public interface IResponseFactory {
 
     default Either<UserError, HttpResponse> jsonResponse(Object obj, int code) {
         return toResponse(
-            getJacksonMain().getJson().serialize(obj),
+            getObjMapperSet().getJson().serialize(obj),
             Response.json,
             code
         );
@@ -42,7 +41,7 @@ public interface IResponseFactory {
 
     default Either<UserError, HttpResponse> yamlResponse(Object obj, int code) {
         return toResponse(
-            getJacksonMain().getJson().serialize(obj),
+            getObjMapperSet().getJson().serialize(obj),
             Response.text,
             code
         );

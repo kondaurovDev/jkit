@@ -21,8 +21,8 @@ public class JwtModel<A> {
                 jwtHMAC.sign(builder ->
                     builder
                         .withIssuer(issuer)
-//                        .withExpiresAt(TimeExt.getCurrent().plusDays(3).toDate())
-                        .withClaim(claimName, map.toJavaMap())
+                        .withExpiresAt(TimeExt.getCurrent().plusDays(3).toDate())
+                        .withClaim(claimName, map)
                 )
             );
 

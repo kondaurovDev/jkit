@@ -16,7 +16,7 @@ public interface Deps {
     );
 
     ObjectMapperExt json = jacksonMain.getJson();
-    ObjectMapperExt yaml = jacksonMain.getYaml();
+    ObjectMapperExt yaml = jacksonMain.getYml();
     IDsl jsonDsl = jacksonMain.getJsonDSL();
 
     @Value

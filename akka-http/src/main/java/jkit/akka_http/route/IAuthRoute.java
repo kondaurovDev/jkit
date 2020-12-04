@@ -2,14 +2,14 @@ package jkit.akka_http.route;
 
 import akka.http.javadsl.server.Route;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.vavr.Function1;
 import jkit.jwt.JwtHMAC;
 import lombok.*;
 
-public interface IAuthRoute<U> extends IRouter {
+import java.util.Map;
 
-    Class<U> getUserClass();
+public interface IAuthRoute extends IRouter {
+
     JwtHMAC getJwtHMAC();
     String getJwtClaimName();
 
@@ -42,7 +42,7 @@ public interface IAuthRoute<U> extends IRouter {
 
     default Route withUser(
         String paramName,
-        Function1<U, Route> inner
+        Function1<Map<String, Object>, Route> inner
     ) {
         return withJWT(paramName, t -> {
             val claim = t.getClaim(getJwtClaimName());
@@ -50,10 +50,8 @@ public interface IAuthRoute<U> extends IRouter {
                 return completeError("Unknown claim");
             }
 
-            return withRight(
-                getJacksonMain().getJson().deserialize(claim.as(JsonNode.class), getUserClass()),
-                inner
-            );
+            return inner
+                .apply(claim.asMap());
         });
     }
 

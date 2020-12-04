@@ -3,7 +3,7 @@ package jkit.entry;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import jkit.core.ext.*;
-import jkit.core.iface.Entry;
+import jkit.core.JKitEntry;
 import jkit.core.model.UserError;
 import lombok.*;
 
@@ -12,22 +12,22 @@ import java.util.function.Consumer;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Command implements Entry.ICommand {
+public class Command implements JKitEntry.ICommand {
 
     CommandDef commandDef;
-    Entry.AccessChecker accessChecker;
-    Entry.Executor executor;
+    JKitEntry.AccessChecker accessChecker;
+    JKitEntry.Executor executor;
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
     public Either<UserError, ?> executeBlocking(
-        Entry.IMethodContext methodContext
+        JKitEntry.IMethodContext methodContext
     ) {
        return this.executeBlocking(methodContext, c -> {});
     }
 
     public Either<UserError, ?> executeBlocking(
-        Entry.IMethodContext methodContext,
+        JKitEntry.IMethodContext methodContext,
         Consumer<CommandEvent> onSave
     ) {
 
