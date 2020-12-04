@@ -2,19 +2,9 @@ package jkit.entry;
 
 import jkit.core.ext.IOExt;
 import jkit.core.ext.TryExt;
-import jkit.jackson.JacksonModule;
-import jkit.jackson.ObjectMapperExt;
-import jkit.validate.Validator;
 import lombok.*;
-import org.junit.jupiter.api.BeforeAll;
 
 public interface Deps {
-
-    @BeforeAll
-    default void init() {
-        val mapper = ObjectMapperExt.of(JacksonModule.createJsonMapper(), Validator.of());
-        EntryGlobal.$.setObjectMapper(mapper);
-    }
 
     interface Prop {
         PropDef<?> name = PropDef.of("name", String.class);
