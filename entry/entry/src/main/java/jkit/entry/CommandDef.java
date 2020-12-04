@@ -63,7 +63,7 @@ public class CommandDef implements Entry.ICommandDef {
             ),
             "validate",
             true
-        ).map(lst -> new PropMap().params(lst.toJavaMap(t -> t)));
+        ).map(lst -> PropMap.create().params(lst.toJavaMap(t -> t)).build());
     }
 
     public Either<UserError, ReadyCommand> createReadyCommand(

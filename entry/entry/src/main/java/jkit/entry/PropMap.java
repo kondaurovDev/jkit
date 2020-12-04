@@ -7,56 +7,45 @@ import jkit.core.iface.Entry;
 import jkit.core.model.UserError;
 import lombok.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
+@Value
+@Builder(builderMethodName = "create")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PropMap implements Entry.IPropMap {
 
-    HashMap<String, Object> params = new HashMap<>();
-
-    public static PropMap create() {
-        return new PropMap();
-    }
-
-    public PropMap param(String key, Object value) {
-        params.put(key, value);
-        return this;
-    }
-
-    public PropMap params(Map<String, Object> all) {
-        params.putAll(all);
-        return this;
-    }
+    @Singular
+    Map<String, Object> params;
 
     public Map<String, Object> getParams() {
         return this.params;
     }
 
-    public <A> Either<UserError, A> propOpt(Entry.IPropDef<A> param) {
+    public <A> Either<UserError, A> propOpt(Entry.IPropDef<A> prop) {
         return MapExt
-            .get(param.getName(), params,String.format("Param '%s'  not found", param.getName()))
+            .get(prop.getName(), params,String.format("Param '%s'  not found", prop.getName()))
             .flatMap(v -> {
-                if (!param.getParamClass().isInstance(v))
+                if (!prop.getParamClass().isInstance(v))
                     return Either.left(UserError.create("Wrong class"));
-                return Either.right(param.getParamClass().cast(v));
+                return Either.right(prop.getParamClass().cast(v));
             });
     }
 
-    public <A> A prop(Entry.IPropDef<A> param) {
-        val v = propOpt(param);
+    public <A> A prop(Entry.IPropDef<A> prop) {
+        val v = propOpt(prop);
 
         if (v.isEmpty())
             throw UserError.create(
                 String.format(
                     "Param '%s' not found",
-                    param.getName()
+                    prop.getName()
                 )
             ).toError();
 
         return v.get();
     }
 
-    public <A> List<A> paramList(PropDef<A> propDef) {
+    public <A> List<A> propList(PropDef<A> propDef) {
         return propDef
             .validateList(prop(propDef))
             .getOrElseThrow(UserError::toError);

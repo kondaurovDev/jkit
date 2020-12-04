@@ -16,8 +16,10 @@ class CommandMapTest implements Deps {
 
         val actual = CmdDef.test.createReadyCommand(
             PropMap.create()
-                .param("name", "Alex"),
+                .param("name", "Alex")
+                .build(),
             PropMap.create()
+                .build()
         );
 
         assertTrue(actual.isRight());
