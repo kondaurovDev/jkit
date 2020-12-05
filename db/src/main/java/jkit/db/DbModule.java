@@ -2,9 +2,9 @@ package jkit.db;
 
 import io.vavr.Function1;
 import io.vavr.control.Either;
+import jkit.core.JKitData;
 import jkit.core.ext.TimeExt;
 import jkit.core.ext.TryExt;
-import jkit.core.iface.IObjMapper;
 import jkit.core.model.UserError;
 import org.flywaydb.core.Flyway;
 
@@ -24,7 +24,7 @@ public class DbModule {
     Flyway flyway;
 
     public static DbModule create(
-        IObjMapper objectMapper,
+        JKitData.IObjMapper<?> objectMapper,
         String filePath,
         Function1<DbFile, DataSource> createDataSource
     ) {

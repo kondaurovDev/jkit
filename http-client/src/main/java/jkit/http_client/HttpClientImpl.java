@@ -1,8 +1,7 @@
 package jkit.http_client;
 
 import io.vavr.control.Either;
-import jkit.core.iface.IObjMapper;
-import jkit.core.model.HttpResponse;
+import jkit.core.JKitData;
 import jkit.core.model.UserError;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -23,11 +22,11 @@ public class HttpClientImpl implements IEntity, IReadResponse, IFactory {
 
     Logger logger = IOExt.createLogger(HttpClientImpl.class);
 
-    IObjMapper objectMapper;
+    JKitData.IObjMapper<?> jsonObjMapper;
     HttpClient httpClient;
 
     public static HttpClientImpl createDefault(
-        IObjMapper objectSerializer
+        JKitData.IObjMapper<?> objectSerializer
     ) {
         return HttpClientImpl.create(
             objectSerializer,

@@ -53,7 +53,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
     ) {
         return ListExt.applyToEach(
             props,
-            p -> MapExt.get(p.getName(), propMap.getParams(), "Missing prop").fold(
+            p -> MapExt.get(p.getName(), propMap.getProps(), "Missing prop").fold(
                 err -> {
                     if (requiredProps.contains(p.getName()))
                         return Either.left(UserError.create(String.format("Missing property '%s' ", p.getName())));
@@ -63,7 +63,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
             ),
             "validate",
             true
-        ).map(lst -> PropMap.create().params(lst.toJavaMap(t -> t)).build());
+        ).map(lst -> PropMap.create().props(lst.toJavaMap(t -> t)).build());
     }
 
     public Either<UserError, JKitEntry.IMethodContext> createContext(

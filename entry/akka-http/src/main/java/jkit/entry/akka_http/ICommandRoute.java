@@ -8,7 +8,6 @@ import jkit.core.CorePredef;
 import jkit.core.ext.EnumExt;
 import jkit.core.JKitEntry;
 import jkit.entry.CommandRequest;
-import jkit.entry.PropMap;
 
 import java.util.function.Consumer;
 
@@ -76,8 +75,8 @@ public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
                 withPayload(payload ->
                     inner.apply(CommandRequest.of(
                         commandName,
-                        PropMap.create().params(payload).build(),
-                        PropMap.create().params(user).build()
+                        payload,
+                        user
                     ))
                 )
             )

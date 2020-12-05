@@ -15,7 +15,7 @@ class CommandDefTest implements Deps {
 
         val a = CmdDef.test.parseMap(
             PropMap.create()
-                .param("name", "alex")
+                .prop("name", "alex")
                 .build()
         );
 
@@ -28,8 +28,8 @@ class CommandDefTest implements Deps {
 
         val a = CmdDef.test.createReadyCommand(
             PropMap.create()
-                .param(Prop.num.getName(), 1)
-                .param(Prop.name.getName(), "alex")
+                .prop(Prop.num.getName(), 1)
+                .prop(Prop.name.getName(), "alex")
                 .build(),
             PropMap.create()
                 .build()

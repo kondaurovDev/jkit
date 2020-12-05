@@ -4,8 +4,8 @@ import io.vavr.*;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import jkit.core.JKitData;
 import jkit.core.ext.*;
-import jkit.core.iface.IObjMapper;
 import jkit.core.model.UserError;
 import jkit.db.model.DbColumn;
 import jkit.db.model.TableInfo;
@@ -21,7 +21,7 @@ import lombok.*;
 @lombok.Value(staticConstructor = "of")
 public class DbWrapper {
 
-    IObjMapper objectMapperExt;
+    JKitData.IObjMapper<?> objectMapperExt;
     DataSource ds;
 
     private static final Logger logger = IOExt.createLogger(DbWrapper.class);

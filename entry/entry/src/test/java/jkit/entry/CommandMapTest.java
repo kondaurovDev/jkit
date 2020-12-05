@@ -16,7 +16,7 @@ class CommandMapTest implements Deps {
 
         val actual = CmdDef.test.createReadyCommand(
             PropMap.create()
-                .param("name", "Alex")
+                .prop("name", "Alex")
                 .build(),
             PropMap.create()
                 .build()

@@ -1,20 +1,18 @@
 package jkit.core;
 
-import io.vavr.collection.Stream;
 import io.vavr.control.Either;
 import jkit.core.model.UserError;
 import org.reactivestreams.Publisher;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public interface JKitEntry {
 
     interface ICommandRequest {
         String getCommandName();
-        IPropMap getPayload();
-        IPropMap getUser();
+        Map<String, Object> getPayload();
+        Map<String, Object> getUser();
     }
 
     interface ICommandMap {
@@ -53,18 +51,6 @@ public interface JKitEntry {
         );
     }
 
-    interface ICommandResult {
-
-        default Stream<?> getResponse() {
-           return this.getResponse(e -> {});
-        }
-
-        Stream<?> getResponse(
-            Consumer<ICommandEvent> onSave
-        );
-
-    }
-
     interface ICommandEvent {
 
     }
@@ -86,7 +72,7 @@ public interface JKitEntry {
     }
 
     interface IPropMap {
-        Map<String, Object> getParams();
+        Map<String, Object> getProps();
         <A> Either<UserError, A> propOpt(IPropDef<A> prop);
         <A> A prop(IPropDef<A> prop);
     }

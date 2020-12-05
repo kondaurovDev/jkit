@@ -6,7 +6,6 @@ import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.IOExt;
 import jkit.core.model.UserError;
-import jkit.core.model.http.IHttpConfig;
 import lombok.*;
 
 public interface AkkaExt {
@@ -46,19 +45,6 @@ public interface AkkaExt {
             IOExt.out(String.format("%s service is listening http on %s", serviceName, r));
             return akkaHttpServer;
         });
-    }
-
-    static <C extends IHttpConfig> Either<UserError, ?> runServer(
-        String serviceName,
-        Function1<AkkaModule, Route> createRoute,
-        C config
-    ) {
-        return config.getHttpPort()
-            .flatMap(port -> AkkaExt.listenHttp(
-                serviceName,
-                createRoute,
-                port
-            ));
     }
 
 }

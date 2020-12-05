@@ -3,8 +3,8 @@ package jkit.http_client;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
+import jkit.core.JKitData;
 import jkit.core.ext.TryExt;
-import jkit.core.iface.IObjMapper;
 import jkit.core.model.UserError;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 
 interface IEntity {
 
-    IObjMapper getObjectMapper();
+    JKitData.IObjMapper<?> getJsonObjMapper();
 
     default Either<UserError, StringEntity> createStringEntity(String s) {
         return TryExt.get(
@@ -39,7 +39,7 @@ interface IEntity {
         Object object
     ) {
 
-        return getObjectMapper().serialize(object)
+        return getJsonObjMapper().serialize(object)
             .flatMap(this::createStringEntity)
             .map(e -> {
                 e.setContentType("application/json");

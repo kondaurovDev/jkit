@@ -15,15 +15,15 @@ import java.util.Map;
 public class PropMap implements JKitEntry.IPropMap {
 
     @Singular
-    Map<String, Object> params;
+    Map<String, Object> props;
 
     public Map<String, Object> getParams() {
-        return this.params;
+        return this.props;
     }
 
     public <A> Either<UserError, A> propOpt(JKitEntry.IPropDef<A> prop) {
         return MapExt
-            .get(prop.getName(), params,String.format("Param '%s'  not found", prop.getName()))
+            .get(prop.getName(), props, String.format("Param '%s' not found", prop.getName()))
             .flatMap(v -> {
                 if (!prop.getParamClass().isInstance(v))
                     return Either.left(UserError.create("Wrong class"));

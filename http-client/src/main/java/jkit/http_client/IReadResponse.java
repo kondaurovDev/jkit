@@ -6,7 +6,6 @@ import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.IOExt;
 import jkit.core.ext.TryExt;
-import jkit.core.model.HttpResponse;
 import jkit.core.model.UserError;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;

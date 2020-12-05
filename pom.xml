@@ -16,8 +16,9 @@
         <module>http-client</module>
         <module>graphql</module>
         <module>entry/entry</module>
-        <module>akka-http</module>
         <module>entry/akka-http</module>
+        <module>http-server/akka-http</module>
+        <module>http-server/native</module>
     </modules>
 
     <packaging>pom</packaging>

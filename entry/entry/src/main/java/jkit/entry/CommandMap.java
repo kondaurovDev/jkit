@@ -43,8 +43,8 @@ public class CommandMap implements JKitEntry.ICommandMap {
     ) {
         return getCommand(commandRequest.getCommandName())
             .flatMap(cmd -> cmd.getCommandDef().createReadyCommand(
-                commandRequest.getPayload(),
-                commandRequest.getUser()
+                PropMap.create().props(commandRequest.getPayload()).build(),
+                PropMap.create().props(commandRequest.getUser()).build()
             ));
     }
 
