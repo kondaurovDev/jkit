@@ -50,7 +50,7 @@ public class HttpClientImpl implements IEntity, IReadResponse, IFactory {
 
     public <A> Either<UserError, HttpResponse<A>> filterByCode(HttpResponse<A> response, Integer code) {
 
-        if (response.getCode() != code) {
+        if (!response.getCode().equals(code)) {
             return Either.left(UserError.create(response.toString()));
         } else {
             return Either.right(response);

@@ -1,7 +1,6 @@
 package jkit.http_client;
 
 import io.vavr.Tuple2;
-import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
 import jkit.core.ext.TryExt;
@@ -16,6 +15,8 @@ import lombok.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 interface IEntity {
 
@@ -49,9 +50,9 @@ interface IEntity {
 
     }
 
-    default HttpEntity getFormEntity(List<Tuple2<String, String>> args) {
+    default HttpEntity getFormEntity(Stream<Tuple2<String, String>> args) {
         val params = args.map(p -> new BasicNameValuePair(p._1, p._2));
-        return new UrlEncodedFormEntity(params.toJavaList(), StandardCharsets.UTF_8);
+        return new UrlEncodedFormEntity(params.collect(Collectors.toList()), StandardCharsets.UTF_8);
     }
 
 }

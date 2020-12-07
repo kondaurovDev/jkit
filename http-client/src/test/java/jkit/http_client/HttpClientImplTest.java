@@ -13,7 +13,8 @@ class HttpClientImplTest implements Deps {
         val actual =
             httpClient
                 .createGetRequest("https://google.com")
-                .flatMap(httpClient::getStringResponse);
+                .flatMap(httpClient::getStringResponse)
+                .flatMap(r -> httpClient.filterByCode(r,200));
 
         assertTrue(actual.isRight());
 

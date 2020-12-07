@@ -1,5 +1,6 @@
 package jkit.core.ext;
 
+import io.vavr.Function0;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
@@ -37,5 +38,12 @@ public interface VavrExt {
         return TryExt.get(() -> Integer.parseInt(s), "to int");
     }
 
+    static <A> Either<UserError, A> getOrDefault(
+        A value,
+        Function0<Either<UserError, A>> getDefault
+    ) {
+        if (value != null) return Either.right(value);
+        return getDefault.apply();
+    }
 
 }
