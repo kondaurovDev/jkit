@@ -1,18 +1,24 @@
-package jkit.http_client;
+package jkit.http_client_apache;
 
 import io.vavr.Function1;
 import io.vavr.Tuple;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
+import jkit.http_client_core.HttpResponse;
+import jkit.http_client_core.JKitHttpClient;
 import jkit.core.ext.IOExt;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import java.io.InputStream;
 
-interface IReadResponse {
+interface IRequestExecutor extends
+    JKitHttpClient.IEntityFactory<HttpEntity>,
+    JKitHttpClient.IClient<HttpEntity, HttpUriRequest>
+{
 
     HttpClient getHttpClient();
 

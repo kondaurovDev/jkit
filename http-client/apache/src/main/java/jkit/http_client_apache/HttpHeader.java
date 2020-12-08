@@ -1,4 +1,4 @@
-package jkit.http_client;
+package jkit.http_client_apache;
 
 import jkit.core.ext.StringExt;
 import org.apache.http.Header;

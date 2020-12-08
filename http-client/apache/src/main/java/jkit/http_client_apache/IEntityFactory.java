@@ -1,8 +1,9 @@
-package jkit.http_client;
+package jkit.http_client_apache;
 
 import io.vavr.Tuple2;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
+import jkit.http_client_core.JKitHttpClient;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
 import org.apache.http.HttpEntity;
@@ -18,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-interface IEntity {
+interface IEntityFactory extends JKitHttpClient.IEntityFactory<HttpEntity> {
 
     JKitData.IObjMapper<?> getJsonObjMapper();
 

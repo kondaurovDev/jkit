@@ -1,11 +1,12 @@
-package jkit.http_client;
+package jkit.http_client_apache;
 
 import io.vavr.control.Either;
 import jkit.core.JKitData;
 import jkit.core.model.UserError;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import jkit.http_client_core.HttpResponse;
+import jkit.http_client_core.JKitHttpClient;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.FileEntity;
@@ -16,16 +17,23 @@ import java.io.File;
 
 import jkit.core.ext.*;
 
+import lombok.*;
+
 @Value(staticConstructor = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class HttpClientImpl implements IEntity, IReadResponse, IFactory {
+public class HttpClientImpl implements
+    JKitHttpClient.IClient<HttpEntity, HttpUriRequest>,
+    IEntityFactory,
+    IRequestExecutor,
+    IRequestFactory
+{
 
     Logger logger = IOExt.createLogger(HttpClientImpl.class);
 
     JKitData.IObjMapper<?> jsonObjMapper;
     HttpClient httpClient;
 
-    public static HttpClientImpl createDefault(
+    public static JKitHttpClient.IClient<HttpEntity, HttpUriRequest> createDefault(
         JKitData.IObjMapper<?> objectSerializer
     ) {
         return HttpClientImpl.create(

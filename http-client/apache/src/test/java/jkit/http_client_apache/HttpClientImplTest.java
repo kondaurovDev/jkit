@@ -1,4 +1,4 @@
-package jkit.http_client;
+package jkit.http_client_apache;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;

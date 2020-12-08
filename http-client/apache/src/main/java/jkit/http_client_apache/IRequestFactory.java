@@ -1,18 +1,16 @@
-package jkit.http_client;
+package jkit.http_client_apache;
 
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import jkit.http_client_core.JKitHttpClient;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URI;
 
-interface IFactory {
+interface IRequestFactory extends JKitHttpClient.IRequestFactory<HttpUriRequest> {
 
     default Either<UserError, URIBuilder> createUriBuilder(List<String> urlParts) {
 

@@ -1,13 +1,12 @@
-package jkit.http_client;
+package jkit.http_client_core;
 
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import jkit.core.JKitHttpClient;
 import lombok.*;
 
 @Value(staticConstructor = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class HttpResponse<A> implements JKitHttpClient.IHttpResponse<A> {
+public class HttpResponse<A> {
 
     Integer code;
     String codePhrase;

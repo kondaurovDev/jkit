@@ -13,12 +13,13 @@
         <module>core</module>
         <module>validate</module>
         <module>jwt</module>
-        <module>http-client</module>
         <module>graphql</module>
         <module>entry/entry</module>
         <module>entry/akka-http</module>
+        <module>http-client/apache</module>
         <module>http-server/akka-http</module>
         <module>http-server/native</module>
+        <module>http-client/core</module>
     </modules>
 
     <packaging>pom</packaging>
