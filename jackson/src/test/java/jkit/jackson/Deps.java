@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import jkit.validate.Validator;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 

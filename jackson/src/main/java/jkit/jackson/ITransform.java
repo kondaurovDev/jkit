@@ -3,15 +3,11 @@ package jkit.jackson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.Function1;
-import io.vavr.Tuple;
 import io.vavr.collection.Stream;
 import io.vavr.control.Either;
-import jkit.core.ext.ListExt;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
 import lombok.val;
-
-import java.util.Map;
 
 public interface ITransform extends IDeserialize {
 
@@ -27,25 +23,6 @@ public interface ITransform extends IDeserialize {
             });
 
         return result;
-
-    }
-
-    default Either<UserError, Map<String, String>> transformMap(
-        Map<String, ?> input
-    ) {
-
-        return ListExt.applyToEach(
-            input.entrySet(),
-            v -> {
-                val t = v.getValue().getClass();
-                if (t.isInstance(Map.class)) {
-                    return Either.right((String)v.getValue());
-                }
-
-            },
-            "transform map",
-            true
-        ).map(lst -> lst.toJavaMap(t -> t));
 
     }
 

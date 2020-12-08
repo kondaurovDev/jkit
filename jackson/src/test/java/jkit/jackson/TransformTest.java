@@ -11,7 +11,7 @@ public class TransformTest implements Deps {
     @Test
     void transformMapTest() {
 
-        val actual = json.transformMap(
+        val actual = json.objToStringMap(
             HashMap.of(
                 "int", 1,
                 "product", HashMap.of("name", "alex"),
@@ -21,7 +21,7 @@ public class TransformTest implements Deps {
             ).toJavaMap()
         );
 
-        assertTrue(actual.isRight());
+        assertFalse(actual.isEmpty());
 
     }
 

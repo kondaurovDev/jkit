@@ -8,8 +8,9 @@ import jkit.core.JKitData;
 import jkit.core.JKitValidate;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
-
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface IObjMapper
     extends JKitData.IObjMapper<JsonNode> {
@@ -59,6 +60,16 @@ public interface IObjMapper
             () -> getObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {}),
             "object to Map"
         );
+    }
+
+    default Either<UserError, Map<String, String>> objToStringMap(Object node) {
+        return objToMap(node)
+            .map(map ->
+                map
+                    .entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString(), (prev, next) -> next, HashMap::new))
+            );
+
     }
 
 }

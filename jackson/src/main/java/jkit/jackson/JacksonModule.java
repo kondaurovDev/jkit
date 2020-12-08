@@ -33,7 +33,7 @@ public interface JacksonModule {
         mapper
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-            .configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, false);
+            .configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, true);
 
         val jodaModule = new JodaModule();
 
