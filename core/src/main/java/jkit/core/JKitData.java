@@ -1,5 +1,6 @@
 package jkit.core;
 
+import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.MapExt;
 import jkit.core.model.UserError;
@@ -13,6 +14,10 @@ public interface JKitData {
         <C> Either<UserError, C> convert(Object obj, Class<C> clazz, String... fields);
         <C> Either<UserError, C> deserialize(Object input, Class<C> clazz);
         Either<UserError, Map<String, Object>> objToMap(Object node);
+        <T> Either<UserError, List<T>> deserializeToList(String s, Class<T> tClass);
+        <T> Either<UserError, Map<String, T>> deserializeToMap(String s, Class<T> tClass);
+        <C> Either<UserError, C> deserializeFromString(String s, Class<C> clazz);
+        <C> Either<UserError, C> deserializeFromNode(A json, Class<C> clazz);
     }
 
     interface IParser<A> {

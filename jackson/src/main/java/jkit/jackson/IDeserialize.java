@@ -2,23 +2,17 @@ package jkit.jackson;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
-import jkit.core.JKitValidate;
 import jkit.core.ext.*;
 import jkit.core.JKitData;
 import jkit.core.model.UserError;
-import lombok.val;
 
 import java.util.Map;
 
-public interface IDeserialize extends JKitData.IParser<JsonNode> {
-
-    ObjectMapper getObjectMapper();
-    JKitValidate.IValidator getValidator();
+public interface IDeserialize extends JKitData.IParser<JsonNode>, IObjMapper {
 
     default Option<String> nonEmptyJsonString(String raw) {
         if (raw.isEmpty()) {
@@ -111,13 +105,10 @@ public interface IDeserialize extends JKitData.IParser<JsonNode> {
         JacksonModule.IJsonTransformer transform
     ) {
         return ListExt
-            .applyToEach(list, e -> {
-                val input = transform.apply(e);
-                return deserializeFromNode(
-                    input,
-                    clazz
-                );
-            }, "Deserialize list");
+            .applyToEach(list, e -> deserializeFromNode(
+                transform.apply(e),
+                clazz
+            ), "Deserialize list");
     }
 
 }
