@@ -26,7 +26,7 @@ public interface StreamExt {
         return StreamSupport.stream(spliterator, false);
     }
 
-    static Either<UserError, ByteArrayOutputStream> readAllBytes(InputStream inputStream) {
+    static Either<UserError, byte[]> readAllBytes(InputStream inputStream) {
         return TryExt.get(() -> {
             val buffer = new ByteArrayOutputStream();
             int nRead;
@@ -36,7 +36,7 @@ public interface StreamExt {
               buffer.write(data, 0, nRead);
             }
 
-            return buffer;
+            return buffer.toByteArray();
         }, "read input stream");
 
     }

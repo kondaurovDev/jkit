@@ -4,7 +4,7 @@ import io.vavr.CheckedConsumer;
 import io.vavr.collection.List;
 import io.vavr.control.*;
 import jkit.core.model.UserError;
-import lombok.val;
+import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,32 +89,10 @@ public interface IOExt {
     static Either<UserError, String> inputStreamToString(
         InputStream inputStream
     ) {
-        return inputStreamToString(inputStream, false);
-    }
-
-    static Either<UserError, String> inputStreamToString(
-        InputStream inputStream,
-        Boolean output
-    ) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        try (
-            InputStreamReader inputStreamReader = new InputStreamReader
-                (inputStream, Charset.forName(StandardCharsets.UTF_8.name()));
-            BufferedReader reader = new BufferedReader(inputStreamReader)) {
-            int c;
-            while ((c = reader.read()) != -1) {
-                val ch = (char) c;
-                if (output) System.out.print(ch);
-                stringBuilder.append(ch);
-            }
-        } catch (Exception e) {
-            return Either.left(UserError
-                .create("Can't read input stream", e)
-            );
-        }
-
-        return Either.right(stringBuilder.toString());
+        return StreamExt
+            .readAllBytes(inputStream)
+            .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
+            .mapLeft(e -> e.withError("Can't read input stream"));
     }
 
     static Either<UserError, Process> runCmd(
@@ -162,12 +140,10 @@ public interface IOExt {
         return Try
             .of(() -> {
                 val stdout = IOExt.inputStreamToString(
-                    process.getInputStream(),
-                    output
+                    process.getInputStream()
                 );
                 val stderr = IOExt.inputStreamToString(
-                    process.getErrorStream(),
-                    true
+                    process.getErrorStream()
                 ).flatMap(s -> Either.<UserError, String>left(UserError.create(s)));
                 int exitVal = process.waitFor();
                 if (exitVal == 0) {

@@ -1,6 +1,6 @@
 package jkit.core.ext;
 
-import io.vavr.collection.List;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,8 +10,12 @@ class UrlExtTest {
     @Test
     void createUrl1() {
 
-        final String actual = UrlExt
-            .createUrl(List.of("http://alex.com", "some", "path"));
+        val actual = UrlExt
+            .createUrl(url -> url
+                .base("http://alex.com")
+                .path("some")
+                .path("path")
+            ).get().toString();
 
         assertEquals(actual, "http://alex.com/some/path");
 
@@ -20,21 +24,26 @@ class UrlExtTest {
     @Test
     void createUrl2() {
 
-        final String actual = UrlExt
-            .createUrl(List.of("http://alex.com/a/", "some", "path"));
+        val actual = UrlExt
+            .createUrl(url -> url.base("http://alex.com/a/")
+                .path("some")
+                .path("path")
+            ).get().toString();
 
         assertEquals(actual, "http://alex.com/a/some/path");
 
     }
 
+    void getHost(String expected, String url) {
+        assertEquals(expected, UrlExt.getHost(UrlExt.createURL(url).get()));
+    }
+
     @Test
     void extractHostFromReferrer() {
-
-        assertEquals("http://localhost:8080", UrlExt.getHost("http://localhost:8080/admin/noAccess"));
-        assertEquals("http://localhost:8080", UrlExt.getHost("http://localhost:8080"));
-        assertEquals("http://localhost:8080", UrlExt.getHost("http://localhost:8080/"));
-        assertEquals("http://arr2-web", UrlExt.getHost("http://arr2-web/admin"));
-
+        getHost("http://localhost:8080", "http://localhost:8080/admin/noAccess");
+        getHost("http://localhost:8080", "http://localhost:8080");
+        getHost("http://localhost:8080", "http://localhost:8080/");
+        getHost("http://arr2-web", "http://arr2-web/admin");
     }
 
 }

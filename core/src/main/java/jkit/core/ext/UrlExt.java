@@ -1,9 +1,13 @@
 package jkit.core.ext;
 
-import io.vavr.Tuple2;
-import io.vavr.collection.List;
+import io.vavr.Function1;
+import io.vavr.control.Either;
+import jkit.core.model.Pair;
+import jkit.core.model.Url;
+import jkit.core.model.UserError;
 
 import java.net.URL;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public interface UrlExt {
@@ -13,34 +17,53 @@ public interface UrlExt {
     Pattern slashRegex = Pattern.compile("(?<=\\w)\\/\\/");
     Pattern hostRegex = Pattern.compile("(?<=\\w)\\/\\/");
 
-    static String createUrl(List<String> urlParts) {
+    static Either<UserError, URL> createURL(String input) {
+        return TryExt
+            .get(() -> new URL(input), "create URL");
+    }
 
-        String res = urlParts
-            .filter(s -> !s.isEmpty())
-            .mkString("/");
+    static Either<UserError, URL> createUrl(Function1<Url.UrlBuilder, Url.UrlBuilder> builder) {
+        return createUrl(builder.apply(Url.builder()).build());
+    }
 
-        return slashRegex.matcher(res).replaceAll(slash);
+    static Either<UserError, URL> createUrl(Url url) {
+
+        String res = url.getBase();
+
+        if (!url.getUrlParts().isEmpty() && !res.endsWith("/"))
+            res += "/";
+
+        res += StreamExt.join(
+            url.getUrlParts().stream().filter(s -> !s.isEmpty()),
+            v -> v,
+            "/"
+        );
+
+        if (!url.getQueryParams().isEmpty())
+            res += "?" + createQueryString(url.getQueryParams());
+
+        res = slashRegex.matcher(res).replaceAll(slash);
+
+        return createURL(res);
 
     }
 
-    static String createQueryString(List<Tuple2<String, String>> params) {
+    static String createQueryString(List<Pair<String, String>> params) {
 
-        return params
-            .map(t -> t._1 + "=" + t._2)
-            .mkString("&");
+        return StreamExt.join(
+            params.stream().map(t -> t.getFirst() + "=" + t.getSecond()),
+            v -> v,
+            "&"
+        );
 
     }
 
-    static String getHost(String input) {
-
-        return TryExt.get(() -> new URL(input), "as").fold(
-            err -> null,
-            url -> String.format(
-                "%s://%s%s",
-                url.getProtocol(),
-                url.getHost(),
-                url.getPort() == -1 ? "" : ":" + url.getPort()
-            )
+    static String getHost(URL url) {
+        return String.format(
+            "%s://%s%s",
+            url.getProtocol(),
+            url.getHost(),
+            url.getPort() == -1 ? "" : ":" + url.getPort()
         );
     }
 

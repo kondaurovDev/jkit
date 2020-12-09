@@ -1,23 +1,22 @@
 package jkit.http_client_core;
 
+import jkit.core.model.Pair;
+import jkit.core.model.Url;
 import lombok.*;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Map;
+import java.util.List;
 
 @Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 public class HttpRequest {
 
-    String url;
+    Url url;
     @Builder.Default
-    ByteArrayOutputStream entity = null;
+    byte[] entity = null;
     @Builder.Default
     String method = "post";
-    @Singular("param")
-    Map<String, String> queryParams;
     @Singular("header")
-    Map<String, String> headers;
+    List<Pair<String, String>> headers;
 
 }

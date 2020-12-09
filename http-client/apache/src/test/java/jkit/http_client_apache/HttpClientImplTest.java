@@ -1,5 +1,7 @@
 package jkit.http_client_apache;
 
+import jkit.core.model.Pair;
+import jkit.http_client_core.HttpResponse;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -10,13 +12,19 @@ class HttpClientImplTest implements Deps {
     @Test
     void getGooglePage() {
 
-        val actual =
+        val resp =
             httpClient
-                .createGetRequest("https://google.com")
-                .flatMap(httpClient::getStringResponse)
-                .flatMap(r -> httpClient.filterByCode(r,200));
+                .execute(builder ->
+                    builder
+                        .method("get")
+                        .url("https://google.com")
+                        .queryParam(Pair.of("command", "run"))
+                );
+        
+        val body = resp.map(HttpResponse::getBodyString);
 
-        assertTrue(actual.isRight());
+        assertTrue(resp.isRight());
+        assertTrue(body.isRight());
 
     }
 
