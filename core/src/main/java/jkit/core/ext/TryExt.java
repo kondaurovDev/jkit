@@ -55,10 +55,6 @@ public interface TryExt {
             .getOrElseThrow(e -> new Error(errorMsg, e));
     }
 
-    static <R> R get(Function0<R> lambda) {
-        return lambda.apply();
-    }
-
     static <A> Either<UserError, A> assertStmt(
         A value,
         Function1<A, Boolean> cond,

@@ -56,7 +56,7 @@ public class HttpClientImpl implements
         return request;
     }
 
-    public <A> Either<UserError, HttpResponse<A>> filterByCode(HttpResponse<A> response, Integer code) {
+    public Either<UserError, HttpResponse> filterByCode(HttpResponse response, Integer code) {
 
         if (!response.getCode().equals(code)) {
             return Either.left(UserError.create(response.toString()));
@@ -66,17 +66,32 @@ public class HttpClientImpl implements
 
     }
 
-    public Either<UserError, HttpResponse<String>> uploadFile(
+    public Either<UserError, HttpResponse> uploadFile(
         String uri,
         String filePath,
         Header authHeader
     ) {
+
+        createPutRequest(uri)
+            .flatMap(r ->
+                createFileEntity(filePath)
+                    .map(e -> {
+                        r.setEntity(e);
+                        r.setHeader(authHeader);
+                        return r;
+                    })
+            );
+
+
         return TryExt.get(() -> {
+            createFileEntity(filePath)
+            this.
             HttpPut req = new HttpPut(uri);
             req.setEntity(new FileEntity(new File(filePath)));
             req.setHeader(authHeader);
             return req;
         }, "upload file")
+                .flatMap(e -> getRequestExecutor().apply(e))
         .flatMap(this::getStringResponse);
     }
 

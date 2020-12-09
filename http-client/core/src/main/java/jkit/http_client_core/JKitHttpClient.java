@@ -1,15 +1,13 @@
 package jkit.http_client_core;
 
+import io.vavr.CheckedFunction1;
 import io.vavr.control.Either;
 import jkit.core.model.UserError;
 
 public interface JKitHttpClient {
 
     interface IRequestFactory<A> {
-        Either<UserError, ? extends A> createGetRequest(String uri);
-        Either<UserError, ? extends A> createPostRequest(String uri);
-        Either<UserError, ? extends A> createDeleteRequest(String uri);
-        Either<UserError, ? extends A> createPutRequest(String uri);
+
     }
 
     interface IEntityFactory<A> {
@@ -18,9 +16,9 @@ public interface JKitHttpClient {
         Either<UserError, ? extends A> createFileEntity(String path);
     }
 
-    interface IRequestExecutor<A> {
-        Either<UserError, HttpResponse<String>> getJsonResponse(A request);
-        Either<UserError, HttpResponse<String>> getStringResponse(A request);
+    interface IRequestExecutor<Req, Res> {
+        CheckedFunction1<Req, Res> getRequestExecutor();
+        Either<UserError, HttpResponse> turnResponse(Res response);
     }
 
     interface IClient<E, R> extends
