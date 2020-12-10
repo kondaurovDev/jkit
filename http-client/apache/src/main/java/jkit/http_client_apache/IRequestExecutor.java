@@ -3,9 +3,9 @@ package jkit.http_client_apache;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.StreamExt;
-import jkit.http_client_core.HttpRequest;
-import jkit.http_client_core.HttpResponse;
-import jkit.http_client_core.JKitHttpClient;
+import jkit.http_client.HttpRequest;
+import jkit.http_client.HttpResponse;
+import jkit.http_client.JKitHttpClient;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
 import lombok.val;
@@ -14,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
 
 import java.util.stream.Stream;
 
@@ -50,19 +51,22 @@ interface IRequestExecutor extends
 
         return request
             .getUrl().createURI()
-            .map(uri -> {
+            .flatMap(uri -> {
                 val builder = RequestBuilder
                     .create(request.getMethod())
                     .setUri(uri);
 
-                if (request.getEntity() != null)
-                    builder.setEntity(new ByteArrayEntity(request.getEntity()));
+                if (request.getEntity() != null) {
+                    val e = TryExt.get(request.getEntity(), "read entity");
+                    if (e.isLeft()) return Either.left(e.getLeft());
+                    builder.setEntity(new InputStreamEntity(e.get()));
+                }
 
                 request
                     .getHeaders()
                     .forEach(p -> builder.addHeader(p.getFirst(), p.getSecond()));
 
-                return builder.build();
+                return Either.right(builder.build());
             });
 
     }

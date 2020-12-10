@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>jkit</groupId>
-            <artifactId>http-client-core</artifactId>
+            <artifactId>http-client</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

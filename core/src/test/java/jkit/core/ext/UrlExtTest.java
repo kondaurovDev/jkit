@@ -11,12 +11,12 @@ class UrlExtTest {
     @Test
     void createUrl1() {
 
-        val actual = Url
-            .createUrl(url -> url
-                .base("http://alex.com")
-                .path("some")
-                .path("path")
-            ).createUrlString();
+        val actual = Url.builder()
+            .base("http://alex.com")
+            .path("some")
+            .path("path")
+            .build()
+            .createUrlString();
 
         assertEquals(actual, "http://alex.com/some/path");
 
@@ -25,12 +25,12 @@ class UrlExtTest {
     @Test
     void createUrl2() {
 
-        val actual = Url
-            .createUrl(url -> url
-                .base("http://alex.com/a/")
-                .path("some")
-                .path("path")
-            ).createUrlString();
+        val actual = Url.builder()
+            .base("http://alex.com/a/")
+            .path("some")
+            .path("path")
+            .build()
+            .createUrlString();
 
         assertEquals(actual, "http://alex.com/a/some/path");
 

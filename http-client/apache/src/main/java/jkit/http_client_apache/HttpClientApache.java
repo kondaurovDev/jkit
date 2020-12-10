@@ -4,8 +4,8 @@ import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
 import jkit.core.model.UserError;
-import jkit.http_client_core.HttpResponse;
-import jkit.http_client_core.JKitHttpClient;
+import jkit.http_client.HttpResponse;
+import jkit.http_client.JKitHttpClient;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -16,7 +16,7 @@ import jkit.core.ext.*;
 
 import lombok.*;
 
-interface HttpClientApache {
+public interface HttpClientApache {
 
     interface Client extends
         JKitHttpClient.IClient<HttpUriRequest, org.apache.http.HttpResponse>,
@@ -61,35 +61,6 @@ interface HttpClientApache {
             }
 
         }
-
-//        public Either<UserError, HttpResponse> uploadFile(
-//            String uri,
-//            String filePath,
-//            Header authHeader
-//        ) {
-//
-//            createPutRequest(uri)
-//                .flatMap(r ->
-//                    createFileEntity(filePath)
-//                        .map(e -> {
-//                            r.setEntity(e);
-//                            r.setHeader(authHeader);
-//                            return r;
-//                        })
-//                );
-//
-//
-//            return TryExt.get(() -> {
-//                createFileEntity(filePath)
-//                this.
-//                HttpPut req = new HttpPut(uri);
-//                req.setEntity(new FileEntity(new File(filePath)));
-//                req.setHeader(authHeader);
-//                return req;
-//            }, "upload file")
-//                    .flatMap(e -> getRequestExecutor().apply(e))
-//            .flatMap(this::getStringResponse);
-//        }
 
     }
 

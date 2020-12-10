@@ -1,6 +1,5 @@
 package jkit.core.model;
 
-import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.StreamExt;
 import jkit.core.ext.UrlExt;
@@ -19,10 +18,6 @@ public class Url {
     List<String> urlParts;
     @Singular
     List<Pair<String, String>> queryParams;
-
-    public static Url createUrl(Function1<UrlBuilder, UrlBuilder> builder) {
-        return builder.apply(Url.builder()).build();
-    }
 
     public Either<UserError, URI> createURI() { return UrlExt.createURI(createUrlString()); }
     public Either<UserError, URL> createURL() { return UrlExt.createURL(createUrlString()); }

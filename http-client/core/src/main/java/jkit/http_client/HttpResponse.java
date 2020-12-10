@@ -1,4 +1,4 @@
-package jkit.http_client_core;
+package jkit.http_client;
 
 import lombok.*;
 

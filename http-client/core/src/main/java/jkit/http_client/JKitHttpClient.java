@@ -1,22 +1,17 @@
-package jkit.http_client_core;
+package jkit.http_client;
 
 import io.vavr.Function1;
 import io.vavr.Function2;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
+import jkit.http_client.context.Context;
 
 import java.nio.charset.StandardCharsets;
 
 public interface JKitHttpClient {
 
     Context context = new Context() {};
-
-    interface IEntityFactory<A> {
-        Either<UserError, ? extends A> createJsonEntity(Object object);
-        Either<UserError, ? extends A> createStringEntity(String s);
-        Either<UserError, ? extends A> createFileEntity(String path);
-    }
 
     interface IRequestExecutor<Req, Res> {
         Function1<Req, Either<UserError, Res>> getRequestExecutor();
