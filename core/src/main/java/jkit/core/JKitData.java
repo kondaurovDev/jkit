@@ -26,7 +26,7 @@ public interface JKitData {
     }
 
     interface IObjMapperMain<J, A extends IObjMapper<J>> {
-        A getJson();
+        IObjMapper<J> getJson();
         A getYml();
 
         Either<UserError, java.util.Map<String, Object>> readPayload(

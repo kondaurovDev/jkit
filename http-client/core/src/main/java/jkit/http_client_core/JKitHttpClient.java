@@ -1,12 +1,16 @@
 package jkit.http_client_core;
 
-import io.vavr.CheckedFunction1;
 import io.vavr.Function1;
+import io.vavr.Function2;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
 
+import java.nio.charset.StandardCharsets;
+
 public interface JKitHttpClient {
+
+    Context context = new Context() {};
 
     interface IEntityFactory<A> {
         Either<UserError, ? extends A> createJsonEntity(Object object);
@@ -15,27 +19,35 @@ public interface JKitHttpClient {
     }
 
     interface IRequestExecutor<Req, Res> {
-        CheckedFunction1<Req, Res> getRequestExecutor();
+        Function1<Req, Either<UserError, Res>> getRequestExecutor();
 
         Either<UserError, HttpResponse> castResponse(Res response);
         Either<UserError, Req> castRequest(HttpRequest request);
 
         default Either<UserError, HttpResponse> execute(
-            Function1<HttpRequest.HttpRequestBuilder, HttpRequest.HttpRequestBuilder> builder
+            Function2<HttpRequest.HttpRequestBuilder, Context, HttpRequest.HttpRequestBuilder> builder
         ) {
             return execute(
-                builder.apply(HttpRequest.builder()).build()
+                builder.apply(HttpRequest.builder(), context).build()
             );
         }
 
         default Either<UserError, HttpResponse> execute(HttpRequest request) {
 
             return TryExt.get(() ->
-                getRequestExecutor().apply(castRequest(request)),
+                castRequest(request)
+                    .flatMap(r -> getRequestExecutor().apply(r)),
                 "execute http request"
-            ).flatMap(this::castResponse);
+            ).flatMap(r -> r.flatMap(this::castResponse));
 
+        }
 
+        default String readStringResponse(HttpResponse response) {
+            return new String(response.getBody(), StandardCharsets.UTF_8);
+        }
+
+        default String readJsonResponse(HttpResponse response) {
+            return new String(response.getBody(), StandardCharsets.UTF_8);
         }
 
     }

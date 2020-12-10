@@ -9,7 +9,7 @@ import jkit.core.ext.*;
 
 import java.util.Map;
 
-public interface IPayloadRoute extends IRouter {
+public interface IPayloadRoute extends ICompleteRoute {
 
     default Route withPayloadStringFromBody(
         Function1<String, Route> inner

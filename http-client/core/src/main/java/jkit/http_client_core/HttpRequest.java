@@ -15,7 +15,7 @@ public class HttpRequest {
     @Builder.Default
     byte[] entity = null;
     @Builder.Default
-    String method = "post";
+    String method = null;
     @Singular("header")
     List<Pair<String, String>> headers;
 

@@ -1,5 +1,6 @@
 package jkit.core.ext;
 
+import jkit.core.model.Url;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +11,12 @@ class UrlExtTest {
     @Test
     void createUrl1() {
 
-        val actual = UrlExt
+        val actual = Url
             .createUrl(url -> url
                 .base("http://alex.com")
                 .path("some")
                 .path("path")
-            ).get().toString();
+            ).createUrlString();
 
         assertEquals(actual, "http://alex.com/some/path");
 
@@ -24,11 +25,12 @@ class UrlExtTest {
     @Test
     void createUrl2() {
 
-        val actual = UrlExt
-            .createUrl(url -> url.base("http://alex.com/a/")
+        val actual = Url
+            .createUrl(url -> url
+                .base("http://alex.com/a/")
                 .path("some")
                 .path("path")
-            ).get().toString();
+            ).createUrlString();
 
         assertEquals(actual, "http://alex.com/a/some/path");
 

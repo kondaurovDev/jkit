@@ -19,7 +19,7 @@ import jkit.core.ext.*;
 import jkit.core.model.UserError;
 import lombok.*;
 
-public interface IRouter extends IResponseFactory {
+public interface ICompleteRoute extends IResponseFactory {
 
     AllDirectives d();
 

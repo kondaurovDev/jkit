@@ -52,20 +52,6 @@ interface HttpClientApache {
         JKitData.IObjMapper<?> jsonObjMapper;
         HttpClient httpClient;
 
-        static <A extends HttpUriRequest> A setBasicAuth(
-            A request,
-            String user,
-            String password
-        ) {
-            request.setHeader(
-                HttpHeader.basicAuth(
-                    user,
-                    password
-                )
-            );
-            return request;
-        }
-
         public Either<UserError, HttpResponse> filterByCode(HttpResponse response, Integer code) {
 
             if (!response.getCode().equals(code)) {

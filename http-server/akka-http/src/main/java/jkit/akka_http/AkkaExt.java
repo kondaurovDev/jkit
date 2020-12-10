@@ -4,30 +4,32 @@ import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import io.vavr.Function1;
 import io.vavr.control.Either;
+import jkit.akka_http.route.IPayloadRoute;
+import jkit.akka_http.route.ICompleteRoute;
+import jkit.core.JKitData;
 import jkit.core.ext.IOExt;
 import jkit.core.model.UserError;
 import lombok.*;
 
 public interface AkkaExt {
 
-    class Router extends AllDirectives {}
-
     static Either<UserError, AkkaHttpServer> buildAndListen(
+        int port,
         String serviceName,
-        Function1<AllDirectives, Route> createRouter,
-        int port
+        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain,
+        Function1<Router, Route> createRouter
     ) {
         return listenHttp(
+            port,
             serviceName,
-            d -> createRouter.apply(new Router()),
-            port
+            d -> createRouter.apply(Router.of(objMapperMain))
         );
     }
 
     static Either<UserError, AkkaHttpServer> listenHttp(
+        int port,
         String serviceName,
-        Function1<AkkaModule, Route> createRouter,
-        int port
+        Function1<AkkaModule, Route> createRouter
     ) {
         val akkaModule = AkkaModule.create(serviceName);
 
@@ -45,6 +47,22 @@ public interface AkkaExt {
             IOExt.out(String.format("%s service is listening http on %s", serviceName, r));
             return akkaHttpServer;
         });
+    }
+
+    @Value(staticConstructor = "of")
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+    class Router extends AllDirectives
+        implements
+            ICompleteRoute,
+            IPayloadRoute
+    {
+
+        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain;
+
+        public AllDirectives d() {
+            return this;
+        }
+
     }
 
 }

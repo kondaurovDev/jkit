@@ -8,7 +8,7 @@ import lombok.*;
 
 import java.util.Map;
 
-public interface IAuthRoute extends IRouter {
+public interface IAuthRoute extends ICompleteRoute {
 
     JwtHMAC getJwtHMAC();
     String getJwtClaimName();

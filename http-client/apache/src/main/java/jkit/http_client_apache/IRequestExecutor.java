@@ -1,6 +1,6 @@
 package jkit.http_client_apache;
 
-import io.vavr.CheckedFunction1;
+import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.StreamExt;
 import jkit.http_client_core.HttpRequest;
@@ -23,8 +23,8 @@ interface IRequestExecutor extends
 
     HttpClient getHttpClient();
 
-    default CheckedFunction1<HttpUriRequest, org.apache.http.HttpResponse> getRequestExecutor() {
-        return r -> getHttpClient().execute(r);
+    default Function1<HttpUriRequest, Either<UserError, org.apache.http.HttpResponse>> getRequestExecutor() {
+        return r -> TryExt.get(() -> getHttpClient().execute(r), "Execute http request");
     }
 
     default Either<UserError, HttpResponse> castResponse(
@@ -48,21 +48,22 @@ interface IRequestExecutor extends
 
     default Either<UserError, HttpUriRequest> castRequest(HttpRequest request) {
 
-        val
+        return request
+            .getUrl().createURI()
+            .map(uri -> {
+                val builder = RequestBuilder
+                    .create(request.getMethod())
+                    .setUri(uri);
 
+                if (request.getEntity() != null)
+                    builder.setEntity(new ByteArrayEntity(request.getEntity()));
 
-        val builder = RequestBuilder
-            .create(request.getMethod())
-            .setUri(request.getUrl());
+                request
+                    .getHeaders()
+                    .forEach(p -> builder.addHeader(p.getFirst(), p.getSecond()));
 
-        if (request.getEntity() != null)
-            builder.setEntity(new ByteArrayEntity(request.getEntity()));
-
-        request
-            .getHeaders()
-            .forEach(builder::addHeader);
-
-        return builder.build();
+                return builder.build();
+            });
 
     }
 }
