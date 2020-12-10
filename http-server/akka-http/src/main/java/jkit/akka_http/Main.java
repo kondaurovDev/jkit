@@ -1,7 +1,9 @@
 package jkit.akka_http;
 
+import akka.http.javadsl.model.HttpHeader;
 import akka.http.javadsl.server.directives.SecurityDirectives;
 import io.vavr.collection.HashMap;
+import io.vavr.collection.List;
 import jkit.validate.Validator;
 import lombok.val;
 
@@ -11,7 +13,7 @@ public interface Main {
 
     AkkaExt.CreateRoute createRoute =
         d -> d.concat(
-            d.pathEndOrSingleSlash(() -> d.complete("index")),
+            d.pathEndOrSingleSlash(() -> d.complete("JKit http server")),
             d.path("product", () -> d.completeJson(HashMap.of("product", "macbook air"))),
             d.path("secured", () ->
                 d.authenticateBasic(
@@ -19,7 +21,7 @@ public interface Main {
                     (cred) -> cred
                         .filter(c -> c.verify("pwd"))
                         .map(SecurityDirectives.ProvidedCredentials::identifier),
-                    (u) -> d.complete("Hello " + u)
+                    u -> d.complete("Hello " + u)
                 )
             ),
             d.path("greet", () -> d.get(() ->
@@ -29,7 +31,14 @@ public interface Main {
             )),
             d.path("echo", () ->
                 d.withPayloadStringFromBody(payload ->
-                    d.completeJson(HashMap.of("your message", payload))
+                    d.extractRequest(r ->
+                        d.completeJson(
+                            HashMap.of(
+                                "your message", payload,
+                                "headers", List.ofAll(r.getHeaders()).map(HttpHeader::name)
+                            )
+                        )
+                    )
                 )
             ),
             d.path("file", () ->

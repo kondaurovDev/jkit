@@ -3,17 +3,12 @@ package jkit.jackson;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.vavr.CheckedFunction0;
 import io.vavr.CheckedFunction1;
-import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
 import jkit.core.JKitValidate;
-import jkit.core.ext.StreamExt;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
-
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,10 +47,6 @@ public interface IObjMapper
             () -> getSerializer().apply(obj),
             "Can't serialize object"
         );
-    }
-
-    default CheckedFunction0<InputStream> serializeToInputStream(Object obj) {
-        return () -> StreamExt.fromString(getSerializer().apply(obj)).apply();
     }
 
     default CheckedFunction1<Object, String> getSerializer() {

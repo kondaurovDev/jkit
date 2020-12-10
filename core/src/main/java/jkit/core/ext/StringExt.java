@@ -3,6 +3,7 @@ package jkit.core.ext;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.model.UserError;
+import lombok.val;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -78,12 +79,16 @@ public interface StringExt {
     static String fromInputStream(
         InputStream inputStream
     ) {
-        String text = new BufferedReader(
-          new InputStreamReader(inputStream, StandardCharsets.UTF_8)
-        )
+        val text = new BufferedReader(
+              new InputStreamReader(inputStream, StandardCharsets.UTF_8)
+            )
             .lines()
             .collect(Collectors.joining("\n"));
         return text;
+    }
+
+    static byte[] getBytes(String input) {
+        return input.getBytes(StandardCharsets.UTF_8);
     }
 
 }

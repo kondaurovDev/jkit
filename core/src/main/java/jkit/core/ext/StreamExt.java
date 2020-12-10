@@ -6,10 +6,7 @@ import io.vavr.control.Either;
 import jkit.core.model.UserError;
 import lombok.val;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,16 +69,12 @@ public interface StreamExt {
                 .collect(Collectors.toMap(getKey, getValue, (prev, next) -> next, HashMap::new));
     }
 
-    static InputStream fromBytes(byte[] input) {
+    static ByteArrayInputStream fromBytes(byte[] input) {
         return new ByteArrayInputStream(input);
     }
 
-    static CheckedFunction0<InputStream> fromString(String input) {
-        return () -> StreamExt.fromBytes(input.getBytes(StandardCharsets.UTF_8));
-    }
-
-    static CheckedFunction0<InputStream> fromFile(String input) {
-        return () -> new FileInputStream(input);
+    static CheckedFunction0<FileInputStream> fromFile(File file) {
+        return () -> new FileInputStream(file);
     }
 
 }

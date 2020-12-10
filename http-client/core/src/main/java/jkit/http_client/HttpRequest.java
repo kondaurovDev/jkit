@@ -1,12 +1,12 @@
 package jkit.http_client;
 
 import io.vavr.CheckedFunction0;
+import io.vavr.Tuple2;
 import jkit.core.model.Pair;
 import jkit.core.model.Url;
 import jkit.http_client.context.IResponse;
 import lombok.*;
 
-import java.io.InputStream;
 import java.util.List;
 
 @Value
@@ -16,7 +16,7 @@ public class HttpRequest {
 
     Url url;
     @Builder.Default
-    CheckedFunction0<InputStream> entity = null;
+    CheckedFunction0<Payload> entity = null;
     @Builder.Default
     String method = null;
     @Singular("header")

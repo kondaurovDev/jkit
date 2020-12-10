@@ -20,7 +20,6 @@ class HttpClientImplTest implements Deps {
                     .base("http://localhost:8080/greet")
                     .queryParam(Pair.of("name", "jack"))
                 ))
-                .checkResponse(ctx.response200)
             );
 
         val body = resp.map(HttpResponse::getBodyString);
@@ -39,7 +38,7 @@ class HttpClientImplTest implements Deps {
                     .base("http://localhost:8080/echo")
                     .queryParam(Pair.of("name", "jack"))
                 ))
-                .header(ctx.ctText)
+                .header(Pair.of("custom1", "zxc"))
                 .entity(ctx.createStringPayload("greeting!!!"))
         );
 
