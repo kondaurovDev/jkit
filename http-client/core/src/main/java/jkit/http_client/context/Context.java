@@ -6,7 +6,8 @@ import jkit.core.model.Url;
 
 public interface Context extends IHeader, IPayload, IResponse {
 
-    String contentType = "content-type";
+    String contentType = "Content-Type";
+    String contentLength = "Content-Length";
     Pair<String, String> ctText = Pair.of(contentType, "text/plain");
     Pair<String, String> ctJson = Pair.of(contentType, "application/json");
     String methodPost = "POST";
@@ -14,6 +15,10 @@ public interface Context extends IHeader, IPayload, IResponse {
 
     default Url createUrl(Function1<Url.UrlBuilder, Url.UrlBuilder> builder) {
         return builder.apply(Url.builder()).build();
+    }
+
+    default Pair<String, String> contentLength(Integer size) {
+        return Pair.of(contentLength, size.toString());
     }
 
 }

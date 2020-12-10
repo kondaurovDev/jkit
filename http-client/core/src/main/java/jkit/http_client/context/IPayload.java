@@ -1,23 +1,18 @@
 package jkit.http_client.context;
 
 import io.vavr.CheckedFunction0;
+import jkit.core.ext.StreamExt;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public interface IPayload {
 
-    default InputStream createPayload(byte[] input) {
-        return new ByteArrayInputStream(input);
-    }
-
     default CheckedFunction0<InputStream> createStringPayload(String input) {
-        return () -> new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+        return StreamExt.fromString(input);
     }
 
-//    default InputStream createFilePayload(String file) {
-//        return new FileInputStream(file);
-//    }
+    default CheckedFunction0<InputStream> createFilePayload(String file) {
+        return StreamExt.fromFile(file);
+    }
 
 }

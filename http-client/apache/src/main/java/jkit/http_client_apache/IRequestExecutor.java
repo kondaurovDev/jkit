@@ -55,7 +55,7 @@ interface IRequestExecutor extends
 
                 if (request.getEntity() != null) {
                     val e = TryExt.get(request.getEntity(), "read entity");
-                    if (e.isLeft()) return Either.left(e.getLeft());
+                    if (e.isLeft()) return e.map(r -> null);
                     builder.setEntity(new InputStreamEntity(e.get()));
                 }
 

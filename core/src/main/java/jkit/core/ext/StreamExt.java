@@ -1,11 +1,14 @@
 package jkit.core.ext;
 
+import io.vavr.CheckedFunction0;
 import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.model.UserError;
 import lombok.val;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -67,6 +70,18 @@ public interface StreamExt {
     ) {
             return input
                 .collect(Collectors.toMap(getKey, getValue, (prev, next) -> next, HashMap::new));
+    }
+
+    static InputStream fromBytes(byte[] input) {
+        return new ByteArrayInputStream(input);
+    }
+
+    static CheckedFunction0<InputStream> fromString(String input) {
+        return () -> StreamExt.fromBytes(input.getBytes(StandardCharsets.UTF_8));
+    }
+
+    static CheckedFunction0<InputStream> fromFile(String input) {
+        return () -> new FileInputStream(input);
     }
 
 }

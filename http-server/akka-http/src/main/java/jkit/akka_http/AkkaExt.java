@@ -13,16 +13,20 @@ import lombok.*;
 
 public interface AkkaExt {
 
+    interface CreateRoute {
+        Route createRoute(Router router);
+    }
+
     static Either<UserError, AkkaHttpServer> buildAndListen(
         int port,
         String serviceName,
         JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain,
-        Function1<Router, Route> createRouter
+        CreateRoute createRouter
     ) {
         return listenHttp(
             port,
             serviceName,
-            d -> createRouter.apply(Router.of(objMapperMain))
+            d -> createRouter.createRoute(Router.of(objMapperMain))
         );
     }
 
