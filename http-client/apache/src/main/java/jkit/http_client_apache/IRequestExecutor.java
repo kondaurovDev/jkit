@@ -1,6 +1,5 @@
 package jkit.http_client_apache;
 
-import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.StreamExt;
 import jkit.http_client.HttpRequest;
@@ -13,18 +12,17 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 
 import java.util.stream.Stream;
 
 interface IRequestExecutor extends
-    JKitHttpClient.IRequestExecutor<HttpUriRequest, org.apache.http.HttpResponse>
+    JKitHttpClient<HttpUriRequest, org.apache.http.HttpResponse>
 {
 
     HttpClient getHttpClient();
 
-    default Function1<HttpUriRequest, Either<UserError, org.apache.http.HttpResponse>> getRequestExecutor() {
+    default ExecuteRequest<HttpUriRequest, org.apache.http.HttpResponse> getRequestExecutor() {
         return r -> TryExt.get(() -> getHttpClient().execute(r), "Execute http request");
     }
 
@@ -33,7 +31,6 @@ interface IRequestExecutor extends
     ) {
         return TryExt
             .get(() -> response.getEntity().getContent(), "read input stream")
-            .flatMap(StreamExt::readAllBytes)
             .map(body -> HttpResponse.create(
                 response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase(),

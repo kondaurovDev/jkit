@@ -1,10 +1,7 @@
 package jkit.http_client_apache;
 
 import io.vavr.Function1;
-import io.vavr.control.Either;
 import jkit.core.JKitData;
-import jkit.core.model.UserError;
-import jkit.http_client.HttpResponse;
 import jkit.http_client.JKitHttpClient;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
@@ -19,12 +16,11 @@ import lombok.*;
 public interface HttpClientApache {
 
     interface Client extends
-        JKitHttpClient.IClient<HttpUriRequest, org.apache.http.HttpResponse>,
-        IRequestExecutor
-    { }
+        JKitHttpClient<HttpUriRequest, org.apache.http.HttpResponse>,
+        IRequestExecutor { }
 
-    static Client create(
-        JKitData.IObjMapper<?> objectSerializer,
+    static <J> Client create(
+        JKitData.IObjMapper<J> objectSerializer,
         HttpClient httpClient
     ) {
         return HttpClientImpl.create(
@@ -51,16 +47,6 @@ public interface HttpClientApache {
 
         JKitData.IObjMapper<?> jsonObjMapper;
         HttpClient httpClient;
-
-        public Either<UserError, HttpResponse> filterByCode(HttpResponse response, Integer code) {
-
-            if (!response.getCode().equals(code)) {
-                return Either.left(UserError.create(response.toString()));
-            } else {
-                return Either.right(response);
-            }
-
-        }
 
     }
 

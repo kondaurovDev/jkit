@@ -7,6 +7,7 @@ import lombok.val;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Spliterators;
@@ -15,6 +16,15 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public interface StreamExt {
+
+    static Either<UserError, String> inputStreamToString(
+        InputStream inputStream
+    ) {
+        return StreamExt
+            .readAllBytes(inputStream)
+            .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
+            .mapLeft(e -> e.withError("Can't read input stream"));
+    }
 
     static <T> Stream<T> getStreamFromIterator(Iterator<T> iterator) {
 

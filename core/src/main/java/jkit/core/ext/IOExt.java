@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.function.Consumer;
 import java.util.zip.ZipFile;
@@ -35,7 +34,7 @@ public interface IOExt {
         return Option
             .of(IOExt.class.getResourceAsStream(path))
             .toEither(() -> UserError.create("resource not found: " + path))
-            .flatMap(IOExt::inputStreamToString);
+            .flatMap(StreamExt::inputStreamToString);
 
     }
 
@@ -86,15 +85,6 @@ public interface IOExt {
         }, "Log message");
     }
 
-    static Either<UserError, String> inputStreamToString(
-        InputStream inputStream
-    ) {
-        return StreamExt
-            .readAllBytes(inputStream)
-            .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
-            .mapLeft(e -> e.withError("Can't read input stream"));
-    }
-
     static Either<UserError, Process> runCmd(
         List<String> command,
         List<String> envParams
@@ -139,10 +129,10 @@ public interface IOExt {
 
         return Try
             .of(() -> {
-                val stdout = IOExt.inputStreamToString(
+                val stdout = StreamExt.inputStreamToString(
                     process.getInputStream()
                 );
-                val stderr = IOExt.inputStreamToString(
+                val stderr = StreamExt.inputStreamToString(
                     process.getErrorStream()
                 ).flatMap(s -> Either.<UserError, String>left(UserError.create(s)));
                 int exitVal = process.waitFor();

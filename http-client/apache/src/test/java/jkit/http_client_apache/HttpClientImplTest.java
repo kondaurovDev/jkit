@@ -2,7 +2,6 @@ package jkit.http_client_apache;
 
 import io.vavr.control.Either;
 import jkit.core.model.Pair;
-import jkit.core.model.Url;
 import jkit.http_client.HttpResponse;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ class HttpClientImplTest implements Deps {
                     .base("http://localhost:8080/greet")
                     .queryParam(Pair.of("name", "jack"))
                 ))
+                .checkResponse(ctx.response200)
             );
 
         val body = resp.map(HttpResponse::getBodyString);
@@ -43,7 +43,7 @@ class HttpClientImplTest implements Deps {
                 .entity(ctx.createStringPayload("greeting!!!"))
         );
 
-        val body = resp.map(HttpResponse::getBodyString);
+        val body = resp.flatMap(HttpResponse::getBodyString);
 
         assertTrue(body.isRight());
         assertEquals(Either.right("{\"your message\":\"greeting!!!\"}"), body);
@@ -62,7 +62,7 @@ class HttpClientImplTest implements Deps {
                 .entity(ctx.createStringPayload("greeting!!!"))
         );
 
-        val body = resp.map(HttpResponse::getBodyString);
+        val body = resp.flatMap(HttpResponse::getBodyString);
 
         assertTrue(body.isRight());
         assertEquals(Either.right("Hello Alex"), body);

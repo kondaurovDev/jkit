@@ -1,8 +1,11 @@
 package jkit.http_client;
 
+import io.vavr.control.Either;
+import jkit.core.ext.StreamExt;
+import jkit.core.model.UserError;
 import lombok.*;
 
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.util.Map;
 
 @Value(staticConstructor = "create")
@@ -11,11 +14,11 @@ public class HttpResponse {
 
     Integer code;
     String codePhrase;
-    byte[] body;
+    InputStream body;
     Map<String, String> headers;
 
-    public String getBodyString() {
-        return new String(body, StandardCharsets.UTF_8);
+    public Either<UserError, String> getBodyString() {
+        return StreamExt.inputStreamToString(body);
     }
 
 }
