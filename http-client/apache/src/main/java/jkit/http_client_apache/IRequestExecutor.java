@@ -8,14 +8,12 @@ import jkit.http_client.JKitHttpClient;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
 import lombok.val;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 
 import java.util.stream.Stream;
 
@@ -59,14 +57,15 @@ interface IRequestExecutor extends
                 if (request.getEntity() != null) {
                     val e = TryExt.get(request.getEntity(), "read entity");
                     if (e.isLeft()) return e.map(r -> null);
-//                    builder.setEntity(new InputStreamEntity(e.get().getInputStream()));
-                    TryExt
-                        .get(() -> new StringEntity("hey"), "")
-                        .forEach(entity -> {
-                            entity.setContentType("asd");
-                            builder.setEntity(entity);
-                        });
-                    builder.setHeader("content-length", String.valueOf("asd".getBytes().length));
+                    val entity = new ByteArrayEntity(e.get().getBody());
+                    entity.setContentType(e.get().getContentType());
+                    builder.setEntity(entity);
+//                    TryExt
+//                        .get(() -> new StringEntity("hey"), "")
+//                        .forEach(entity -> {
+//                            entity.setContentType("asd");
+//                            builder.setEntity(entity);
+//                        });
                 }
 
                 builder.setHeader("surname", "alex");

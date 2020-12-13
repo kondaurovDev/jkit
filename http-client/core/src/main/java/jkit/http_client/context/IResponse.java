@@ -8,5 +8,4 @@ public interface IResponse {
         Boolean checkCode(Integer code);
     }
 
-
 }

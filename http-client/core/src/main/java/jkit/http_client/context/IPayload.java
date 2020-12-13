@@ -1,30 +1,40 @@
 package jkit.http_client.context;
 
 import io.vavr.CheckedFunction0;
-import jkit.core.ext.StreamExt;
+import jkit.core.JKitData;
 import jkit.core.ext.StringExt;
+import jkit.core.model.UserError;
 import jkit.http_client.Payload;
-import lombok.val;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public interface IPayload {
 
+    JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> getObjMapperMain();
+
     default CheckedFunction0<Payload> createStringPayload(String input) {
-        return () -> {
-            val bytes = StringExt.getBytes(input);
-            return Payload.of(
-                StreamExt.fromBytes(bytes),
-                bytes.length
-            );
-        };
+        return () -> Payload.of(
+            StringExt.getBytes(input),
+            "plain/text"
+        );
     }
 
-    default CheckedFunction0<Payload> createFilePayload(File file) {
+    default CheckedFunction0<Payload> createFilePayload(String filePath) {
         return () -> Payload.of(
-            new FileInputStream(file),
-            file.length()
+            Files.readAllBytes(Paths.get(filePath)),
+            "application/octet-stream"
+        );
+    }
+
+    default CheckedFunction0<Payload> createJsonPayload(Object input) {
+        return () -> Payload.of(
+            StringExt.getBytes(
+                getObjMapperMain().getJson()
+                    .serialize(input)
+                    .getOrElseThrow(UserError::toError)
+            ),
+            "application/json"
         );
     }
 

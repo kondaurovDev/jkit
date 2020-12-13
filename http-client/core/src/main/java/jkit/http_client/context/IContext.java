@@ -1,10 +1,12 @@
 package jkit.http_client.context;
 
 import io.vavr.Function1;
+import jkit.core.JKitData;
 import jkit.core.model.Pair;
 import jkit.core.model.Url;
+import lombok.*;
 
-public interface Context extends IHeader, IPayload, IResponse {
+public interface IContext extends IHeader, IPayload, IResponse {
 
     String contentType = "Content-Type";
     String contentLength = "Content-Length";
@@ -17,8 +19,10 @@ public interface Context extends IHeader, IPayload, IResponse {
         return builder.apply(Url.builder()).build();
     }
 
-    default Pair<String, String> contentLength(Integer size) {
-        return Pair.of(contentLength, size.toString());
+    @Value
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+    class Context implements IContext {
+        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain;
     }
 
 }

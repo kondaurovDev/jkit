@@ -1,7 +1,6 @@
 package jkit.http_client;
 
 import io.vavr.CheckedFunction0;
-import io.vavr.Tuple2;
 import jkit.core.model.Pair;
 import jkit.core.model.Url;
 import jkit.http_client.context.IResponse;

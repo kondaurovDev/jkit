@@ -20,6 +20,7 @@
         <module>http-server/akka-http</module>
         <module>http-server/native</module>
         <module>http-client/core</module>
+        <module>http-client/native</module>
     </modules>
 
     <packaging>pom</packaging>

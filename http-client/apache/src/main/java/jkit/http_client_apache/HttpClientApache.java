@@ -3,6 +3,7 @@ package jkit.http_client_apache;
 import io.vavr.Function1;
 import jkit.core.JKitData;
 import jkit.http_client.JKitHttpClient;
+import jkit.http_client.context.IContext;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -20,11 +21,11 @@ public interface HttpClientApache {
         IRequestExecutor { }
 
     static <J> Client create(
-        JKitData.IObjMapper<J> objectSerializer,
+        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain,
         HttpClient httpClient
     ) {
         return HttpClientImpl.create(
-            objectSerializer,
+            new IContext.Context(objMapperMain),
             httpClient
         );
     }
@@ -45,7 +46,7 @@ public interface HttpClientApache {
 
         Logger logger = IOExt.createLogger(HttpClientImpl.class);
 
-        JKitData.IObjMapper<?> jsonObjMapper;
+        IContext context;
         HttpClient httpClient;
 
     }

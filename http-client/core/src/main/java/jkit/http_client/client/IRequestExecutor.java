@@ -6,11 +6,11 @@ import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
 import jkit.http_client.HttpRequest;
 import jkit.http_client.HttpResponse;
-import jkit.http_client.context.Context;
+import jkit.http_client.context.IContext;
 
 public interface IRequestExecutor<Req, Res> {
 
-    Context context = new Context() {};
+    IContext getContext();
 
     interface ExecuteRequest<Req, Res> {
         Either<UserError, Res> execute(Req req);
@@ -22,10 +22,10 @@ public interface IRequestExecutor<Req, Res> {
     Either<UserError, Req> castRequest(HttpRequest request);
 
     default Either<UserError, HttpResponse> execute(
-        Function2<HttpRequest.HttpRequestBuilder, Context, HttpRequest.HttpRequestBuilder> builder
+        Function2<HttpRequest.HttpRequestBuilder, IContext, HttpRequest.HttpRequestBuilder> builder
     ) {
         return execute(
-            builder.apply(HttpRequest.builder(), context).build()
+            builder.apply(HttpRequest.builder(), getContext()).build()
         );
     }
 

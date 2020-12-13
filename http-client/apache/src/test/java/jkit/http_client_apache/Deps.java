@@ -10,7 +10,7 @@ public interface Deps {
 
     HttpClientApache.Client httpClient =
         HttpClientApache.create(
-            jacksonMain.getJson(),
+            jacksonMain,
             HttpClientApache.createDefaultClient()
         );
 
