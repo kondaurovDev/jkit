@@ -11,8 +11,6 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.vavr.control.Either;
 import io.vavr.jackson.datatype.VavrModule;
 import jkit.core.model.UserError;
-import jkit.jackson.serdes.LocalDateTimeSerde;
-import jkit.jackson.serdes.LocalTimeSerde;
 import lombok.val;
 
 public interface JacksonModule {
