@@ -102,7 +102,7 @@ public interface IDeserialize extends JKitData.IParser<JsonNode>, IObjMapper {
     default <C, N extends JsonNode> Either<UserError, List<C>> deserializeList(
         Iterable<N> list,
         Class<C> clazz,
-        JacksonModule.IJsonTransformer transform
+        IFactory.IJsonTransformer transform
     ) {
         return ListExt
             .applyToEach(list, e -> deserializeFromNode(

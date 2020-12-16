@@ -10,7 +10,7 @@ public interface IDsl {
     default <A> Either<UserError, A> getPath(
         JsonNode node,
         String path,
-        JacksonModule.IJsonTypeTransformer<A> transformer
+        IFactory.IJsonTypeTransformer<A> transformer
     ) {
         return getPathOpt(node, path)
             .toEither(() -> UserError.create("Json path doesn't exists: " + path))

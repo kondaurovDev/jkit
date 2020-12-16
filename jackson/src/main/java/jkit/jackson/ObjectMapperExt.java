@@ -14,10 +14,6 @@ public class ObjectMapperExt
     ObjectMapper objectMapper;
     JKitValidate.IValidator validator;
 
-    public JacksonModule.IJsonFactory getFactory(Object o) {
-        return () -> toJsonNode(o);
-    }
-
     public ObjectNode newObj() {
         return objectMapper
             .createObjectNode();

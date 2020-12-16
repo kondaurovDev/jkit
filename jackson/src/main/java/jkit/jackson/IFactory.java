@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -12,8 +13,10 @@ import io.vavr.control.Either;
 import io.vavr.jackson.datatype.VavrModule;
 import jkit.core.model.UserError;
 import lombok.val;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
-public interface JacksonModule {
+interface IFactory extends ISerdes  {
 
     interface IJsonTypeTransformer<A> {
         Either<UserError, A> apply(JsonNode json);
@@ -23,20 +26,40 @@ public interface JacksonModule {
         JsonNode apply(JsonNode json);
     }
 
-    interface IJsonFactory {
-        Either<UserError, JsonNode> apply();
-    }
-
-    static void configureObjectMapper(ObjectMapper mapper) {
+    default void configureObjectMapper(ObjectMapper mapper) {
         mapper
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, true);
 
-        val jodaModule = new JodaModule();
+        val simpleModule = new SimpleModule();
 
-        LocalDateTimeSerde.register(jodaModule);
-        LocalTimeSerde.register(jodaModule);
+        createSerde(
+            simpleModule,
+            LocalDateTime.class,
+            dt -> dt.toString("dd/MM/YY HH:mm:ss"),
+            node -> {
+                if (node.isLong()) {
+                    return new LocalDateTime(node.longValue());
+                } else {
+                    throw new Error("Unknown input for date time");
+                }
+            }
+        );
+
+        createSerde(
+            simpleModule,
+            LocalTime.class,
+            dt -> dt.toString("HH:mm:ss"),
+            node -> {
+                if (node.isLong()) {
+                    return new LocalTime(node.longValue());
+                }
+
+                String s = node.asText();
+                return LocalTime.parse(s);
+            }
+        );
 
         VisibilityChecker<?> checker = mapper
             .getSerializationConfig()
@@ -48,20 +71,21 @@ public interface JacksonModule {
 
         mapper
             .registerModule(new VavrModule())
-            .registerModule(jodaModule)
+            .registerModule(new JodaModule())
+            .registerModule(simpleModule)
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         mapper.setVisibility(checker);
     }
 
-    static ObjectMapper createJsonMapper() {
+    default ObjectMapper createJsonMapper() {
         val objectMapper = new ObjectMapper();
         configureObjectMapper(objectMapper);
         return objectMapper;
     }
 
-    static ObjectMapper createYamlMapper() {
+    default ObjectMapper createYamlMapper() {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         configureObjectMapper(objectMapper);
         return objectMapper;

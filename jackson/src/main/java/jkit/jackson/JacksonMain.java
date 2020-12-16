@@ -15,6 +15,8 @@ import java.util.Map;
 public class JacksonMain<A extends ObjectMapperExt>
     implements JKitData.IObjMapperMain<JsonNode, A> {
 
+    private static IFactory factory = new IFactory() {};
+
     IDsl jsonDSL;
     A json;
     A yml;
@@ -22,8 +24,8 @@ public class JacksonMain<A extends ObjectMapperExt>
     public static JacksonMain<ObjectMapperExt> create(JKitValidate.IValidator validator) {
         return JacksonMain.of(
             new IDsl() {},
-            ObjectMapperExt.of(JacksonModule.createJsonMapper(), validator),
-            ObjectMapperExt.of(JacksonModule.createYamlMapper(), validator)
+            ObjectMapperExt.of(factory.createJsonMapper(), validator),
+            ObjectMapperExt.of(factory.createYamlMapper(), validator)
         );
     }
 
