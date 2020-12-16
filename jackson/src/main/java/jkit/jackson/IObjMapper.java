@@ -3,12 +3,16 @@ package jkit.jackson;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.CheckedFunction1;
+import io.vavr.Tuple2;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
 import jkit.core.JKitValidate;
 import jkit.core.ext.TryExt;
 import jkit.core.model.UserError;
+import lombok.val;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -75,6 +79,16 @@ public interface IObjMapper
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString(), (prev, next) -> next, HashMap::new))
             );
 
+    }
+
+    default ObjectNode createEmptyObject() {
+        return getObjectMapper().createObjectNode();
+    }
+
+    default ObjectNode createObjectNode(Iterable<Tuple2<String, Object>> map) {
+        val result = createEmptyObject();
+        map.forEach(t -> result.putPOJO(t._1, t._2));
+        return result;
     }
 
 }

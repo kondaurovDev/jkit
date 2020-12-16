@@ -132,7 +132,7 @@ class JsonExtTest implements Deps {
 
         assertTrue(merged.isRight());
 
-        val name = jsonDsl.getPath(
+        val name = json.getPath(
             merged.get(), "name"
         );
 
@@ -179,8 +179,6 @@ class JsonExtTest implements Deps {
         val a = 1;
 
     }
-
-
 
     @Test
     void fromEnvParams() {

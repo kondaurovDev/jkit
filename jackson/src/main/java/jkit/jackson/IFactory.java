@@ -1,22 +1,26 @@
 package jkit.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.vavr.control.Either;
 import io.vavr.jackson.datatype.VavrModule;
 import jkit.core.model.UserError;
-import lombok.val;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
-interface IFactory extends ISerdes  {
+import java.io.IOException;
+
+interface IFactory {
+
+    interface MapperBuilder {
+         ObjectMapper build(SimpleModule module, ObjectMapper mapper, IFactory factory);
+    }
 
     interface IJsonTypeTransformer<A> {
         Either<UserError, A> apply(JsonNode json);
@@ -26,40 +30,23 @@ interface IFactory extends ISerdes  {
         JsonNode apply(JsonNode json);
     }
 
-    default void configureObjectMapper(ObjectMapper mapper) {
+    interface Serialize<A> {
+        String serialize(A input);
+    }
+
+    interface Deserialize<A> {
+        A deserialize(JsonNode input);
+    }
+
+    default ObjectMapper createMapper() {
+        return new ObjectMapper();
+    }
+
+    default ObjectMapper configureObjectMapper(ObjectMapper mapper) {
         mapper
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, true);
-
-        val simpleModule = new SimpleModule();
-
-        createSerde(
-            simpleModule,
-            LocalDateTime.class,
-            dt -> dt.toString("dd/MM/YY HH:mm:ss"),
-            node -> {
-                if (node.isLong()) {
-                    return new LocalDateTime(node.longValue());
-                } else {
-                    throw new Error("Unknown input for date time");
-                }
-            }
-        );
-
-        createSerde(
-            simpleModule,
-            LocalTime.class,
-            dt -> dt.toString("HH:mm:ss"),
-            node -> {
-                if (node.isLong()) {
-                    return new LocalTime(node.longValue());
-                }
-
-                String s = node.asText();
-                return LocalTime.parse(s);
-            }
-        );
 
         VisibilityChecker<?> checker = mapper
             .getSerializationConfig()
@@ -72,23 +59,73 @@ interface IFactory extends ISerdes  {
         mapper
             .registerModule(new VavrModule())
             .registerModule(new JodaModule())
-            .registerModule(simpleModule)
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         mapper.setVisibility(checker);
+        return mapper;
     }
 
-    default ObjectMapper createJsonMapper() {
-        val objectMapper = new ObjectMapper();
-        configureObjectMapper(objectMapper);
-        return objectMapper;
+    default <A> IFactory createSerde(
+        SimpleModule module,
+        Class<A> aClass,
+        Serialize<A> serialize,
+        Deserialize<A> deserialize
+    ) {
+        createSerializer(module, aClass, serialize);
+        createDeserializer(module, aClass, deserialize);
+        return this;
     }
 
-    default ObjectMapper createYamlMapper() {
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-        configureObjectMapper(objectMapper);
-        return objectMapper;
+    default <A> IFactory createSerializer(
+        SimpleModule module,
+        Class<A> aClass,
+        Serialize<A> serialize
+    ) {
+        module.addSerializer(createSerializer(
+            aClass,
+            serialize
+        ));
+        return this;
+    }
+
+    default <A> IFactory createDeserializer(
+        SimpleModule module,
+        Class<A> aClass,
+        Deserialize<A> deserialize
+    ) {
+        module.addDeserializer(aClass, createDeserializer(
+            aClass,
+            deserialize
+        ));
+        return this;
+    }
+
+    static<A> StdSerializer<A> createSerializer(
+        Class<A> aClass,
+        Serialize<A> serialize
+    ) {
+        return new StdSerializer<A>(aClass) {
+            public void serialize(
+                A a,
+                JsonGenerator jsonGenerator,
+                SerializerProvider serializerProvider
+            ) throws IOException {
+                jsonGenerator.writeString(serialize.serialize(a));
+            }
+        };
+    }
+
+    static<A> StdDeserializer<A> createDeserializer(
+        Class<A> aClass,
+        Deserialize<A> deserialize
+    ) {
+        return new StdDeserializer<A>(aClass) {
+            public A deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+                JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+                return deserialize.deserialize(node);
+            }
+        };
     }
 
 }

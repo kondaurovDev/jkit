@@ -5,18 +5,44 @@ import io.vavr.collection.List;
 import io.vavr.control.Option;
 import jkit.validate.Validator;
 import lombok.*;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 import javax.validation.constraints.NotNull;
 
 public interface Deps {
 
-    JacksonMain<ObjectMapperExt> jacksonMain = JacksonMain.create(
-        Validator.of()
-    );
+    JKitJackson json = JKitJackson.create(
+        Validator.of(),
+        (module, mapper, factory) ->
+            factory
+                .createSerde(
+                    module,
+                    LocalDateTime.class,
+                    dt -> dt.toString("dd/MM/YY HH:mm:ss"),
+                    node -> {
+                        if (node.isLong()) {
+                            return new LocalDateTime(node.longValue());
+                        } else {
+                            throw new Error("Unknown input for date time");
+                        }
+                    }
+                )
+                .createSerde(
+                    module,
+                    LocalTime.class,
+                    dt -> dt.toString("HH:mm:ss"),
+                    node -> {
+                        if (node.isLong()) {
+                            return new LocalTime(node.longValue());
+                        }
 
-    ObjectMapperExt json = jacksonMain.getJson();
-    ObjectMapperExt yaml = jacksonMain.getYml();
-    IDsl jsonDsl = jacksonMain.getJsonDSL();
+                        String s = node.asText();
+                        return LocalTime.parse(s);
+                    }
+                )
+                .configureObjectMapper(mapper)
+    );
 
     @Value
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -36,7 +62,7 @@ public interface Deps {
         Boolean option3;
     }
 
-        enum CrudAction {
+    enum CrudAction {
         create,
         update,
         delete
