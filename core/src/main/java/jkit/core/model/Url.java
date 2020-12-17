@@ -1,6 +1,6 @@
 package jkit.core.model;
 
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.StreamExt;
 import jkit.core.ext.UrlExt;
 import lombok.*;
@@ -19,8 +19,8 @@ public class Url {
     @Singular
     List<Pair<String, String>> queryParams;
 
-    public Either<UserError, URI> createURI() { return UrlExt.createURI(createUrlString()); }
-    public Either<UserError, URL> createURL() { return UrlExt.createURL(createUrlString()); }
+    public Try<URI> createURI() { return UrlExt.createURI(createUrlString()); }
+    public Try<URL> createURL() { return UrlExt.createURL(createUrlString()); }
 
     public String createUrlString() {
 
@@ -43,9 +43,5 @@ public class Url {
         return res;
 
     }
-
-
-
-
 
 }

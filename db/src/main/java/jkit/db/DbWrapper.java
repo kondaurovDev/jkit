@@ -6,7 +6,7 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jkit.core.JKitData;
 import jkit.core.ext.*;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.db.model.DbColumn;
 import jkit.db.model.TableInfo;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class DbWrapper {
 
     private static final Logger logger = IOExt.createLogger(DbWrapper.class);
 
-    public static <A> Either<UserError, A> withStatement(
+    public static <A> Either<JKitError, A> withStatement(
         CheckedFunction0<Connection> getConn,
         String query,
         CheckedFunction1<PreparedStatement, A> handler
@@ -41,13 +41,13 @@ public class DbWrapper {
             return Either.right(handler.apply(stmt));
         } catch (Throwable e) {
             IOExt.log(l -> l.error("Db Error", e));
-            return Either.left(UserError
+            return Either.left(JKitError
                 .create("Can't execute sql query", e)
             );
         }
     }
 
-    public <A> Either<UserError, A> withStatement(
+    public <A> Either<JKitError, A> withStatement(
         String query,
         CheckedFunction1<PreparedStatement, A> handler
     ) {
@@ -60,7 +60,7 @@ public class DbWrapper {
 
     }
 
-    <R> Either<UserError, List<R>> executeSelect(
+    <R> Either<JKitError, List<R>> executeSelect(
         TableInfo<R> tableInfo,
         String query,
         Function1<PreparedStatement, Try<Void>> prepare,
@@ -71,7 +71,7 @@ public class DbWrapper {
             prepare.apply(stmt);
             ResultSet rs = stmt.executeQuery();
             var result = new ArrayList<R>();
-            UserError error = null;
+            JKitError error = null;
 
             while (TryExt.get(rs::next, "").contains(true) && error == null) {
 
@@ -89,16 +89,16 @@ public class DbWrapper {
             }
 
             if (error == null) {
-                return Either.<UserError, List<R>>right(List.ofAll(result));
+                return Either.<JKitError, List<R>>right(List.ofAll(result));
             } else {
-                return Either.<UserError, List<R>>left(error);
+                return Either.<JKitError, List<R>>left(error);
             }
         }).flatMap(r -> r)
         .mapLeft(e -> e.withError("Can't execute select query"));
 
     }
 
-    public Either<UserError, Integer> update(
+    public Either<JKitError, Integer> update(
         String query,
         Function1<PreparedStatement, Try<Void>> handlerSet
     ) {
@@ -110,9 +110,9 @@ public class DbWrapper {
 
     }
 
-    Either<UserError, List<Integer>> batchUpdate(
+    Either<JKitError, List<Integer>> batchUpdate(
         String query,
-        Function1<PreparedStatement, Either<UserError, Void>> handlerSet
+        Function1<PreparedStatement, Either<JKitError, Void>> handlerSet
     ) {
 
         return withStatement(query, stmt -> {

@@ -3,7 +3,7 @@ package jkit.http_client.client;
 import io.vavr.Function2;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.http_client.HttpRequest;
 import jkit.http_client.HttpResponse;
 import jkit.http_client.context.IContext;
@@ -13,15 +13,15 @@ public interface IRequestExecutor<Req, Res> {
     IContext getContext();
 
     interface ExecuteRequest<Req, Res> {
-        Either<UserError, Res> execute(Req req);
+        Either<JKitError, Res> execute(Req req);
     }
 
     ExecuteRequest<Req, Res> getRequestExecutor();
 
-    Either<UserError, HttpResponse> castResponse(Res response);
-    Either<UserError, Req> castRequest(HttpRequest request);
+    Either<JKitError, HttpResponse> castResponse(Res response);
+    Either<JKitError, Req> castRequest(HttpRequest request);
 
-    default Either<UserError, HttpResponse> execute(
+    default Either<JKitError, HttpResponse> execute(
         Function2<HttpRequest.HttpRequestBuilder, IContext, HttpRequest.HttpRequestBuilder> builder
     ) {
         return execute(
@@ -29,7 +29,7 @@ public interface IRequestExecutor<Req, Res> {
         );
     }
 
-    default Either<UserError, HttpResponse> execute(HttpRequest request) {
+    default Either<JKitError, HttpResponse> execute(HttpRequest request) {
 
         return TryExt.get(() ->
             castRequest(request)

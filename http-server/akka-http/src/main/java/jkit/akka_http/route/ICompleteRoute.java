@@ -16,7 +16,7 @@ import io.vavr.control.Option;
 import jkit.akka_http.AkkaPredef;
 import jkit.akka_http.util.IResponseFactory;
 import jkit.core.ext.*;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 public interface ICompleteRoute extends IResponseFactory {
@@ -34,7 +34,7 @@ public interface ICompleteRoute extends IResponseFactory {
         return ExceptionHandler.newBuilder()
             .match(Throwable.class, x -> {
                 IOExt.log(l -> l.error("Request error", x));
-                return completeError(UserError.create("Internal error"), 500);
+                return completeError(JKitError.create("Internal error"), 500);
             })
             .build();
     }
@@ -43,7 +43,7 @@ public interface ICompleteRoute extends IResponseFactory {
         return d().respondWithHeader(AkkaPredef.noCacheControl, inner::apply);
     }
 
-    default Route completeError(UserError error, Integer code) {
+    default Route completeError(JKitError error, Integer code) {
         val err = error.toString();
         return d().extractUri(uri -> {
             val msg = String.format(
@@ -71,7 +71,7 @@ public interface ICompleteRoute extends IResponseFactory {
         return d().complete(jsonResponseOrThrow(json, status));
     }
 
-    default Route completeSuccess(Function0<Either<UserError, ?>> factory) {
+    default Route completeSuccess(Function0<Either<JKitError, ?>> factory) {
         return withRight(
             factory.apply().map(this::jsonResponse),
             r -> d().complete(r)
@@ -92,7 +92,7 @@ public interface ICompleteRoute extends IResponseFactory {
     }
 
     default <A> Route withRight(
-        Either<UserError, A> tried,
+        Either<JKitError, A> tried,
         Function1<A, Route> handle
     ) {
         return tried.fold(

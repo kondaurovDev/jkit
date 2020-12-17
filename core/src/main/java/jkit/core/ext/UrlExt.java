@@ -1,9 +1,7 @@
 package jkit.core.ext;
 
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.model.Pair;
-import jkit.core.model.UserError;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -15,12 +13,12 @@ public interface UrlExt {
 
     Pattern slashRegex = Pattern.compile("(?<=\\w)\\/\\/");
 
-    static Either<UserError, URL> createURL(String url) {
+    static Try<URL> createURL(String url) {
         return TryExt
             .get(() -> new URL(url), "create URL");
     }
 
-    static Either<UserError, URI> createURI(String url) {
+    static Try<URI> createURI(String url) {
         return TryExt
             .get(() -> new URI(url), "create URI");
     }

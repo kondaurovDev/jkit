@@ -5,7 +5,7 @@ import akka.http.javadsl.Http;
 import akka.http.javadsl.server.Route;
 import io.vavr.control.Either;
 import jkit.core.ext.*;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -30,7 +30,7 @@ public class AkkaHttpServer {
         );
     }
 
-    public Either<UserError, String> bind()  {
+    public Either<JKitError, String> bind()  {
 
         val routeFlow = router
             .flow(akkaModule.getActorSystem(), akkaModule.getMaterializer());

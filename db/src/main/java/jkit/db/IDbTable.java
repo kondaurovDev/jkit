@@ -8,7 +8,7 @@ import io.vavr.control.Try;
 import jkit.db.model.DbColumn;
 import jkit.db.model.TableInfo;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.db.model.IDb;
 
 import java.sql.PreparedStatement;
@@ -41,19 +41,19 @@ public interface IDbTable<M> extends ICreateExpr {
             );
     }
 
-    default Either<UserError, Integer> executeOneWithCheck(
+    default Either<JKitError, Integer> executeOneWithCheck(
         ISql.ReadyExpr readyExpr
     ) {
         return executeOne(readyExpr).flatMap(i -> {
             if (i == 0) {
-                return Either.left(UserError.create("Not saved"));
+                return Either.left(JKitError.create("Not saved"));
             } else {
                 return Either.right(i);
             }
         });
     }
 
-    default Either<UserError, Integer> executeOne(
+    default Either<JKitError, Integer> executeOne(
         ISql.ReadyExpr readyExpr
     ) {
         return getDbWrapper().update(
@@ -62,7 +62,7 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<UserError, List<Integer>> executeMany(
+    default Either<JKitError, List<Integer>> executeMany(
         List<ISql.ReadyExpr> list
     ) {
 
@@ -73,7 +73,7 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<UserError, List<Integer>> executeMany(
+    default Either<JKitError, List<Integer>> executeMany(
         String sql,
         List<List<? extends IDb.IDbColumnWithValue>> records
     ) {
@@ -89,7 +89,7 @@ public interface IDbTable<M> extends ICreateExpr {
                     );
                 }))
                 .toEither()
-                .mapLeft(e -> UserError.create(
+                .mapLeft(e -> JKitError.create(
                     "executing batch update",
                     e
                 ))
@@ -97,7 +97,7 @@ public interface IDbTable<M> extends ICreateExpr {
 
     }
 
-    default Either<UserError, Integer> delete(
+    default Either<JKitError, Integer> delete(
         List<? extends IDb.IDbColumnCondition> where
     ) {
         String sql = "DELETE FROM "
@@ -113,7 +113,7 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<UserError, List<M>> getList(
+    default Either<JKitError, List<M>> getList(
         IDb.IDbColumnCondition... where
     ) {
         return getList(
@@ -121,7 +121,7 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<UserError, List<M>> getList(
+    default Either<JKitError, List<M>> getList(
         Function1<SelectExpr.SelectExprBuilder, SelectExpr.SelectExprBuilder> inner
     ) {
 
@@ -141,7 +141,7 @@ public interface IDbTable<M> extends ICreateExpr {
 
     }
 
-    default Either<UserError, Option<M>> getOneOpt(
+    default Either<JKitError, Option<M>> getOneOpt(
         ISql.WhereValue... where
     ) {
         return getList(select -> select.where(Arrays.asList(where)))
@@ -153,12 +153,12 @@ public interface IDbTable<M> extends ICreateExpr {
             .map(Traversable::headOption);
     }
 
-    default Either<UserError, M> getOne(
+    default Either<JKitError, M> getOne(
         ISql.WhereValue... where
     ) {
         return getOneOpt(where)
             .flatMap(opt -> opt
-                .toEither(() -> UserError
+                .toEither(() -> JKitError
                     .create("Row not found in " + getTableInfo().getTableName())
                 )
             )

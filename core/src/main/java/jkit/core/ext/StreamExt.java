@@ -2,8 +2,7 @@ package jkit.core.ext;
 
 import io.vavr.CheckedFunction0;
 import io.vavr.Function1;
-import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 import lombok.val;
 
 import java.io.*;
@@ -17,13 +16,12 @@ import java.util.stream.StreamSupport;
 
 public interface StreamExt {
 
-    static Either<UserError, String> inputStreamToString(
+    static Try<String> inputStreamToString(
         InputStream inputStream
     ) {
         return StreamExt
             .readAllBytes(inputStream)
-            .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
-            .mapLeft(e -> e.withError("Can't read input stream"));
+            .map(bytes -> new String(bytes, StandardCharsets.UTF_8));
     }
 
     static <T> Stream<T> getStreamFromIterator(Iterator<T> iterator) {
@@ -36,18 +34,20 @@ public interface StreamExt {
         return StreamSupport.stream(spliterator, false);
     }
 
-    static Either<UserError, byte[]> readAllBytes(InputStream inputStream) {
-        return TryExt.get(() -> {
-            val buffer = new ByteArrayOutputStream();
-            int nRead;
-            val data = new byte[16384];
+    static Try<byte[]> readAllBytes(InputStream inputStream) {
+        return Try
+            .of(() -> {
+                val buffer = new ByteArrayOutputStream();
+                int nRead;
+                val data = new byte[16384];
 
-            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-              buffer.write(data, 0, nRead);
-            }
+                while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                  buffer.write(data, 0, nRead);
+                }
 
-            return buffer.toByteArray();
-        }, "read input stream");
+                return buffer.toByteArray();
+            })
+            .onFailure(e -> IOExt.debug("read input stream", e));
 
     }
 

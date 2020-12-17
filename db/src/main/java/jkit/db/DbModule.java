@@ -5,7 +5,7 @@ import io.vavr.control.Either;
 import jkit.core.JKitData;
 import jkit.core.ext.TimeExt;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import org.flywaydb.core.Flyway;
 
 import java.sql.PreparedStatement;
@@ -44,7 +44,7 @@ public class DbModule {
 
     }
 
-    public Either<UserError, Void> runSql(
+    public Either<JKitError, Void> runSql(
         String sql,
         String processName
     ) {
@@ -57,14 +57,14 @@ public class DbModule {
         .map(s -> null);
     }
 
-    public Either<UserError, String> runMigration() {
+    public Either<JKitError, String> runMigration() {
         return TryExt.get(() -> {
             val res = flyway.migrate();
             return "migrated: " + res;
         }, "migrate");
     }
 
-    public Either<UserError, ?> backupDb(String destFile) {
+    public Either<JKitError, ?> backupDb(String destFile) {
         return runSql(
             DbModule.backupSql(destFile),
             "creating db backup"

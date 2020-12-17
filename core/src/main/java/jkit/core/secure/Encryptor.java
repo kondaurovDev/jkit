@@ -1,8 +1,7 @@
 package jkit.core.secure;
 
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,7 +21,7 @@ public class Encryptor {
     Cipher encryptCipher;
     Cipher decryptCipher;
 
-    public static Either<UserError, Encryptor> create(
+    public static Try<Encryptor> create(
         String key
     ) {
 
@@ -41,7 +40,7 @@ public class Encryptor {
 
     }
 
-    static Either<UserError, Cipher> buildCipher(
+    static Try<Cipher> buildCipher(
         SecretKeySpec secretKey,
         int mode
     ) {
@@ -52,7 +51,7 @@ public class Encryptor {
         }, "build cipher");
     }
 
-    static Either<UserError, SecretKeySpec> buildKey(String myKey) {
+    static Try<SecretKeySpec> buildKey(String myKey) {
         return TryExt.get(() -> {
             MessageDigest sha;
             byte[] key;
@@ -64,7 +63,7 @@ public class Encryptor {
         }, "build secret key");
     }
 
-    public Either<UserError, String> encrypt(
+    public Try<String> encrypt(
         String strToEncrypt
     ) {
 
@@ -76,7 +75,7 @@ public class Encryptor {
 
     }
 
-    public Either<UserError, String> decrypt(
+    public Try<String> decrypt(
         String str
     ) {
 

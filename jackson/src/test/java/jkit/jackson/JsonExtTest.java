@@ -3,9 +3,8 @@ package jkit.jackson;
 import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.StringExt;
-import jkit.core.model.UserError;
 import lombok.*;
 import org.joda.time.LocalTime;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ class JsonExtTest implements Deps {
 
         var actual = json.parseRaw(input);
 
-        assertTrue(actual.isRight());
+        assertTrue(actual.isSuccess());
 
     }
 
@@ -53,7 +52,7 @@ class JsonExtTest implements Deps {
             MyUser2.class
         );
 
-        assertTrue(actual.isRight());
+        assertTrue(actual.isSuccess());
 
     }
 
@@ -71,7 +70,7 @@ class JsonExtTest implements Deps {
         val actual = json
             .deserialize(node, MyUser.class);
 
-        assertEquals(actual.map(MyUser::getUserName), Either.right("Alexander"));
+        assertEquals(actual.map(MyUser::getUserName), Try.success("Alexander"));
 
     }
 
@@ -84,7 +83,7 @@ class JsonExtTest implements Deps {
         val row = json
             .deserialize(node, MyUser.class);
 
-        assertTrue(row.isRight());
+        assertTrue(row.isSuccess());
 
     }
 
@@ -130,7 +129,7 @@ class JsonExtTest implements Deps {
 
         val merged = json.merge(node1, node2);
 
-        assertTrue(merged.isRight());
+        assertTrue(merged.isSuccess());
 
         val name = json.getPath(
             merged.get(), "name"
@@ -152,7 +151,7 @@ class JsonExtTest implements Deps {
 
         val actual = json.deserialize(input, EitherTest.class);
 
-        assertTrue(actual.isRight());
+        assertTrue(actual.isSuccess());
 
     }
 
@@ -207,9 +206,9 @@ class JsonExtTest implements Deps {
     @Test
     void parseEnum() {
 
-        Either<UserError, CrudAction> d = json.deserialize("\"create\"", CrudAction.class);
+        val d = json.deserialize("\"create\"", CrudAction.class);
 
-        val _d = 1;
+        assertTrue(d.isSuccess());
 
     }
 

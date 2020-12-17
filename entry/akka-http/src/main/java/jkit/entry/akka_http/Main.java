@@ -2,11 +2,11 @@ package jkit.entry.akka_http;
 
 import io.vavr.control.Either;
 import jkit.akka_http.AkkaExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 
 public interface Main {
 
-    static Either<UserError, ?> bind(
+    static Either<JKitError, ?> bind(
         Router router
     ) {
         return AkkaExt.buildAndListen(

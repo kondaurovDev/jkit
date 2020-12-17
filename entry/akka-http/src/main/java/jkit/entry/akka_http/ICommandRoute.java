@@ -6,16 +6,18 @@ import jkit.akka_http.route.IAuthRoute;
 import jkit.akka_http.route.IPayloadRoute;
 import jkit.core.CorePredef;
 import jkit.core.ext.EnumExt;
-import jkit.core.JKitEntry;
+import jkit.entry.CommandEvent;
+import jkit.entry.CommandMap;
 import jkit.entry.CommandRequest;
+import jkit.entry.ReadyCommand;
 
 import java.util.function.Consumer;
 
 public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
 
-    JKitEntry.ICommandMap getCommandMap();
+    CommandMap getCommandMap();
 
-    Consumer<JKitEntry.ICommandEvent> onCommandExecute();
+    Consumer<CommandEvent> onCommandExecute();
 
     default Route withCommandName(
         Function1<String, Route> inner
@@ -24,7 +26,7 @@ public interface ICommandRoute extends IPayloadRoute, IAuthRoute {
     }
 
     default Route withReadyCommand(
-        Function1<JKitEntry.IReadyCommand, Route> inner
+        Function1<ReadyCommand, Route> inner
     ) {
         return withCommandRequest(commandRequest ->
             withRight(getCommandMap().getReadyCommand(commandRequest), inner)

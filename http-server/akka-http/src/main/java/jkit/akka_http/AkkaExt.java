@@ -8,7 +8,7 @@ import jkit.akka_http.route.IPayloadRoute;
 import jkit.akka_http.route.ICompleteRoute;
 import jkit.core.JKitData;
 import jkit.core.ext.IOExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 public interface AkkaExt {
@@ -17,7 +17,7 @@ public interface AkkaExt {
         Route createRoute(Router router);
     }
 
-    static Either<UserError, AkkaHttpServer> buildAndListen(
+    static Either<JKitError, AkkaHttpServer> buildAndListen(
         int port,
         String serviceName,
         JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain,
@@ -30,7 +30,7 @@ public interface AkkaExt {
         );
     }
 
-    static Either<UserError, AkkaHttpServer> listenHttp(
+    static Either<JKitError, AkkaHttpServer> listenHttp(
         int port,
         String serviceName,
         Function1<AkkaModule, Route> createRouter

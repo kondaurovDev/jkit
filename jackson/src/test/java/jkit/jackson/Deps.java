@@ -81,7 +81,7 @@ public interface Deps {
         String userName;
         List<Integer> nums;
 
-        static public final JavaType tt = json.getType(MyUser2.class);
+        static public final JavaType tt = json.getCustomType(MyUser2.class);
     }
 
 }

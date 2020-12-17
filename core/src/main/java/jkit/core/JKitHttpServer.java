@@ -1,12 +1,11 @@
 package jkit.core;
 
-import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 
 public interface JKitHttpServer {
 
     interface IHttpConfig {
-        Either<UserError, Integer> getHttpPort();
+        Try<Integer> getHttpPort();
     }
 
 }

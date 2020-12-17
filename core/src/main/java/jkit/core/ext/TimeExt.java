@@ -1,8 +1,7 @@
 package jkit.core.ext;
 
 import io.vavr.Function1;
-import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -29,18 +28,18 @@ public interface TimeExt {
         return getDifferenceInSeconds(getCurrent(), ts);
     }
 
-    static Either<UserError, LocalDateTime> parse(String dt) {
+    static Try<LocalDateTime> parse(String dt) {
         return TryExt.get(
             () -> LocalDateTime.parse(dt, dateFormat),
             "date time from string"
         );
     }
 
-    static Either<UserError, LocalDateTime> parse(Long dt) {
+    static Try<LocalDateTime> parse(Long dt) {
         return parse(new Timestamp(dt));
     }
 
-    static Either<UserError, LocalDateTime> parse(Object dt) {
+    static Try<LocalDateTime> parse(Object dt) {
         return TryExt.get(
             () -> new LocalDateTime(dt),
             "date time from object"
@@ -78,7 +77,7 @@ public interface TimeExt {
         return new Timestamp(instant.getMillis());
     }
 
-    static Either<UserError, Timestamp> getTimestamp(String s) {
+    static Try<Timestamp> getTimestamp(String s) {
         return TimeExt.parse(s).map(dt -> TimeExt.getTimestamp(dt.toDateTime()));
     }
 

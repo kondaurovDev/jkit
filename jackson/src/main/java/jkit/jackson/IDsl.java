@@ -1,19 +1,18 @@
 package jkit.jackson;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.vavr.control.Either;
 import io.vavr.control.Option;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 
 public interface IDsl {
 
-    default <A> Either<UserError, A> getPath(
+    default <A> Try<A> getPath(
         JsonNode node,
         String path,
         IFactory.IJsonTypeTransformer<A> transformer
     ) {
         return getPathOpt(node, path)
-            .toEither(() -> UserError.create("Json path doesn't exists: " + path))
+            .toTry(() -> new Error("Json path doesn't exists: " + path))
             .flatMap(transformer::apply);
     }
 
@@ -25,8 +24,8 @@ public interface IDsl {
             .of(node.get(path));
     }
 
-    default Either<UserError, JsonNode> getPath(JsonNode node, String path) {
-        return getPath(node, path, v -> Either.right(v));
+    default Try<JsonNode> getPath(JsonNode node, String path) {
+        return getPath(node, path, Try::success);
     }
 
 }

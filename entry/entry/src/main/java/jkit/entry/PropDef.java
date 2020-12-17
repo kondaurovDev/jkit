@@ -2,9 +2,10 @@ package jkit.entry;
 
 import io.vavr.collection.List;
 import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.ListExt;
 import jkit.core.JKitEntry;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 @Value(staticConstructor = "of")
@@ -38,8 +39,8 @@ public class PropDef<A> implements JKitEntry.IPropDef<A> {
         );
     }
 
-    UserError wrongType(Object obj, String expected) {
-        return UserError.create(String.format(
+    JKitError wrongType(Object obj, String expected) {
+        return JKitError.of().withError(String.format(
             "'%s' not a %s but %s",
             name,
             expected,
@@ -47,7 +48,7 @@ public class PropDef<A> implements JKitEntry.IPropDef<A> {
         ));
     }
 
-    public Either<UserError, ?> validateObj(Object obj) {
+    public Try<Object> validateObj(Object obj) {
 
         if (Boolean.TRUE.equals(isList)) {
             if (obj instanceof java.util.List<?>) {
@@ -64,17 +65,17 @@ public class PropDef<A> implements JKitEntry.IPropDef<A> {
 
     }
 
-    public Either<UserError, List<A>> validateList(Object object) {
+    public Either<JKitError, List<A>> validateList(Object object) {
 
         if (!(object instanceof java.util.List<?>)) {
-            return Either.left(UserError.create("Must be list"));
+            return Either.left(JKitError.create("Must be list"));
         }
 
         return ListExt.applyToEach(
             (java.util.List<?>)object,
             v -> {
                 if (paramClass.isInstance(v)) {
-                    return Either.left(UserError.create("Wrong element type: " + v.getClass().getSimpleName()));
+                    return Either.left(JKitError.create("Wrong element type: " + v.getClass().getSimpleName()));
                 }
                 return Either.right(paramClass.cast(v));
             },

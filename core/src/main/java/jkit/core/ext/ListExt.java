@@ -4,8 +4,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
-import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -20,9 +19,9 @@ public interface ListExt {
         return List.ofAll(list);
     }
 
-    static <A, R> Either<UserError, List<R>> applyToEach(
+    static <A, R> Try<List<R>> applyToEach(
         Iterable<A> source,
-        Function<A, Either<UserError, R>> handle,
+        Function<A, Try<R>> handle,
         String errorMsg
     ) {
         return applyToEach(
@@ -33,15 +32,15 @@ public interface ListExt {
         );
     }
 
-    static <A, R> Either<UserError, List<R>> applyToEach(
+    static <A, R> Try<List<R>> applyToEach(
         Iterable<A> source,
-        Function<A, Either<UserError, R>> handle,
+        Function<A, Try<R>> handle,
         String errorMsg,
         Boolean failOnFirst
     ) {
 
         ArrayList<R> success = new ArrayList<>();
-        ArrayList<UserError> errors = new ArrayList<>();
+        ArrayList<Throwable> errors = new ArrayList<>();
 
         source.forEach(i -> {
             if (failOnFirst && !errors.isEmpty()) {
@@ -58,12 +57,9 @@ public interface ListExt {
         });
 
         if (errors.isEmpty()) {
-            return Either.right(List.ofAll(success));
+            return Try.success(List.ofAll(success));
         } else {
-            return Either.left(UserError
-                .create(errorMsg)
-                .withErrors(errors)
-            );
+            return Try.failure(new Error(errorMsg, errors.get(0)));
         }
 
     }

@@ -2,7 +2,7 @@ package jkit.db.table;
 
 import io.vavr.collection.List;
 import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.db.DbWrapper;
 import jkit.db.IDbTable;
 import jkit.db.model.DbColumn;
@@ -25,7 +25,7 @@ public interface ProductTable {
         DbWrapper dbWrapper;
         TableInfo<Row> tableInfo = ProductTable.tableInfo;
 
-        public Either<UserError, Integer> create(String name) {
+        public Either<JKitError, Integer> create(String name) {
             return executeOne(createMergeExpr(merge ->
                 merge.field(Field.name.value(name))
                     .where(Field.name)

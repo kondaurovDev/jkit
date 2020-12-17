@@ -10,20 +10,19 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import io.vavr.jackson.datatype.VavrModule;
-import jkit.core.model.UserError;
 
 import java.io.IOException;
 
-interface IFactory {
+public interface IFactory {
 
     interface MapperBuilder {
          ObjectMapper build(SimpleModule module, ObjectMapper mapper, IFactory factory);
     }
 
     interface IJsonTypeTransformer<A> {
-        Either<UserError, A> apply(JsonNode json);
+        Try<A> apply(JsonNode json);
     }
 
     interface IJsonTransformer {

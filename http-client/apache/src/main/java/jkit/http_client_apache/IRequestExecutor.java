@@ -6,7 +6,7 @@ import jkit.http_client.HttpRequest;
 import jkit.http_client.HttpResponse;
 import jkit.http_client.JKitHttpClient;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.val;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -27,7 +27,7 @@ interface IRequestExecutor extends
         return r -> TryExt.get(() -> getHttpClient().execute(r), "Execute http request");
     }
 
-    default Either<UserError, HttpResponse> castResponse(
+    default Either<JKitError, HttpResponse> castResponse(
         org.apache.http.HttpResponse response
     ) {
         return TryExt
@@ -45,7 +45,7 @@ interface IRequestExecutor extends
             .mapLeft(e -> e.withError("Convert http response (apache)"));
     }
 
-    default Either<UserError, HttpUriRequest> castRequest(HttpRequest request) {
+    default Either<JKitError, HttpUriRequest> castRequest(HttpRequest request) {
 
         return request
             .getUrl().createURI()

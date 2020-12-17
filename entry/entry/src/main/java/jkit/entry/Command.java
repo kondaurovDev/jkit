@@ -4,7 +4,7 @@ import io.vavr.control.Either;
 import io.vavr.control.Option;
 import jkit.core.ext.*;
 import jkit.core.JKitEntry;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.HashSet;
@@ -20,7 +20,7 @@ public class Command implements JKitEntry.ICommand {
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
-    public Either<UserError, ?> executeBlocking(
+    public Either<JKitError, ?> executeBlocking(
         PropMap payload,
         PropMap user
     ) {
@@ -29,13 +29,13 @@ public class Command implements JKitEntry.ICommand {
             .flatMap(this::executeBlocking);
     }
 
-    public Either<UserError, ?> executeBlocking(
+    public Either<JKitError, ?> executeBlocking(
         JKitEntry.IMethodContext methodContext
     ) {
        return this.executeBlocking(methodContext, c -> {});
     }
 
-    public Either<UserError, ?> executeBlocking(
+    public Either<JKitError, ?> executeBlocking(
         JKitEntry.IMethodContext methodContext,
         Consumer<CommandEvent> onSave
     ) {
@@ -49,12 +49,12 @@ public class Command implements JKitEntry.ICommand {
         IOExt.log(l -> l.debug(msg));
 
         if (!accessChecker.check(methodContext))
-            return Either.left(UserError.create("No rights to execute command"));
+            return Either.left(JKitError.create("No rights to execute command"));
 
         if (!commandDef.getFlag().getParallelRun())
             synchronized (this) {
                 if (inProgress.contains(commandDef.getName())) {
-                    return Either.left(UserError.create("Already in progress"));
+                    return Either.left(JKitError.create("Already in progress"));
                 } else {
                     inProgress.add(commandDef.getName());
                 }
@@ -66,7 +66,7 @@ public class Command implements JKitEntry.ICommand {
             .mapLeft(e -> e.withError("Can't execute: " + commandDef.getName()));
 
         val error = result.fold(
-            UserError::toString,
+            JKitError::toString,
             res -> null
         );
 

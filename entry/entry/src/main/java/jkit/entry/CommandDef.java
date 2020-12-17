@@ -2,10 +2,11 @@ package jkit.entry;
 
 import io.vavr.Tuple;
 import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.ListExt;
 import jkit.core.ext.MapExt;
 import jkit.core.JKitEntry;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.Collections;
@@ -48,7 +49,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
         return cmd;
     }
 
-    public Either<UserError, PropMap> parseMap(
+    public Try<PropMap> parseMap(
         JKitEntry.IPropMap propMap
     ) {
         return ListExt.applyToEach(
@@ -56,7 +57,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
             p -> MapExt.get(p.getName(), propMap.getProps(), "Missing prop").fold(
                 err -> {
                     if (requiredProps.contains(p.getName()))
-                        return Either.left(UserError.create(String.format("Missing property '%s' ", p.getName())));
+                        return Either.left(JKitError.of().withError(String.format("Missing property '%s' ", p.getName())));
                     return Either.right(null);
                 },
                 o -> p.validateObj(o).map(v -> Tuple.of(p.getName(), v))
@@ -66,7 +67,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
         ).map(lst -> PropMap.create().props(lst.toJavaMap(t -> t)).build());
     }
 
-    public Either<UserError, JKitEntry.IMethodContext> createContext(
+    public Either<JKitError, JKitEntry.IMethodContext> createContext(
         JKitEntry.IPropMap payload,
         JKitEntry.IPropMap user
     ) {
@@ -81,7 +82,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
             );
     }
 
-    public Either<UserError, JKitEntry.IReadyCommand> createReadyCommand(
+    public Either<JKitError, JKitEntry.IReadyCommand> createReadyCommand(
         JKitEntry.IPropMap payload,
         JKitEntry.IPropMap user
     ) {

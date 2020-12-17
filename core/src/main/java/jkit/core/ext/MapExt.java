@@ -1,13 +1,12 @@
 package jkit.core.ext;
 
-import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public interface MapExt {
 
-    static <A> Either<UserError, A> get(
+    static <A> Try<A> get(
         String key,
         Map<String, A> map,
         String error

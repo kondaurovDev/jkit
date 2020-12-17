@@ -1,6 +1,6 @@
 package jkit.db;
 
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.db.sql.MergeExpr;
 import jkit.db.sql.UpdateExpr;
 import jkit.db.table.ProductTable;
@@ -19,7 +19,7 @@ class ProductTest implements Deps, ProductTable {
 
     @BeforeAll
     void init() {
-        dbModule.runMigration().getOrElseThrow(UserError::toError);
+        dbModule.runMigration().getOrElseThrow(JKitError::toError);
     }
 
     @Test

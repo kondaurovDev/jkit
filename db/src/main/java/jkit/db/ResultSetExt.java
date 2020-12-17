@@ -8,7 +8,7 @@ import io.vavr.control.Either;
 import jkit.core.ext.ListExt;
 import jkit.core.ext.StringExt;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.db.model.DbColumn;
 import jkit.db.model.DbColumnMeta;
 import jkit.db.model.TableInfo;
@@ -26,7 +26,7 @@ public interface ResultSetExt {
                 .get(((JdbcClob)value)::getAsciiStream, "clob type to string")
                 .map(StringExt::fromInputStream);
 
-            return res.getOrElseThrow(UserError::toError);
+            return res.getOrElseThrow(JKitError::toError);
         } else if (value instanceof Enum) {
             return ((Enum<?>)value).name();
         }
@@ -34,7 +34,7 @@ public interface ResultSetExt {
         return value;
     }
 
-    static Either<UserError, List<Tuple2<DbColumn, Object>>> extractRow(
+    static Either<JKitError, List<Tuple2<DbColumn, Object>>> extractRow(
         ResultSet rs,
         TableInfo<?> tableInfo,
         Function2<DbColumn, Object, Object> transformKey
@@ -55,7 +55,7 @@ public interface ResultSetExt {
 
     }
 
-    static Either<UserError, List<DbColumnMeta>> getColumns(ResultSet rs) {
+    static Either<JKitError, List<DbColumnMeta>> getColumns(ResultSet rs) {
         return TryExt
                 .get(() -> {
                     val rsmd = rs.getMetaData();

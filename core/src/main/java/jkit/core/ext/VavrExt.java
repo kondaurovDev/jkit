@@ -3,9 +3,8 @@ package jkit.core.ext;
 import io.vavr.Function0;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
-import io.vavr.control.Either;
 import io.vavr.control.Option;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 
 public interface VavrExt {
 
@@ -25,24 +24,27 @@ public interface VavrExt {
         return List.of(elems);
     }
 
-    static <A> Either<UserError, A> checkNull(A opt, String error) {
-        if (opt == null) return Either.left(UserError.create(error));
-        return Either.right(opt);
+    static <A> Try<A> checkNull(A opt, String error) {
+        if (opt == null) return Try.failure(new Error(error, null));
+        return Try.success(opt);
     }
 
-    static <A> Either<UserError, A> get(Option<A> opt, String name) {
-        return opt.toEither(UserError.create("Missing value: " + name));
+    static <A> Try<A> get(Option<A> opt, String name) {
+        return opt.fold(
+            () -> Try.failure(new Error("Missing value: " + name, null)),
+            Try::success
+        );
     }
 
-    static Either<UserError, Integer> parseInt(String s) {
+    static Try<Integer> parseInt(String s) {
         return TryExt.get(() -> Integer.parseInt(s), "to int");
     }
 
-    static <A> Either<UserError, A> getOrDefault(
+    static <A> Try<A> getOrDefault(
         A value,
-        Function0<Either<UserError, A>> getDefault
+        Function0<Try<A>> getDefault
     ) {
-        if (value != null) return Either.right(value);
+        if (value != null) return Try.success(value);
         return getDefault.apply();
     }
 

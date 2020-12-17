@@ -4,7 +4,7 @@ import akka.http.javadsl.model.*;
 import akka.http.javadsl.model.headers.Location;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import jkit.core.ext.*;
 
 public interface IResponseFactory {
@@ -18,7 +18,7 @@ public interface IResponseFactory {
     default HttpResponse yamlResponseOrThrow(Object resp) {
         return yamlResponse(resp, 200)
             .mapLeft(e -> e.withError("Create yaml response"))
-            .getOrElseThrow(e -> new Error(e.toString()));
+            .getOrElseThrow(e -> new java.lang.Error(e.toString()));
     }
 
     default HttpResponse jsonResponse(Object resp) {
@@ -28,10 +28,10 @@ public interface IResponseFactory {
     default HttpResponse jsonResponseOrThrow(Object resp, Integer status) {
         return jsonResponse(resp, status)
             .mapLeft(e -> e.withError("Create json response"))
-            .getOrElseThrow(UserError::toError);
+            .getOrElseThrow(JKitError::toError);
     }
 
-    default Either<UserError, HttpResponse> jsonResponse(Object obj, int code) {
+    default Either<JKitError, HttpResponse> jsonResponse(Object obj, int code) {
         return toResponse(
             getObjMapperMain().getJson().serialize(obj),
             Response.json,
@@ -39,7 +39,7 @@ public interface IResponseFactory {
         );
     }
 
-    default Either<UserError, HttpResponse> yamlResponse(Object obj, int code) {
+    default Either<JKitError, HttpResponse> yamlResponse(Object obj, int code) {
         return toResponse(
             getObjMapperMain().getJson().serialize(obj),
             Response.text,
@@ -47,8 +47,8 @@ public interface IResponseFactory {
         );
     }
 
-    default Either<UserError, HttpResponse> toResponse(
-        Either<UserError, String> str,
+    default Either<JKitError, HttpResponse> toResponse(
+        Either<JKitError, String> str,
         Response response,
         int status
     ) {
@@ -56,15 +56,15 @@ public interface IResponseFactory {
             .map(node -> response.getHttpResponse(node, status));
     }
 
-    default Either<UserError, HttpResponse> html(String html) {
+    default Either<JKitError, HttpResponse> html(String html) {
         return html(html, 200);
     }
 
-    default Either<UserError, HttpResponse> html(String html, Integer status) {
+    default Either<JKitError, HttpResponse> html(String html, Integer status) {
         return Either.right(Response.html.getHttpResponse(html, status));
     }
 
-    default Either<UserError, HttpResponse> redirect(String url) {
+    default Either<JKitError, HttpResponse> redirect(String url) {
         return TryExt.get(
             () -> HttpResponse
                 .create()

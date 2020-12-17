@@ -1,8 +1,7 @@
 package jkit.jwt;
 
 import io.vavr.control.Either;
-import jkit.core.ext.TimeExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 @Value(staticConstructor = "of")
@@ -14,7 +13,7 @@ public class JwtModel<A> {
     String issuer;
     String claimName;
 
-    public Either<UserError, String> sign(A obj) {
+    public Either<JKitError, String> sign(A obj) {
 
         return getJwtHMAC().getObjMapper().objToMap(obj)
             .flatMap(map ->
@@ -28,13 +27,13 @@ public class JwtModel<A> {
 
     }
 
-    public Either<UserError, A> decode(String token) {
+    public Either<JKitError, A> decode(String token) {
 
         return getJwtHMAC()
             .verify(token)
             .flatMap(t -> {
                 val claim = t.getClaim(claimName);
-                if (claim.isNull()) return Either.left(UserError.create("Unknown claim"));
+                if (claim.isNull()) return Either.left(JKitError.create("Unknown claim"));
                 return Either.right(claim);
             })
             .flatMap(claim -> getJwtHMAC().getObjMapper().deserialize(claim.asMap(), aClass));

@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 import io.vavr.control.Either;
 import jkit.core.ext.MapExt;
 import jkit.core.JKitEntry;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.Map;
@@ -21,12 +21,12 @@ public class PropMap implements JKitEntry.IPropMap {
         return this.props;
     }
 
-    public <A> Either<UserError, A> propOpt(JKitEntry.IPropDef<A> prop) {
+    public <A> Either<JKitError, A> propOpt(JKitEntry.IPropDef<A> prop) {
         return MapExt
             .get(prop.getName(), props, String.format("Param '%s' not found", prop.getName()))
             .flatMap(v -> {
                 if (!prop.getParamClass().isInstance(v))
-                    return Either.left(UserError.create("Wrong class"));
+                    return Either.left(JKitError.create("Wrong class"));
                 return Either.right(prop.getParamClass().cast(v));
             });
     }
@@ -35,7 +35,7 @@ public class PropMap implements JKitEntry.IPropMap {
         val v = propOpt(prop);
 
         if (v.isEmpty())
-            throw UserError.create(
+            throw JKitError.create(
                 String.format(
                     "Param '%s' not found",
                     prop.getName()
@@ -48,7 +48,7 @@ public class PropMap implements JKitEntry.IPropMap {
     public <A> List<A> propList(PropDef<A> propDef) {
         return propDef
             .validateList(prop(propDef))
-            .getOrElseThrow(UserError::toError);
+            .getOrElseThrow(JKitError::toError);
     }
 
 }

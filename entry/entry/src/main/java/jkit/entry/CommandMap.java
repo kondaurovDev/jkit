@@ -2,7 +2,7 @@ package jkit.entry;
 
 import io.vavr.control.Either;
 import jkit.core.JKitEntry;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.HashMap;
@@ -22,23 +22,23 @@ public class CommandMap implements JKitEntry.ICommandMap {
 
     public void register(Command command) {
         if (map.containsKey(command.getCommandDef().getName())) {
-            throw new Error("Command '" + command.getCommandDef().getName() + "' has been registered already");
+            throw new java.lang.Error("Command '" + command.getCommandDef().getName() + "' has been registered already");
         } else {
             map.put(command.getCommandDef().getName(), command);
         }
     }
 
-    public Either<UserError, JKitEntry.ICommand> getCommand(
+    public Either<JKitError, JKitEntry.ICommand> getCommand(
         String commandName
     ) {
         val cmd = this.map.get(commandName);
         if (cmd == null) {
-            return Either.left(UserError.create("Unknown command"));
+            return Either.left(JKitError.create("Unknown command"));
         }
         return Either.right(cmd);
     }
 
-    public Either<UserError, JKitEntry.IReadyCommand> getReadyCommand(
+    public Either<JKitError, JKitEntry.IReadyCommand> getReadyCommand(
         JKitEntry.ICommandRequest commandRequest
     ) {
         return getCommand(commandRequest.getCommandName())
@@ -48,7 +48,7 @@ public class CommandMap implements JKitEntry.ICommandMap {
             ));
     }
 
-    public Either<UserError, Object> execute(
+    public Either<JKitError, Object> execute(
         JKitEntry.IReadyCommand readyCommand
     ) {
         return getCommand(readyCommand.getCommandDef().getName())

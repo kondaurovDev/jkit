@@ -1,8 +1,7 @@
 package jkit.core.ext;
 
 import io.vavr.collection.List;
-import io.vavr.control.Either;
-import jkit.core.model.UserError;
+import io.vavr.control.Try;
 import lombok.val;
 
 import java.io.BufferedReader;
@@ -59,17 +58,17 @@ public interface StringExt {
         return Base64.getEncoder().withoutPadding().encodeToString(source.getBytes());
     }
 
-    static Either<UserError, String> decodeBase64(String source) {
-        return TryExt.get(() ->
-            new String(Base64.getDecoder().decode(source)),
-            "decode base64 string"
-        ).flatMap(s -> {
-            if (s.isEmpty()) {
-                return Either.left(UserError.create("Not valid base 64 string"));
-            } else {
-                return Either.right(s);
-            }
-        });
+    static Try<String> decodeBase64(String source) {
+        return Try
+            .of(() -> new String(Base64.getDecoder().decode(source)))
+            .onFailure(e -> IOExt.debug("decode base64 string", e))
+            .flatMap(s -> {
+                if (s.isEmpty() && !source.isEmpty()) {
+                    return Try.failure(new Error("Not valid base 64 string"));
+                } else {
+                    return Try.success(s);
+                }
+            });
     }
 
     static String limitLength(String s, Integer maxLength) {

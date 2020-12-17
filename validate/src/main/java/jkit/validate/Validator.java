@@ -1,9 +1,8 @@
 package jkit.validate;
 
 import io.vavr.collection.List;
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.JKitValidate;
-import jkit.core.model.UserError;
 import lombok.*;
 
 import jkit.core.ext.*;
@@ -16,15 +15,15 @@ public class Validator implements JKitValidate.IValidator {
     ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
     javax.validation.Validator validator = validatorFactory.getValidator();
 
-    public <A> Either<UserError, A> validate(
+    public <A> Try<A> validate(
         A obj, String... fields
     ) {
 
         if (obj == null) {
-            return Either.left(UserError.create("Can't validate null"));
+            return Try.failure(new Error("Can't validate null"));
         }
 
-        Either<UserError, List<ConstraintViolation<A>>> errors;
+        Try<List<ConstraintViolation<A>>> errors;
 
         if (fields.length == 0) {
             errors = TryExt
@@ -46,15 +45,15 @@ public class Validator implements JKitValidate.IValidator {
                     String msg = err
                         .map(e -> e.getPropertyPath() + "(" + e.getMessage() + ")")
                         .mkString(", ");
-                    return Either.left(
-                        UserError.create(String.format(
+                    return Try.failure(
+                        new Error(String.format(
                             "Validation errors(%s): %s",
                             obj.getClass().getName(),
                             msg
                         ))
                     );
                 } else {
-                    return Either.right(obj);
+                    return Try.success(obj);
                 }
             });
 

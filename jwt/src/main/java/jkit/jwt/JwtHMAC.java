@@ -10,7 +10,7 @@ import io.vavr.Function1;
 import io.vavr.control.Either;
 import jkit.core.ext.TryExt;
 import jkit.core.JKitData;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class JwtHMAC {
         );
     }
 
-    public Either<UserError, String> sign(
+    public Either<JKitError, String> sign(
         Function1<JWTCreator.Builder, JWTCreator.Builder> create
     ) {
         val builder = JWT.create();
@@ -45,28 +45,28 @@ public class JwtHMAC {
             .get(() -> create.apply(builder).sign(getAlgorithm()), "sign jwt");
     }
 
-    public Either<UserError, DecodedJWT> verify(String token) {
+    public Either<JKitError, DecodedJWT> verify(String token) {
         return TryExt.get(
             () -> verifier.verify(token),
             "verify jwt"
         );
     }
 
-    public Either<UserError, String> embedArrayAndSign(List<?> lst) {
+    public Either<JKitError, String> embedArrayAndSign(List<?> lst) {
         return sign(b -> b.withClaim("data", lst));
     }
 
-    public Either<UserError, String> embedMapAndSign(Object obj) {
+    public Either<JKitError, String> embedMapAndSign(Object obj) {
         return objMapper.objToMap(obj)
             .flatMap(map -> sign(b -> b.withClaim("data", map)));
     }
 
-    public Either<UserError, Claim> verifyAndExtract(String token) {
+    public Either<JKitError, Claim> verifyAndExtract(String token) {
         return verify(token)
             .flatMap(t -> {
                 val claim = t.getClaim("data");
                 if (claim.isNull()) {
-                    return Either.left(UserError.create("No 'data' claim"));
+                    return Either.left(JKitError.create("No 'data' claim"));
                 }
                 return Either.right(claim);
             });

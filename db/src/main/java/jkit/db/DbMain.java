@@ -4,7 +4,7 @@ import io.vavr.control.Either;
 import jkit.core.ext.IOExt;
 import jkit.core.ext.TimeExt;
 import jkit.core.ext.TryExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 import org.h2.tools.Console;
 
 import lombok.*;
@@ -17,7 +17,7 @@ public interface DbMain {
         res.get();
     }
 
-    static Either<UserError, Void> runDbUi() {
+    static Either<JKitError, Void> runDbUi() {
         TimeExt.setUtc();
         return TryExt.getAndVoid(
             Console::main,

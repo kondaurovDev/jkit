@@ -2,7 +2,7 @@ package jkit.entry;
 
 import io.vavr.control.Option;
 import jkit.core.ext.IOExt;
-import jkit.core.model.UserError;
+import jkit.core.model.JKitError;
 
 public interface Main {
 
@@ -12,7 +12,7 @@ public interface Main {
     }
 
     static String hello() {
-        UserError.of("err", Option.none());
+        JKitError.of("err", Option.none());
         return "Hello from server";
     }
 

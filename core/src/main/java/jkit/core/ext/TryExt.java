@@ -1,31 +1,34 @@
 package jkit.core.ext;
 
+import io.vavr.API;
 import io.vavr.CheckedFunction0;
 import io.vavr.CheckedRunnable;
-import io.vavr.Function0;
 import io.vavr.Function1;
 import io.vavr.concurrent.Future;
-import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jkit.core.model.UserError;
 import lombok.val;
 
 import java.util.concurrent.CompletableFuture;
 
+import static io.vavr.API.$;
+
 public interface TryExt {
 
-    static <R> Either<UserError, R> await(
+    static <R> Try<R> await(
         CompletableFuture<R> future
     ) {
         val res = Future.fromCompletableFuture(future).await();
         if (res.isSuccess()) {
-            return Either.right(res.get());
+            return res.toTry();
         } else {
-            return Either.left(UserError.create("Await future", res.getCause().get()));
+            return Try.failure(new Error(
+                "Await future",
+                res.getCause().get()
+            ));
         }
     }
 
-    static Either<UserError, Void> getAndVoid(
+    static Try<Void> getAndVoid(
         CheckedRunnable lambda,
         String errorMsg
     ) {
@@ -35,42 +38,33 @@ public interface TryExt {
         }, errorMsg);
     }
 
-    static <R> Either<UserError, R> get(
+    @SuppressWarnings("unchecked")
+    static <R> Try<R> get(
         CheckedFunction0<R> lambda,
         String errorMsg
     ) {
 
         return Try
             .of(lambda)
-            .toEither()
-            .mapLeft(e ->
-                UserError.create(errorMsg, e)
-            );
+            .mapFailure(API.Case($(), e -> new Error(errorMsg, e)));
 
     }
 
     static <R> R getOrThrow(CheckedFunction0<R> lambda, String errorMsg) {
-        return Try
-            .of(lambda)
-            .getOrElseThrow(e -> new Error(errorMsg, e));
+        return get(lambda, errorMsg)
+            .getOrElseThrow((e) -> (Error)e);
     }
 
-    static <A> Either<UserError, A> assertStmt(
+    static <A> Try<A> assertStmt(
         A value,
         Function1<A, Boolean> cond,
         String errorMsg
     ) {
         if (cond.apply(value)) {
-           return Either.right(value);
+           return Try.success(value);
         } else {
-           return Either.left(UserError.create(errorMsg));
+           return Try.failure(new Error(errorMsg, null));
         }
-    }
-
-    static <R> Either<UserError, R> error(String msg) {
-
-        return Either.left(UserError.create(msg));
-
     }
 
 }

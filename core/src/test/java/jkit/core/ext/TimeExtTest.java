@@ -1,6 +1,6 @@
 package jkit.core.ext;
 
-import lombok.var;
+import lombok.val;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class TimeExtTest {
 
     @Test
-    void getDifferenceInSeconds() throws Exception {
+    void getDifferenceInSeconds() {
 
-        var compared1 =
+        val compared1 =
             TimeExt.parse("10/01/20 10:00:00");
 
-        var compared2 =
+        val compared2 =
             TimeExt.parse("10/01/20 15:05:00");
 
         long diff = TimeExt.getDifferenceInSeconds(compared2.get(), compared1.get());
@@ -31,8 +31,8 @@ class TimeExtTest {
 
         TimeExt.setUtc();
         Calendar calendar = Calendar.getInstance();
-        var dt1 = DateTime.now();
-        var dt = calendar.getTime();
+        val dt1 = DateTime.now();
+        val dt = calendar.getTime();
         assertEquals(calendar.getTimeZone(), TimeZone.getTimeZone("UTC"));
 
     }
@@ -40,7 +40,7 @@ class TimeExtTest {
     @Test
     void ago() {
 
-        var actual = TimeExt.getAgoSince(
+        val actual = TimeExt.getAgoSince(
             TimeExt.parse("20/01/20 00:00:03").get().toDateTime(),
             TimeExt.parse("10/01/20 00:00:00").get().toDateTime()
         );
@@ -53,16 +53,16 @@ class TimeExtTest {
     void fromTimestamp() {
 
         TimeExt.setUtc();
-        var actual = TimeExt.parse(TimeExt.getCurrentTimestamp());
+        val actual = TimeExt.parse(TimeExt.getCurrentTimestamp());
 
-        assertTrue(actual.isRight());
+        assertFalse(actual.isEmpty());
 
     }
 
     @Test
     void getNextWeekDay() {
 
-        var current = TimeExt.parse("15/09/20 00:00:03").get();
+        val current = TimeExt.parse("15/09/20 00:00:03").get();
 
         assertEquals(
             TimeExt.parse("18/09/20 00:00:03").get(),
