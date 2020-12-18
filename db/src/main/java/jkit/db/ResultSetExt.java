@@ -4,11 +4,10 @@ import io.vavr.Function2;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.ListExt;
 import jkit.core.ext.StringExt;
 import jkit.core.ext.TryExt;
-import jkit.core.model.JKitError;
 import jkit.db.model.DbColumn;
 import jkit.db.model.DbColumnMeta;
 import jkit.db.model.TableInfo;
@@ -20,21 +19,19 @@ import lombok.*;
 
 public interface ResultSetExt {
 
-    static Object getColumnValue(Object value) {
+    static Try<Object> getColumnValue(Object value) {
         if (value instanceof JdbcClob) {
-            var res = TryExt
+            return TryExt
                 .get(((JdbcClob)value)::getAsciiStream, "clob type to string")
                 .map(StringExt::fromInputStream);
-
-            return res.getOrElseThrow(JKitError::toError);
         } else if (value instanceof Enum) {
-            return ((Enum<?>)value).name();
+            return Try.of(((Enum<?>) value)::name);
+        } else {
+            return Try.success(value);
         }
-
-        return value;
     }
 
-    static Either<JKitError, List<Tuple2<DbColumn, Object>>> extractRow(
+    static Try<List<Tuple2<DbColumn, Object>>> extractRow(
         ResultSet rs,
         TableInfo<?> tableInfo,
         Function2<DbColumn, Object, Object> transformKey
@@ -49,27 +46,26 @@ public interface ResultSetExt {
                 },
                 "extract row value and transform"
             ).map(o -> Tuple.of(c, o)),
-            "extract table row"
-        )
-        .mapLeft(e -> e.withError("extract row from result set"));
+            "extract row from result set"
+        );
 
     }
 
-    static Either<JKitError, List<DbColumnMeta>> getColumns(ResultSet rs) {
+    static Try<List<DbColumnMeta>> getColumns(ResultSet rs) {
         return TryExt
-                .get(() -> {
-                    val rsmd = rs.getMetaData();
-                    val count = rsmd.getColumnCount();
+            .get(() -> {
+                val rsmd = rs.getMetaData();
+                val count = rsmd.getColumnCount();
 
-                    return List.range(0, count)
-                        .map(i -> TryExt.getOrThrow(
-                            () -> new DbColumnMeta(
-                                rsmd.getColumnLabel(i + 1),
-                                rsmd.getColumnType(i + 1),
-                                i == count
-                            ), "columnInfo"
-                        ));
-                }, "get columns info");
+                return List.range(0, count)
+                    .map(i -> TryExt.getOrThrow(
+                        () -> new DbColumnMeta(
+                            rsmd.getColumnLabel(i + 1),
+                            rsmd.getColumnType(i + 1),
+                            i == count
+                        ), "columnInfo"
+                    ));
+            }, "get columns info");
     }
 
 }

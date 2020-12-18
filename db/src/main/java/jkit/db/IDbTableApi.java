@@ -1,15 +1,14 @@
 package jkit.db;
 
 import io.vavr.collection.List;
-import io.vavr.control.Either;
-import jkit.core.model.JKitError;
+import io.vavr.control.Try;
 import org.joda.time.LocalDateTime;
 
 public interface IDbTableApi<ApiModel, Model> extends IDbTable<Model> {
 
     ISql.ReadyExpr toExpr(ApiModel apiModel, LocalDateTime ts);
 
-    default Either<JKitError, List<Integer>> upsertApiModel(
+    default Try<List<Integer>> upsertApiModel(
         List<ApiModel> list,
         LocalDateTime ts
     ) {
@@ -18,7 +17,7 @@ public interface IDbTableApi<ApiModel, Model> extends IDbTable<Model> {
 
     }
 
-    default Either<JKitError, Integer> upsertModel(
+    default Try<Integer> upsertModel(
         ApiModel model,
         LocalDateTime ts
     ) {

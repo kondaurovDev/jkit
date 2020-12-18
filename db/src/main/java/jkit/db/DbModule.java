@@ -1,11 +1,10 @@
 package jkit.db;
 
 import io.vavr.Function1;
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.JKitData;
 import jkit.core.ext.TimeExt;
 import jkit.core.ext.TryExt;
-import jkit.core.model.JKitError;
 import org.flywaydb.core.Flyway;
 
 import java.sql.PreparedStatement;
@@ -44,30 +43,26 @@ public class DbModule {
 
     }
 
-    public Either<JKitError, Void> runSql(
-        String sql,
-        String processName
+    public Try<?> runSql(
+        String sql
     ) {
         return DbWrapper.withStatement(
             dbFile::getSingleConnection,
             sql,
             PreparedStatement::execute
-        )
-        .mapLeft(e -> e.withError(processName))
-        .map(s -> null);
+        );
     }
 
-    public Either<JKitError, String> runMigration() {
+    public Try<String> runMigration() {
         return TryExt.get(() -> {
             val res = flyway.migrate();
             return "migrated: " + res;
         }, "migrate");
     }
 
-    public Either<JKitError, ?> backupDb(String destFile) {
+    public Try<?> backupDb(String destFile) {
         return runSql(
-            DbModule.backupSql(destFile),
-            "creating db backup"
+            DbModule.backupSql(destFile)
         );
     }
 

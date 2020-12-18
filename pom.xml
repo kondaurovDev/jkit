@@ -74,6 +74,20 @@
             </plugin>
 
             <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <version>3.2.1</version>
+              <executions>
+                <execution>
+                  <id>attach-sources</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
@@ -99,7 +113,7 @@
         <repository>
             <id>bintray-jkit-maven</id>
             <name>jkit-maven</name>
-            <url>https://api.bintray.com/maven/jkit/maven/${bintray.package}/;publish=0</url>
+            <url>https://api.bintray.com/maven/jkit/maven/${bintray.package}/;publish=1</url>
         </repository>
     </distributionManagement>
 

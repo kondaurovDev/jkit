@@ -2,11 +2,9 @@ package jkit.db;
 
 import io.vavr.*;
 import io.vavr.collection.List;
-import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jkit.core.JKitData;
 import jkit.core.ext.*;
-import jkit.core.model.JKitError;
 import jkit.db.model.DbColumn;
 import jkit.db.model.TableInfo;
 import org.slf4j.Logger;
@@ -26,7 +24,7 @@ public class DbWrapper {
 
     private static final Logger logger = IOExt.createLogger(DbWrapper.class);
 
-    public static <A> Either<JKitError, A> withStatement(
+    public static <A> Try<A> withStatement(
         CheckedFunction0<Connection> getConn,
         String query,
         CheckedFunction1<PreparedStatement, A> handler
@@ -38,16 +36,14 @@ public class DbWrapper {
             Connection conn = getConn.apply();
             PreparedStatement stmt = conn.prepareStatement(query)
         ) {
-            return Either.right(handler.apply(stmt));
+            return Try.of(() -> handler.apply(stmt));
         } catch (Throwable e) {
             IOExt.log(l -> l.error("Db Error", e));
-            return Either.left(JKitError
-                .create("Can't execute sql query", e)
-            );
+            return Try.failure(new Error("Can't execute sql query", e));
         }
     }
 
-    public <A> Either<JKitError, A> withStatement(
+    public <A> Try<A> withStatement(
         String query,
         CheckedFunction1<PreparedStatement, A> handler
     ) {
@@ -60,7 +56,7 @@ public class DbWrapper {
 
     }
 
-    <R> Either<JKitError, List<R>> executeSelect(
+    <R> Try<List<R>> executeSelect(
         TableInfo<R> tableInfo,
         String query,
         Function1<PreparedStatement, Try<Void>> prepare,
@@ -71,7 +67,7 @@ public class DbWrapper {
             prepare.apply(stmt);
             ResultSet rs = stmt.executeQuery();
             var result = new ArrayList<R>();
-            JKitError error = null;
+            Throwable error = null;
 
             while (TryExt.get(rs::next, "").contains(true) && error == null) {
 
@@ -80,8 +76,8 @@ public class DbWrapper {
                     .map(lst -> lst.toMap(t -> t.map1(DbColumn::getColumnName)))
                     .flatMap(map -> objectMapperExt.convert(map, tableInfo.getModelClass()));
 
-                if (node.isLeft()) {
-                    error = node.getLeft();
+                if (node.isFailure()) {
+                    error = node.getCause();
                 } else {
                     result.add(node.get());
                 }
@@ -89,16 +85,15 @@ public class DbWrapper {
             }
 
             if (error == null) {
-                return Either.<JKitError, List<R>>right(List.ofAll(result));
+                return Try.success(List.ofAll(result));
             } else {
-                return Either.<JKitError, List<R>>left(error);
+                return Try.<List<R>>failure(new Error("Can't execute select query", error.getCause()));
             }
-        }).flatMap(r -> r)
-        .mapLeft(e -> e.withError("Can't execute select query"));
+        }).flatMap(r -> r);
 
     }
 
-    public Either<JKitError, Integer> update(
+    public Try<Integer> update(
         String query,
         Function1<PreparedStatement, Try<Void>> handlerSet
     ) {
@@ -110,9 +105,9 @@ public class DbWrapper {
 
     }
 
-    Either<JKitError, List<Integer>> batchUpdate(
+    Try<List<Integer>> batchUpdate(
         String query,
-        Function1<PreparedStatement, Either<JKitError, Void>> handlerSet
+        Function1<PreparedStatement, Try<?>> handlerSet
     ) {
 
         return withStatement(query, stmt -> {

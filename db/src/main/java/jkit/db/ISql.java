@@ -2,8 +2,7 @@ package jkit.db;
 
 import io.vavr.Function1;
 import io.vavr.collection.*;
-import io.vavr.control.Either;
-import jkit.core.model.JKitError;
+import io.vavr.control.Try;
 import jkit.db.model.IDb;
 import jkit.db.model.TableInfo;
 import lombok.*;
@@ -55,7 +54,7 @@ public interface ISql {
     }
 
     interface IReadyExprFactory {
-        Either<JKitError, ReadyExpr> getReadyExpr(TableInfo<?> tableInfo);
+        Try<ReadyExpr> getReadyExpr(TableInfo<?> tableInfo);
     }
 
     @Value(staticConstructor = "create")

@@ -1,6 +1,5 @@
 package jkit.db;
 
-import jkit.core.model.JKitError;
 import jkit.db.sql.MergeExpr;
 import jkit.db.sql.UpdateExpr;
 import jkit.db.table.ProductTable;
@@ -19,7 +18,7 @@ class ProductTest implements Deps, ProductTable {
 
     @BeforeAll
     void init() {
-        dbModule.runMigration().getOrElseThrow(JKitError::toError);
+        dbModule.runMigration().getOrElseThrow(e -> (Error)e);
     }
 
     @Test
@@ -54,7 +53,7 @@ class ProductTest implements Deps, ProductTable {
 
         var actual = table.getList();
 
-        assertTrue(actual.isRight());
+        assertTrue(actual.isSuccess());
 
     }
 
@@ -63,7 +62,7 @@ class ProductTest implements Deps, ProductTable {
 
         val actual = table.create("apple");
 
-        assertTrue(actual.isRight());
+        assertTrue(actual.isSuccess());
 
     }
 

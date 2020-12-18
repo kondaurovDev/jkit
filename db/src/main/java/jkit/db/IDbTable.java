@@ -2,13 +2,12 @@ package jkit.db;
 
 import io.vavr.Function1;
 import io.vavr.collection.*;
-import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import jkit.core.ext.ListExt;
 import jkit.db.model.DbColumn;
 import jkit.db.model.TableInfo;
 import jkit.core.ext.TryExt;
-import jkit.core.model.JKitError;
 import jkit.db.model.IDb;
 
 import java.sql.PreparedStatement;
@@ -41,19 +40,19 @@ public interface IDbTable<M> extends ICreateExpr {
             );
     }
 
-    default Either<JKitError, Integer> executeOneWithCheck(
+    default Try<Integer> executeOneWithCheck(
         ISql.ReadyExpr readyExpr
     ) {
         return executeOne(readyExpr).flatMap(i -> {
             if (i == 0) {
-                return Either.left(JKitError.create("Not saved"));
+                return Try.failure(new Error("Not saved"));
             } else {
-                return Either.right(i);
+                return Try.success(i);
             }
         });
     }
 
-    default Either<JKitError, Integer> executeOne(
+    default Try<Integer> executeOne(
         ISql.ReadyExpr readyExpr
     ) {
         return getDbWrapper().update(
@@ -62,42 +61,40 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<JKitError, List<Integer>> executeMany(
+    default Try<List<Integer>> executeMany(
         List<ISql.ReadyExpr> list
     ) {
 
         return list.headOption().fold(
-            () -> Either.right(List.empty()),
+            () -> Try.success(List.empty()),
             readyExpr ->
                 executeMany(readyExpr.getSql(), list.map(ISql.ReadyExpr::getValues))
         );
     }
 
-    default Either<JKitError, List<Integer>> executeMany(
+    default Try<List<Integer>> executeMany(
         String sql,
         List<List<? extends IDb.IDbColumnWithValue>> records
     ) {
 
         return getDbWrapper().batchUpdate(
             sql,
-            s -> Try
-                .run(() -> records.forEach(r -> {
-                    setStatementParams(r, s);
-                    TryExt.getOrThrow(() ->
-                        { s.addBatch(); return null; },
-                        "add batch"
-                    );
-                }))
-                .toEither()
-                .mapLeft(e -> JKitError.create(
-                    "executing batch update",
-                    e
-                ))
+            s ->
+                ListExt.applyToEach(
+                    records,
+                    r -> Try.of(() -> {
+                        setStatementParams(r, s);
+                        s.addBatch();
+                        return null;
+                    }),
+                    "add batch",
+                    true
+                )
         );
 
     }
 
-    default Either<JKitError, Integer> delete(
+    default Try<Integer> delete(
         List<? extends IDb.IDbColumnCondition> where
     ) {
         String sql = "DELETE FROM "
@@ -113,7 +110,7 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<JKitError, List<M>> getList(
+    default Try<List<M>> getList(
         IDb.IDbColumnCondition... where
     ) {
         return getList(
@@ -121,7 +118,7 @@ public interface IDbTable<M> extends ICreateExpr {
         );
     }
 
-    default Either<JKitError, List<M>> getList(
+    default Try<List<M>> getList(
         Function1<SelectExpr.SelectExprBuilder, SelectExpr.SelectExprBuilder> inner
     ) {
 
@@ -141,7 +138,7 @@ public interface IDbTable<M> extends ICreateExpr {
 
     }
 
-    default Either<JKitError, Option<M>> getOneOpt(
+    default Try<Option<M>> getOneOpt(
         ISql.WhereValue... where
     ) {
         return getList(select -> select.where(Arrays.asList(where)))
@@ -153,16 +150,13 @@ public interface IDbTable<M> extends ICreateExpr {
             .map(Traversable::headOption);
     }
 
-    default Either<JKitError, M> getOne(
+    default Try<M> getOne(
         ISql.WhereValue... where
     ) {
         return getOneOpt(where)
             .flatMap(opt -> opt
-                .toEither(() -> JKitError
-                    .create("Row not found in " + getTableInfo().getTableName())
-                )
-            )
-            .mapLeft(e -> e.withError("get one record"));
+                .toTry(() -> new Error("Row not found in " + getTableInfo().getTableName()))
+            );
     }
 
 }
