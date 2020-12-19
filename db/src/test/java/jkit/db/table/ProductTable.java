@@ -2,10 +2,10 @@ package jkit.db.table;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import jkit.db.DbWrapper;
-import jkit.db.IDbTable;
-import jkit.db.model.DbColumn;
-import jkit.db.model.TableInfo;
+import com.jkit.db.DbWrapper;
+import com.jkit.db.IDbTable;
+import com.jkit.db.model.DbColumn;
+import com.jkit.db.model.TableInfo;
 import lombok.*;
 import org.joda.time.LocalDateTime;
 

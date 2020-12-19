@@ -2,8 +2,8 @@ package jkit.entry.akka_http;
 
 import jkit.http_client.HttpClientImpl;
 import jkit.jackson.JacksonMain;
-import jkit.jackson.JKitJackson;
-import jkit.validate.Validator;
+import com.jkit.jackson.JKitJackson;
+import com.jkit.validate.Validator;
 
 interface Deps {
 

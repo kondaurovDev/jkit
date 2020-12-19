@@ -4,7 +4,7 @@ import akka.http.javadsl.model.HttpHeader;
 import akka.http.javadsl.server.directives.SecurityDirectives;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
-import jkit.validate.Validator;
+import com.jkit.validate.Validator;
 import lombok.val;
 
 import jkit.jackson.JacksonMain;

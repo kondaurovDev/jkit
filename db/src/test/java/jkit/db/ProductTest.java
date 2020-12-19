@@ -1,12 +1,10 @@
 package jkit.db;
 
-import jkit.db.sql.MergeExpr;
-import jkit.db.sql.UpdateExpr;
+import com.jkit.db.sql.MergeExpr;
+import com.jkit.db.sql.UpdateExpr;
 import jkit.db.table.ProductTable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import lombok.*;
 import org.junit.jupiter.api.TestInstance;

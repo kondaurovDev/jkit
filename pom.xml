@@ -115,6 +115,11 @@
             <name>jkit-maven</name>
             <url>https://api.bintray.com/maven/jkit/maven/${bintray.package}/;publish=1</url>
         </repository>
+        <snapshotRepository>
+            <id>bintray-jkit-maven</id>
+            <name>oss-jfrog-artifactory-snapshots</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <dependencies>
