@@ -1,8 +1,7 @@
 package jkit.http_client;
 
-import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.StreamExt;
-import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.io.InputStream;
@@ -17,7 +16,7 @@ public class HttpResponse {
     InputStream body;
     Map<String, String> headers;
 
-    public Either<JKitError, String> getBodyString() {
+    public Try<String> getBodyString() {
         return StreamExt.inputStreamToString(body);
     }
 

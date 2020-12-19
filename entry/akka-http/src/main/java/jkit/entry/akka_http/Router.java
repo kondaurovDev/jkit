@@ -3,20 +3,17 @@ package jkit.entry.akka_http;
 import akka.http.javadsl.server.AllDirectives;
 import io.vavr.control.Either;
 import jkit.core.JKitData;
-import jkit.core.JKitEntry;
 import jkit.entry.Command;
 import jkit.entry.CommandDef;
 import jkit.entry.CommandMap;
 import jkit.jwt.JwtHMAC;
 import lombok.*;
 
-import java.util.function.Consumer;
-
 @Value(staticConstructor = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 class Router extends AllDirectives implements ICommandRoute {
 
-    JKitEntry.ICommandMap commandMap;
+    CommandMap commandMap;
     JwtHMAC jwtHMAC;
     String jwtClaimName;
     JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain;

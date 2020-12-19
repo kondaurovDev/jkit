@@ -5,8 +5,6 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jkit.core.ext.ListExt;
 import jkit.core.ext.MapExt;
-import jkit.core.JKitEntry;
-import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.Collections;
@@ -15,14 +13,14 @@ import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder @Value
-public class CommandDef implements JKitEntry.ICommandDef {
+public class CommandDef {
 
     @EqualsAndHashCode.Include
     String name;
     @Builder.Default
     CommandFlag flag = CommandFlag.simpleTask;
     @Singular
-    List<JKitEntry.IPropDef<?>> props;
+    List<PropDef<?>> props;
     @Singular(value = "required")
     Set<String> requiredProps;
 
@@ -50,7 +48,7 @@ public class CommandDef implements JKitEntry.ICommandDef {
     }
 
     public Try<PropMap> parseMap(
-        JKitEntry.IPropMap propMap
+        PropMap propMap
     ) {
         return ListExt.applyToEach(
             props,
@@ -67,9 +65,9 @@ public class CommandDef implements JKitEntry.ICommandDef {
         ).map(lst -> PropMap.create().props(lst.toJavaMap(t -> t)).build());
     }
 
-    public Either<JKitError, JKitEntry.IMethodContext> createContext(
-        JKitEntry.IPropMap payload,
-        JKitEntry.IPropMap user
+    public Try<MethodContext> createContext(
+        PropMap payload,
+        PropMap user
     ) {
         return this
             .parseMap(payload)
@@ -82,9 +80,9 @@ public class CommandDef implements JKitEntry.ICommandDef {
             );
     }
 
-    public Either<JKitError, JKitEntry.IReadyCommand> createReadyCommand(
-        JKitEntry.IPropMap payload,
-        JKitEntry.IPropMap user
+    public Try<ReadyCommand> createReadyCommand(
+        PropMap payload,
+        PropMap user
     ) {
         return this
             .createContext(

@@ -13,7 +13,6 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import jkit.akka_http.AkkaModule;
 import jkit.core.ext.IOExt;
-import jkit.core.JKitEntry;
 import lombok.*;
 import org.reactivestreams.Publisher;
 
@@ -21,7 +20,7 @@ import java.util.Optional;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-class UserLogActor implements JKitEntry.IUserLog {
+class UserLogActor {
 
     private static Integer bufferSize = 100;
 

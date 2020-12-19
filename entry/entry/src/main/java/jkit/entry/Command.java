@@ -3,8 +3,6 @@ package jkit.entry;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import jkit.core.ext.*;
-import jkit.core.JKitEntry;
-import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.HashSet;
@@ -12,7 +10,7 @@ import java.util.function.Consumer;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Command implements JKitEntry.ICommand {
+public class Command {
 
     CommandDef commandDef;
     JKitEntry.AccessChecker accessChecker;

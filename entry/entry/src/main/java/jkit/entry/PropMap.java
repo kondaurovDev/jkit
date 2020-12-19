@@ -2,9 +2,8 @@ package jkit.entry;
 
 import io.vavr.collection.List;
 import io.vavr.control.Either;
+import io.vavr.control.Try;
 import jkit.core.ext.MapExt;
-import jkit.core.JKitEntry;
-import jkit.core.model.JKitError;
 import lombok.*;
 
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.Map;
 @Value
 @Builder(builderMethodName = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PropMap implements JKitEntry.IPropMap {
+public class PropMap {
 
     @Singular
     Map<String, Object> props;
@@ -21,7 +20,7 @@ public class PropMap implements JKitEntry.IPropMap {
         return this.props;
     }
 
-    public <A> Either<JKitError, A> propOpt(JKitEntry.IPropDef<A> prop) {
+    public <A> Try<A> propOpt(PropDef<A> prop) {
         return MapExt
             .get(prop.getName(), props, String.format("Param '%s' not found", prop.getName()))
             .flatMap(v -> {
@@ -31,7 +30,7 @@ public class PropMap implements JKitEntry.IPropMap {
             });
     }
 
-    public <A> A prop(JKitEntry.IPropDef<A> prop) {
+    public <A> A prop(PropDef<A> prop) {
         val v = propOpt(prop);
 
         if (v.isEmpty())

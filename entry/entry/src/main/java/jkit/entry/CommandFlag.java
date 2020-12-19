@@ -1,11 +1,10 @@
 package jkit.entry;
 
-import jkit.core.JKitEntry;
 import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandFlag implements JKitEntry.ICommandFlag {
+public class CommandFlag {
     Boolean saveEvent;
     Boolean parallelRun;
 

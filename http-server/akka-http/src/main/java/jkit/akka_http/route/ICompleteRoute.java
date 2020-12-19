@@ -11,12 +11,10 @@ import akka.stream.javadsl.Source;
 import io.vavr.Function0;
 import io.vavr.Function1;
 import io.vavr.collection.HashMap;
-import io.vavr.control.Either;
 import io.vavr.control.Option;
 import jkit.akka_http.AkkaPredef;
 import jkit.akka_http.util.IResponseFactory;
 import jkit.core.ext.*;
-import jkit.core.model.JKitError;
 import lombok.*;
 
 public interface ICompleteRoute extends IResponseFactory {
@@ -43,16 +41,15 @@ public interface ICompleteRoute extends IResponseFactory {
         return d().respondWithHeader(AkkaPredef.noCacheControl, inner::apply);
     }
 
-    default Route completeError(JKitError error, Integer code) {
-        val err = error.toString();
+    default Route completeError(String error, Integer code) {
         return d().extractUri(uri -> {
             val msg = String.format(
                 "Request (%s) completed with an error: %s",
                 uri.getPathString(),
-                err
+                error
             );
             IOExt.log(l -> l.error(msg));
-            return d().complete(plainText(err, code));
+            return d().complete(plainText(error, code));
         });
     }
 

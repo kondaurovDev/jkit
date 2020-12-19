@@ -3,7 +3,6 @@ package jkit.http_client.context;
 import io.vavr.CheckedFunction0;
 import jkit.core.JKitData;
 import jkit.core.ext.StringExt;
-import jkit.core.model.JKitError;
 import jkit.http_client.Payload;
 
 import java.nio.file.Files;
@@ -32,7 +31,7 @@ public interface IPayload {
             StringExt.getBytes(
                 getObjMapperMain().getJson()
                     .serialize(input)
-                    .getOrElseThrow(JKitError::toError)
+                    .getOrElseThrow(e -> (Error)e)
             ),
             "application/json"
         );

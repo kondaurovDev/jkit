@@ -1,8 +1,6 @@
 package jkit.entry;
 
-import io.vavr.control.Either;
-import jkit.core.JKitEntry;
-import jkit.core.model.JKitError;
+import io.vavr.control.Try;
 import lombok.*;
 
 import java.util.HashMap;
@@ -10,9 +8,9 @@ import java.util.Map;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandMap implements JKitEntry.ICommandMap {
+public class CommandMap {
 
-    Map<String, JKitEntry.ICommand> map;
+    Map<String, Command> map;
 
     public static CommandMap create() {
         return CommandMap.of(
@@ -28,18 +26,18 @@ public class CommandMap implements JKitEntry.ICommandMap {
         }
     }
 
-    public Either<JKitError, JKitEntry.ICommand> getCommand(
+    public Try<Command> getCommand(
         String commandName
     ) {
         val cmd = this.map.get(commandName);
         if (cmd == null) {
-            return Either.left(JKitError.create("Unknown command"));
+            return Try.failure(new Error("Unknown command"));
         }
-        return Either.right(cmd);
+        return Try.success(cmd);
     }
 
-    public Either<JKitError, JKitEntry.IReadyCommand> getReadyCommand(
-        JKitEntry.ICommandRequest commandRequest
+    public Try<ReadyCommand> getReadyCommand(
+        CommandRequest commandRequest
     ) {
         return getCommand(commandRequest.getCommandName())
             .flatMap(cmd -> cmd.getCommandDef().createReadyCommand(
@@ -48,8 +46,8 @@ public class CommandMap implements JKitEntry.ICommandMap {
             ));
     }
 
-    public Either<JKitError, Object> execute(
-        JKitEntry.IReadyCommand readyCommand
+    public Try<Object> execute(
+        ReadyCommand readyCommand
     ) {
         return getCommand(readyCommand.getCommandDef().getName())
             .flatMap(cmd -> cmd
