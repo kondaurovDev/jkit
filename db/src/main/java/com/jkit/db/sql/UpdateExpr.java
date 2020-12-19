@@ -1,6 +1,6 @@
 package com.jkit.db.sql;
 
-import jkit.core.ext.ListExt;
+import com.jkit.core.ext.ListExt;
 import com.jkit.db.model.IDb;
 import com.jkit.db.ISql;
 import lombok.*;

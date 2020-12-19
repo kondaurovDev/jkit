@@ -4,10 +4,10 @@ import io.vavr.Function1;
 import io.vavr.collection.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import jkit.core.ext.ListExt;
+import com.jkit.core.ext.ListExt;
 import com.jkit.db.model.DbColumn;
 import com.jkit.db.model.TableInfo;
-import jkit.core.ext.TryExt;
+import com.jkit.core.ext.TryExt;
 import com.jkit.db.model.IDb;
 
 import java.sql.PreparedStatement;

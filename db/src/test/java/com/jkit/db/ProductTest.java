@@ -1,13 +1,15 @@
-package jkit.db;
+package com.jkit.db;
 
 import com.jkit.db.sql.MergeExpr;
 import com.jkit.db.sql.UpdateExpr;
-import jkit.db.table.ProductTable;
+import com.jkit.db.table.ProductTable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import lombok.*;
 import org.junit.jupiter.api.TestInstance;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProductTest implements Deps, ProductTable {

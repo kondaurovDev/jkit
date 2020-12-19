@@ -2,9 +2,8 @@ package com.jkit.db;
 
 import io.vavr.Function1;
 import io.vavr.control.Try;
-import jkit.core.JKitData;
-import jkit.core.ext.TimeExt;
-import jkit.core.ext.TryExt;
+import com.jkit.core.JKitData;
+import com.jkit.core.ext.*;
 import org.flywaydb.core.Flyway;
 
 import java.sql.PreparedStatement;

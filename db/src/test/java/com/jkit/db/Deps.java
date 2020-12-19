@@ -1,7 +1,7 @@
-package jkit.db;
+package com.jkit.db;
 
 import com.jkit.jackson.JKitJackson;
-import jkit.validate.Validator;
+import com.jkit.validate.Validator;
 
 public interface Deps {
 

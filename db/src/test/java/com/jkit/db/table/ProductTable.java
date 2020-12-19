@@ -1,4 +1,4 @@
-package jkit.db.table;
+package com.jkit.db.table;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
