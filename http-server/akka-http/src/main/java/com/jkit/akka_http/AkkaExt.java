@@ -2,11 +2,11 @@ package com.jkit.akka_http;
 
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
+import com.jkit.core.JKitData;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import com.jkit.akka_http.route.IPayloadRoute;
 import com.jkit.akka_http.route.ICompleteRoute;
-import com.jkit.core.JKitData;
 import com.jkit.core.ext.IOExt;
 import lombok.*;
 
@@ -19,13 +19,13 @@ public interface AkkaExt {
     static Try<AkkaHttpServer> buildAndListen(
         int port,
         String serviceName,
-        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain,
+        JKitData.IObjMapper<?> jackson,
         CreateRoute createRouter
     ) {
         return listenHttp(
             port,
             serviceName,
-            d -> createRouter.createRoute(Router.of(objMapperMain))
+            d -> createRouter.createRoute(Router.of(jackson))
         );
     }
 
@@ -60,7 +60,7 @@ public interface AkkaExt {
             IPayloadRoute
     {
 
-        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain;
+        JKitData.IObjMapper<?> objMapper;
 
         public AllDirectives d() {
             return this;

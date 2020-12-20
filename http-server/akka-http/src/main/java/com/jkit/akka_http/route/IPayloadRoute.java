@@ -4,28 +4,36 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import io.vavr.Function1;
 import io.vavr.control.Option;
-import com.jkit.core.CorePredef;
 import com.jkit.core.ext.*;
 
 import java.util.Map;
 
 public interface IPayloadRoute extends ICompleteRoute {
 
-    default Route withPayloadStringFromBody(
-        Function1<String, Route> inner
+    default Route withPayloadFromBody(
+        Function1<Map<String, ?>, Route> inner
     ) {
         return d().entity(
-            Unmarshaller.entityToString(), inner
+            Unmarshaller.entityToString(),
+            s -> withSuccess(
+                getObjMapper().deserializeToMap(s, Object.class),
+                inner::apply
+            )
         );
     }
 
-    default Route withOptEncodedParam(
+    default Route withOptEncodedParams(
         String paramName,
-        Function1<Option<String>, Route> inner
+        Function1<Option<Map<String, Object>>, Route> inner
     ) {
         return withOptionalParam(paramName, opt ->
             opt
-                .map(StringExt::decodeBase64)
+                .map(s -> StringExt
+                    .decodeBase64(s)
+                    .flatMap(json ->
+                        getObjMapper().deserializeToMap(json, Object.class)
+                    )
+                )
                 .fold(
                     () -> inner.apply(Option.none()),
                     some -> withSuccess(some, s -> inner.apply(Option.some(s)))
@@ -33,36 +41,18 @@ public interface IPayloadRoute extends ICompleteRoute {
         );
     }
 
-    default Route withPayloadFormat(
-        Function1<CorePredef.DataFormat, Route> inner
-    ) {
-        return withOptionalParam("payloadFormat", opt ->
-            opt.fold(
-                () -> inner.apply(CorePredef.DataFormat.JSON),
-                pt -> withSuccess(EnumExt.getByName(pt, CorePredef.DataFormat.class), inner)
-            )
-        );
-    }
-
     default Route withQueryParams(
-        Function1<String, Route> inner
+        Function1<Map<String, ?>, Route> inner
     ) {
-        return d().parameterMap(params ->
-            withSuccess(
-                getObjMapperMain()
-                    .mapToYmlAndParse(params)
-                    .flatMap(o -> getObjMapperMain().getYml().serialize(o)),
-                inner
-            )
-        );
+        return d().parameterMap(inner::apply);
     }
 
-    default Route withPayloadString(
-        Function1<String, Route> inner
+    default Route withPayload(
+        Function1<Map<String, ?>, Route> inner
     ) {
          return d().concat(
             d().get(() ->
-                withOptEncodedParam(
+                withOptEncodedParams(
                     "payload",
                     opt -> opt.fold(
                         () -> withQueryParams(inner),
@@ -71,25 +61,7 @@ public interface IPayloadRoute extends ICompleteRoute {
                 )
             ),
             d().post(() ->
-                withPayloadStringFromBody(inner)
-            )
-        );
-    }
-
-    default Route withPayload(
-        Function1<Map<String, Object>, Route> inner
-    ) {
-
-        return withPayloadString(payload ->
-            withPayloadFormat(df ->
-                withSuccess(
-                    getObjMapperMain()
-                        .readPayload(
-                            payload,
-                            df
-                        ),
-                    inner
-                )
+                withPayloadFromBody(inner)
             )
         );
     }
@@ -99,7 +71,7 @@ public interface IPayloadRoute extends ICompleteRoute {
         Function1<A, Route> inner
     ) {
         return withPayload(p -> withSuccess(
-            getObjMapperMain().getJson().deserialize(p, clazz),
+            getObjMapper().deserialize(p, clazz),
             inner
         ));
     }

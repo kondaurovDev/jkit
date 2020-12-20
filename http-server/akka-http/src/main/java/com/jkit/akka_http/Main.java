@@ -29,7 +29,7 @@ public interface Main {
                 )
             )),
             d.path("echo", () ->
-                d.withPayloadStringFromBody(payload ->
+                d.withPayloadFromBody(payload ->
                     d.extractRequest(r ->
                         d.completeJson(
                             HashMap.of(
@@ -55,7 +55,7 @@ public interface Main {
         );
 
         AkkaExt.buildAndListen(
-            8080,
+            8085,
             "test",
             objMapper,
             createRoute

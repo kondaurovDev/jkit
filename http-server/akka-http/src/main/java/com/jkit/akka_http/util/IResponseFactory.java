@@ -8,15 +8,10 @@ import com.jkit.core.ext.*;
 
 public interface IResponseFactory {
 
-    JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> getObjMapperMain();
+    JKitData.IObjMapper<?> getObjMapper();
 
     default HttpResponse plainText(String text, Integer status) {
         return Response.text.getHttpResponse(text, status);
-    }
-
-    default HttpResponse yamlResponseOrThrow(Object resp) {
-        return yamlResponse(resp, 200)
-            .getOrElseThrow(e -> new Error("Create yaml response: " + e.getMessage()));
     }
 
     default HttpResponse jsonResponse(Object resp) {
@@ -30,16 +25,8 @@ public interface IResponseFactory {
 
     default Try<HttpResponse> jsonResponse(Object obj, int code) {
         return toResponse(
-            getObjMapperMain().getJson().serialize(obj),
+            getObjMapper().serialize(obj),
             Response.json,
-            code
-        );
-    }
-
-    default Try<HttpResponse> yamlResponse(Object obj, int code) {
-        return toResponse(
-            getObjMapperMain().getJson().serialize(obj),
-            Response.text,
             code
         );
     }

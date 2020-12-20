@@ -25,7 +25,6 @@
             <groupId>com.jkit</groupId>
             <artifactId>jackson</artifactId>
             <version>0.1</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
