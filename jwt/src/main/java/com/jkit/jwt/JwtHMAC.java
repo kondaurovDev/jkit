@@ -44,10 +44,10 @@ public class JwtHMAC {
             .get(() -> create.apply(builder).sign(getAlgorithm()), "sign jwt");
     }
 
-    public Try<DecodedJWT> verify(String token) {
+    public Try<DecodedJWT> verify(String token, String error) {
         return TryExt.get(
             () -> verifier.verify(token),
-            "verify jwt"
+            String.format("verify jwt: %s", error)
         );
     }
 
@@ -60,8 +60,8 @@ public class JwtHMAC {
             .flatMap(map -> sign(b -> b.withClaim("data", map)));
     }
 
-    public Try<Claim> verifyAndExtract(String token) {
-        return verify(token)
+    public Try<Claim> verifyAndExtract(String token, String error) {
+        return verify(token, error)
             .flatMap(t -> {
                 val claim = t.getClaim("data");
                 if (claim.isNull()) {

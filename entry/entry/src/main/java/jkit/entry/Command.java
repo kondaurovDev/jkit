@@ -2,7 +2,7 @@ package jkit.entry;
 
 import io.vavr.control.Either;
 import io.vavr.control.Option;
-import jkit.core.ext.*;
+import com.jkit.core.ext.*;
 import lombok.*;
 
 import java.util.HashSet;

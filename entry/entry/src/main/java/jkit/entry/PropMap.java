@@ -1,9 +1,8 @@
 package jkit.entry;
 
 import io.vavr.collection.List;
-import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jkit.core.ext.MapExt;
+import com.jkit.core.ext.MapExt;
 import lombok.*;
 
 import java.util.Map;
@@ -25,8 +24,8 @@ public class PropMap {
             .get(prop.getName(), props, String.format("Param '%s' not found", prop.getName()))
             .flatMap(v -> {
                 if (!prop.getParamClass().isInstance(v))
-                    return Either.left(JKitError.create("Wrong class"));
-                return Either.right(prop.getParamClass().cast(v));
+                    return Try.failure(new Error("Wrong class"));
+                return Try.success(prop.getParamClass().cast(v));
             });
     }
 

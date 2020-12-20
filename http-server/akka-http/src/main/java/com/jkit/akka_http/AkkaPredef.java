@@ -1,4 +1,4 @@
-package jkit.akka_http;
+package com.jkit.akka_http;
 
 import akka.http.javadsl.model.headers.CacheControl;
 import akka.http.javadsl.model.headers.CacheDirectives;

@@ -1,4 +1,4 @@
-package jkit.akka_http.model;
+package com.jkit.akka_http.model;
 
 import akka.Done;
 import akka.NotUsed;
@@ -11,8 +11,8 @@ import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.AsPublisher;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
-import jkit.akka_http.AkkaModule;
-import jkit.core.ext.IOExt;
+import com.jkit.akka_http.AkkaModule;
+import com.jkit.core.ext.IOExt;
 import lombok.*;
 import org.reactivestreams.Publisher;
 

@@ -1,9 +1,9 @@
-package jkit.akka_http.route;
+package com.jkit.akka_http.route;
 
 import akka.http.javadsl.server.Route;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.vavr.Function1;
-import jkit.jwt.JwtHMAC;
+import com.jkit.jwt.JwtHMAC;
 import lombok.*;
 
 import java.util.Map;
@@ -33,8 +33,8 @@ public interface IAuthRoute extends ICompleteRoute {
         Function1<DecodedJWT, Route> inner
     ) {
         return withToken(paramName, t ->
-            withRight(
-                getJwtHMAC().verify(t).mapLeft(e -> e.withError("Wrong auth token")),
+            withSuccess(
+                getJwtHMAC().verify(t, "Wrong auth token"),
                 inner
             )
         );

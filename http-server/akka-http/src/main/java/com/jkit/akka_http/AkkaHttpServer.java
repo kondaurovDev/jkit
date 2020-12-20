@@ -1,10 +1,10 @@
-package jkit.akka_http;
+package com.jkit.akka_http;
 
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.server.Route;
 import io.vavr.control.Try;
-import jkit.core.ext.*;
+import com.jkit.core.ext.*;
 import lombok.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

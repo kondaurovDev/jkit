@@ -1,4 +1,4 @@
-package jkit.akka_http;
+package com.jkit.akka_http;
 
 import akka.actor.ActorSystem;
 import akka.stream.Materializer;

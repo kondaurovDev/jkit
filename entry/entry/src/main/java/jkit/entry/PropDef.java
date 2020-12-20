@@ -2,7 +2,7 @@ package jkit.entry;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import jkit.core.ext.ListExt;
+import com.jkit.core.ext.ListExt;
 import lombok.*;
 
 @Value(staticConstructor = "of")

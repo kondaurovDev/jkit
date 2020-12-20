@@ -1,13 +1,12 @@
-package jkit.akka_http;
+package com.jkit.akka_http;
 
 import akka.http.javadsl.model.HttpHeader;
 import akka.http.javadsl.server.directives.SecurityDirectives;
+import com.jkit.jackson.JKitJackson;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import com.jkit.validate.Validator;
 import lombok.val;
-
-import jkit.jackson.JacksonMain;
 
 public interface Main {
 
@@ -50,7 +49,11 @@ public interface Main {
         );
 
     static void main(String[] args) {
-        val objMapper = JacksonMain.create(Validator.of());
+        val objMapper = JKitJackson.create(
+            Validator.of(),
+            (a, b, c) -> c.configureObjectMapper(b)
+        );
+
         AkkaExt.buildAndListen(
             8080,
             "test",

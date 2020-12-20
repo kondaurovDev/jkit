@@ -1,10 +1,10 @@
-package jkit.akka_http.util;
+package com.jkit.akka_http.util;
 
 import akka.http.javadsl.model.*;
 import akka.http.javadsl.model.headers.Location;
 import io.vavr.control.Try;
-import jkit.core.JKitData;
-import jkit.core.ext.*;
+import com.jkit.core.JKitData;
+import com.jkit.core.ext.*;
 
 public interface IResponseFactory {
 

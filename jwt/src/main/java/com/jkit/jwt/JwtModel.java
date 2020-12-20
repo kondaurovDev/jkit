@@ -29,7 +29,7 @@ public class JwtModel<A> {
     public Try<A> decode(String token) {
 
         return getJwtHMAC()
-            .verify(token)
+            .verify(token, "")
             .flatMap(t -> {
                 val claim = t.getClaim(claimName);
                 if (claim.isNull()) return Try.failure(new Error("Unknown claim"));

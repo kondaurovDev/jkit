@@ -1,11 +1,11 @@
 package jkit.entry;
 
-import jkit.core.ext.IOExt;
+import com.jkit.core.ext.IOExt;
 
 public interface Main {
 
     static void main(String[] args) {
-        IOExt.out(jkit.core.Main.hello() + "###");
+        IOExt.out(com.jkit.core.Main.hello() + "###");
         IOExt.out("Yuk");
     }
 

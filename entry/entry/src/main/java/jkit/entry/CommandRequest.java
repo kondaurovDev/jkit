@@ -1,6 +1,6 @@
 package jkit.entry;
 
-import jkit.core.JKitEntry;
+import com.jkit.core.JKitEntry;
 import lombok.*;
 
 import java.util.Map;

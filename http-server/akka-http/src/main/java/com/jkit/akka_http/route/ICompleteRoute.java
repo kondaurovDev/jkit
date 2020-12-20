@@ -1,4 +1,4 @@
-package jkit.akka_http.route;
+package com.jkit.akka_http.route;
 
 import akka.NotUsed;
 import akka.http.javadsl.marshalling.sse.EventStreamMarshalling;
@@ -12,9 +12,10 @@ import io.vavr.Function0;
 import io.vavr.Function1;
 import io.vavr.collection.HashMap;
 import io.vavr.control.Option;
-import jkit.akka_http.AkkaPredef;
-import jkit.akka_http.util.IResponseFactory;
-import jkit.core.ext.*;
+import com.jkit.akka_http.AkkaPredef;
+import com.jkit.akka_http.util.IResponseFactory;
+import com.jkit.core.ext.*;
+import io.vavr.control.Try;
 import lombok.*;
 
 public interface ICompleteRoute extends IResponseFactory {
@@ -32,7 +33,7 @@ public interface ICompleteRoute extends IResponseFactory {
         return ExceptionHandler.newBuilder()
             .match(Throwable.class, x -> {
                 IOExt.log(l -> l.error("Request error", x));
-                return completeError(JKitError.create("Internal error"), 500);
+                return completeError("Internal error", 500);
             })
             .build();
     }
@@ -54,22 +55,22 @@ public interface ICompleteRoute extends IResponseFactory {
     }
 
     default Route completeError(String error) {
-        return withRight(
+        return withSuccess(
             jsonResponse(HashMap.of("error", error), 400),
             r -> d().complete(r)
         );
     }
 
     default Route completeHtml(String html, Integer status) {
-        return withRight(html(html, status), r -> d().complete(r));
+        return withSuccess(html(html, status), r -> d().complete(r));
     }
 
     default Route completeJson(Object json, Integer status) {
         return d().complete(jsonResponseOrThrow(json, status));
     }
 
-    default Route completeSuccess(Function0<Either<JKitError, ?>> factory) {
-        return withRight(
+    default Route completeSuccess(Function0<Try<?>> factory) {
+        return withSuccess(
             factory.apply().map(this::jsonResponse),
             r -> d().complete(r)
         );
@@ -88,8 +89,8 @@ public interface ICompleteRoute extends IResponseFactory {
         );
     }
 
-    default <A> Route withRight(
-        Either<JKitError, A> tried,
+    default <A> Route withSuccess(
+        Try<A> tried,
         Function1<A, Route> handle
     ) {
         return tried.fold(

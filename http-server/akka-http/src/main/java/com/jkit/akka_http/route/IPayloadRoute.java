@@ -1,11 +1,11 @@
-package jkit.akka_http.route;
+package com.jkit.akka_http.route;
 
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import io.vavr.Function1;
 import io.vavr.control.Option;
-import jkit.core.CorePredef;
-import jkit.core.ext.*;
+import com.jkit.core.CorePredef;
+import com.jkit.core.ext.*;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public interface IPayloadRoute extends ICompleteRoute {
                 .map(StringExt::decodeBase64)
                 .fold(
                     () -> inner.apply(Option.none()),
-                    some -> withRight(some, s -> inner.apply(Option.some(s)))
+                    some -> withSuccess(some, s -> inner.apply(Option.some(s)))
                 )
         );
     }
@@ -39,7 +39,7 @@ public interface IPayloadRoute extends ICompleteRoute {
         return withOptionalParam("payloadFormat", opt ->
             opt.fold(
                 () -> inner.apply(CorePredef.DataFormat.JSON),
-                pt -> withRight(EnumExt.getByName(pt, CorePredef.DataFormat.class), inner)
+                pt -> withSuccess(EnumExt.getByName(pt, CorePredef.DataFormat.class), inner)
             )
         );
     }
@@ -48,7 +48,7 @@ public interface IPayloadRoute extends ICompleteRoute {
         Function1<String, Route> inner
     ) {
         return d().parameterMap(params ->
-            withRight(
+            withSuccess(
                 getObjMapperMain()
                     .mapToYmlAndParse(params)
                     .flatMap(o -> getObjMapperMain().getYml().serialize(o)),
@@ -82,7 +82,7 @@ public interface IPayloadRoute extends ICompleteRoute {
 
         return withPayloadString(payload ->
             withPayloadFormat(df ->
-                withRight(
+                withSuccess(
                     getObjMapperMain()
                         .readPayload(
                             payload,
@@ -98,7 +98,7 @@ public interface IPayloadRoute extends ICompleteRoute {
         Class<A> clazz,
         Function1<A, Route> inner
     ) {
-        return withPayload(p -> withRight(
+        return withPayload(p -> withSuccess(
             getObjMapperMain().getJson().deserialize(p, clazz),
             inner
         ));

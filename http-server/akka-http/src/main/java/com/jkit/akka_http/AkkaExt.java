@@ -1,13 +1,13 @@
-package jkit.akka_http;
+package com.jkit.akka_http;
 
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import io.vavr.Function1;
 import io.vavr.control.Try;
-import jkit.akka_http.route.IPayloadRoute;
-import jkit.akka_http.route.ICompleteRoute;
-import jkit.core.JKitData;
-import jkit.core.ext.IOExt;
+import com.jkit.akka_http.route.IPayloadRoute;
+import com.jkit.akka_http.route.ICompleteRoute;
+import com.jkit.core.JKitData;
+import com.jkit.core.ext.IOExt;
 import lombok.*;
 
 public interface AkkaExt {

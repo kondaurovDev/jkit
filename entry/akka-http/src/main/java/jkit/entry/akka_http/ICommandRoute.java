@@ -2,8 +2,8 @@ package jkit.entry.akka_http;
 
 import akka.http.javadsl.server.Route;
 import io.vavr.Function1;
-import jkit.akka_http.route.IAuthRoute;
-import jkit.akka_http.route.IPayloadRoute;
+import com.jkit.akka_http.route.IAuthRoute;
+import com.jkit.akka_http.route.IPayloadRoute;
 import jkit.core.CorePredef;
 import jkit.core.ext.EnumExt;
 import jkit.entry.CommandEvent;
