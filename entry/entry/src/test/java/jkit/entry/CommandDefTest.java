@@ -19,7 +19,7 @@ class CommandDefTest implements Deps {
                 .build()
         );
 
-        assertTrue(a.isRight());
+        assertTrue(a.isSuccess());
 
     }
 

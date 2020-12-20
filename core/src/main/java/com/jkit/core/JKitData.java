@@ -23,4 +23,8 @@ public interface JKitData {
         Try<A> parseBase64(String encoded);
     }
 
+    interface IValidator {
+        <A> Try<A> validate(A input, String... fields);
+    }
+
 }

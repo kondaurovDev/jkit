@@ -33,12 +33,12 @@ public class PropMap {
         val v = propOpt(prop);
 
         if (v.isEmpty())
-            throw JKitError.create(
+            throw new Error(
                 String.format(
                     "Param '%s' not found",
                     prop.getName()
                 )
-            ).toError();
+            );
 
         return v.get();
     }
@@ -46,7 +46,7 @@ public class PropMap {
     public <A> List<A> propList(PropDef<A> propDef) {
         return propDef
             .validateList(prop(propDef))
-            .getOrElseThrow(JKitError::toError);
+            .getOrElseThrow(e -> (Error)e);
     }
 
 }

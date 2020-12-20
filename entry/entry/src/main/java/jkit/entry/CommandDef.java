@@ -1,10 +1,9 @@
 package jkit.entry;
 
 import io.vavr.Tuple;
-import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jkit.core.ext.ListExt;
-import jkit.core.ext.MapExt;
+import com.jkit.core.ext.ListExt;
+import com.jkit.core.ext.*;
 import lombok.*;
 
 import java.util.Collections;
@@ -35,8 +34,8 @@ public class CommandDef {
 
     public Command register(
         CommandMap commandMap,
-        JKitEntry.AccessChecker accessChecker,
-        JKitEntry.Executor executor
+        Command.AccessChecker accessChecker,
+        Command.Executor executor
     ) {
         val cmd = Command.of(
             this,
@@ -55,8 +54,8 @@ public class CommandDef {
             p -> MapExt.get(p.getName(), propMap.getProps(), "Missing prop").fold(
                 err -> {
                     if (requiredProps.contains(p.getName()))
-                        return Either.left(JKitError.of().withError(String.format("Missing property '%s' ", p.getName())));
-                    return Either.right(null);
+                        return Try.failure(new Error(String.format("Missing property '%s' ", p.getName())));
+                    return Try.success(null);
                 },
                 o -> p.validateObj(o).map(v -> Tuple.of(p.getName(), v))
             ),

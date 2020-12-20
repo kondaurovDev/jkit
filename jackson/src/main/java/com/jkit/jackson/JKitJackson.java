@@ -3,21 +3,21 @@ package com.jkit.jackson;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jkit.core.JKitValidate;
+import com.jkit.core.JKitData;
 import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-public class JKitJackson
+public class JKitJackson<V extends JKitData.IValidator>
     implements IDeserialize, ITransform, IDsl {
 
     static IFactory factory = new IFactory() {};
 
     ObjectMapper objectMapper;
-    JKitValidate.IValidator validator;
+    V validator;
 
-    public static JKitJackson create(
-        JKitValidate.IValidator validator,
+    public static <V extends JKitData.IValidator> JKitJackson<V> create(
+        V validator,
         IFactory.MapperBuilder buildMapper
     ) {
         val simpleModule = new SimpleModule();

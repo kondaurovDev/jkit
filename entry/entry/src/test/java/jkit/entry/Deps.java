@@ -1,7 +1,6 @@
 package jkit.entry;
 
-import jkit.core.ext.IOExt;
-import jkit.core.ext.TryExt;
+import com.jkit.core.ext.*;
 import lombok.*;
 
 public interface Deps {
@@ -27,7 +26,7 @@ public interface Deps {
         String name;
     }
 
-    CommandMap commandMap = TryExt.get(() -> {
+    CommandMap commandMap = TryExt.getOrThrow(() -> {
         val commandMap = CommandMap.create();
         CmdDef.test.register(
             commandMap,
@@ -47,7 +46,7 @@ public interface Deps {
                 })
         );
         return commandMap;
-    });
+    }, "get commandMap");
 
 
 }

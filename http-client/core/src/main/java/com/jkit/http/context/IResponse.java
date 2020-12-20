@@ -1,4 +1,4 @@
-package jkit.http_client.context;
+package com.jkit.http.context;
 
 public interface IResponse {
 

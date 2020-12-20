@@ -1,8 +1,8 @@
 package com.jkit.validate;
 
+import com.jkit.core.JKitData;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import com.jkit.core.JKitValidate;
 import lombok.*;
 
 import com.jkit.core.ext.*;
@@ -10,7 +10,7 @@ import javax.validation.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Validator implements JKitValidate.IValidator {
+public class Validator implements JKitData.IValidator {
 
     ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
     javax.validation.Validator validator = validatorFactory.getValidator();

@@ -1,16 +1,16 @@
-package jkit.http_client.context;
+package com.jkit.http.context;
 
 import io.vavr.CheckedFunction0;
-import jkit.core.JKitData;
-import jkit.core.ext.StringExt;
-import jkit.http_client.Payload;
+import com.jkit.core.JKitData;
+import com.jkit.core.ext.StringExt;
+import com.jkit.http.Payload;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public interface IPayload {
 
-    JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> getObjMapperMain();
+    JKitData.IObjMapper<?> getObjMapper();
 
     default CheckedFunction0<Payload> createStringPayload(String input) {
         return () -> Payload.of(
@@ -29,7 +29,7 @@ public interface IPayload {
     default CheckedFunction0<Payload> createJsonPayload(Object input) {
         return () -> Payload.of(
             StringExt.getBytes(
-                getObjMapperMain().getJson()
+                getObjMapper()
                     .serialize(input)
                     .getOrElseThrow(e -> (Error)e)
             ),

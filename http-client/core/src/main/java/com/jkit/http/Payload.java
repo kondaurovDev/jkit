@@ -1,4 +1,4 @@
-package jkit.http_client;
+package com.jkit.http;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;

@@ -8,7 +8,6 @@ import io.vavr.CheckedFunction1;
 import io.vavr.Tuple2;
 import io.vavr.control.Try;
 import com.jkit.core.JKitData;
-import com.jkit.core.JKitValidate;
 import com.jkit.core.ext.*;
 import lombok.val;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 public interface IObjMapper
     extends JKitData.IObjMapper<JsonNode> {
 
-    JKitValidate.IValidator getValidator();
+    JKitData.IValidator getValidator();
     ObjectMapper getObjectMapper();
 
     default <C> Try<C> deserialize(Object input, Class<C> clazz) {

@@ -8,4 +8,8 @@ public class MethodContext {
     PropMap params;
     PropMap user;
     UserLog userLog;
+
+    public void log(String msg) {
+        this.getUserLog().add(msg);
+    }
 }

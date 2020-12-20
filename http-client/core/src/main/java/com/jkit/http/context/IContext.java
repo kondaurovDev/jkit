@@ -1,9 +1,9 @@
-package jkit.http_client.context;
+package com.jkit.http.context;
 
+import com.jkit.http.Url;
 import io.vavr.Function1;
-import jkit.core.JKitData;
-import jkit.core.model.Pair;
-import jkit.core.model.Url;
+import com.jkit.core.JKitData;
+import com.jkit.core.model.Pair;
 import lombok.*;
 
 public interface IContext extends IHeader, IPayload, IResponse {
@@ -22,7 +22,7 @@ public interface IContext extends IHeader, IPayload, IResponse {
     @Value
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     class Context implements IContext {
-        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain;
+        JKitData.IObjMapper<?> objMapper;
     }
 
 }

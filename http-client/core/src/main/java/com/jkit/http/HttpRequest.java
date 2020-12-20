@@ -1,9 +1,8 @@
-package jkit.http_client;
+package com.jkit.http;
 
+import com.jkit.http.context.IResponse;
 import io.vavr.CheckedFunction0;
-import jkit.core.model.Pair;
-import jkit.core.model.Url;
-import jkit.http_client.context.IResponse;
+import com.jkit.core.model.Pair;
 import lombok.*;
 
 import java.util.List;

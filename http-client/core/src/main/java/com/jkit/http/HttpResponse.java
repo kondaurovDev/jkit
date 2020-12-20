@@ -1,7 +1,7 @@
-package jkit.http_client;
+package com.jkit.http;
 
 import io.vavr.control.Try;
-import jkit.core.ext.StreamExt;
+import com.jkit.core.ext.StreamExt;
 import lombok.*;
 
 import java.io.InputStream;

@@ -2,7 +2,7 @@ package jkit.http_client_apache;
 
 import io.vavr.control.Either;
 import jkit.core.model.Pair;
-import jkit.http_client.HttpResponse;
+import com.jkit.http.HttpResponse;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 

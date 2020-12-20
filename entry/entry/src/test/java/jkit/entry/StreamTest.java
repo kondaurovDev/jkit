@@ -1,6 +1,6 @@
 package jkit.entry;
 
-import jkit.core.ext.IOExt;
+import com.jkit.core.ext.IOExt;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

@@ -1,8 +1,8 @@
 package jkit.entry;
 
-import io.vavr.control.Either;
 import io.vavr.control.Option;
 import com.jkit.core.ext.*;
+import io.vavr.control.Try;
 import lombok.*;
 
 import java.util.HashSet;
@@ -13,12 +13,20 @@ import java.util.function.Consumer;
 public class Command {
 
     CommandDef commandDef;
-    JKitEntry.AccessChecker accessChecker;
-    JKitEntry.Executor executor;
+    AccessChecker accessChecker;
+    Executor executor;
+
+    interface Executor {
+        Try<?> execute(MethodContext methodContext);
+    }
+
+    interface AccessChecker {
+        Boolean check(MethodContext ctx);
+    }
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
-    public Either<JKitError, ?> executeBlocking(
+    public Try<?> executeBlocking(
         PropMap payload,
         PropMap user
     ) {
@@ -27,14 +35,14 @@ public class Command {
             .flatMap(this::executeBlocking);
     }
 
-    public Either<JKitError, ?> executeBlocking(
-        JKitEntry.IMethodContext methodContext
+    public Try<?> executeBlocking(
+        MethodContext methodContext
     ) {
        return this.executeBlocking(methodContext, c -> {});
     }
 
-    public Either<JKitError, ?> executeBlocking(
-        JKitEntry.IMethodContext methodContext,
+    public Try<?> executeBlocking(
+        MethodContext methodContext,
         Consumer<CommandEvent> onSave
     ) {
 
@@ -47,12 +55,12 @@ public class Command {
         IOExt.log(l -> l.debug(msg));
 
         if (!accessChecker.check(methodContext))
-            return Either.left(JKitError.create("No rights to execute command"));
+            return Try.failure(new Error("No rights to execute command"));
 
         if (!commandDef.getFlag().getParallelRun())
             synchronized (this) {
                 if (inProgress.contains(commandDef.getName())) {
-                    return Either.left(JKitError.create("Already in progress"));
+                    return Try.failure(new Error("Already in progress"));
                 } else {
                     inProgress.add(commandDef.getName());
                 }
@@ -60,11 +68,14 @@ public class Command {
 
         val startTime = TimeExt.getCurrent();
         methodContext.log("Execute command: " + commandDef.getName());
-        val result = this.executor.execute(methodContext)
-            .mapLeft(e -> e.withError("Can't execute: " + commandDef.getName()));
+        val result = this.executor.execute(methodContext);
 
         val error = result.fold(
-            JKitError::toString,
+            e -> String.format(
+                "Can't execute command (%s): %s",
+                commandDef.getName(),
+                e.getMessage()
+            ),
             res -> null
         );
 

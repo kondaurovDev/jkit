@@ -1,11 +1,11 @@
-package jkit.http_client.client;
+package com.jkit.http.client;
 
 import io.vavr.Function2;
 import io.vavr.control.Try;
-import jkit.core.ext.TryExt;
-import jkit.http_client.HttpRequest;
-import jkit.http_client.HttpResponse;
-import jkit.http_client.context.IContext;
+import com.jkit.core.ext.TryExt;
+import com.jkit.http.HttpRequest;
+import com.jkit.http.HttpResponse;
+import com.jkit.http.context.IContext;
 
 public interface IRequestExecutor<Req, Res> {
 

@@ -1,5 +1,6 @@
-package com.jkit.core.model;
+package com.jkit.http;
 
+import com.jkit.core.model.Pair;
 import io.vavr.control.Try;
 import com.jkit.core.ext.StreamExt;
 import com.jkit.core.ext.UrlExt;

@@ -12,7 +12,11 @@
 
     <version>0.1</version>
 
-    <artifactId>http-client</artifactId>
+    <properties>
+        <bintray.package>jkit-http</bintray.package>
+    </properties>
+
+    <artifactId>http</artifactId>
 
     <dependencies>
         <dependency>

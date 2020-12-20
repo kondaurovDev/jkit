@@ -1,7 +1,8 @@
-package com.jkit.core.ext;
+package com.jkit.http;
 
-import com.jkit.core.model.Url;
+import com.jkit.core.ext.UrlExt;
 import lombok.val;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +38,7 @@ class UrlExtTest {
     }
 
     void getHost(String expected, String url) {
-        assertEquals(expected, UrlExt.getHost(UrlExt.createURL(url).get()));
+        Assertions.assertEquals(expected, UrlExt.getHost(UrlExt.createURL(url).get()));
     }
 
     @Test

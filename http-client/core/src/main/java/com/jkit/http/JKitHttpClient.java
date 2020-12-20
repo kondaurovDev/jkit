@@ -1,8 +1,7 @@
-package jkit.http_client;
+package com.jkit.http;
 
-import jkit.http_client.client.IRequestExecutor;
+import com.jkit.http.client.IRequestExecutor;
 
 public interface JKitHttpClient<Req, Res> extends
     IRequestExecutor<Req, Res> {
-
 }

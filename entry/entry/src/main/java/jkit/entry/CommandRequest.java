@@ -1,13 +1,11 @@
 package jkit.entry;
 
-import com.jkit.core.JKitEntry;
 import lombok.*;
-
 import java.util.Map;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Value(staticConstructor = "of")
-public class CommandRequest implements JKitEntry.ICommandRequest {
+public class CommandRequest {
     String commandName;
     Map<String, Object> payload;
     Map<String, Object> user;

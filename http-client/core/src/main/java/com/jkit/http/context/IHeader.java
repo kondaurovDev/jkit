@@ -1,7 +1,7 @@
-package jkit.http_client.context;
+package com.jkit.http.context;
 
-import jkit.core.ext.StringExt;
-import jkit.core.model.Pair;
+import com.jkit.core.ext.StringExt;
+import com.jkit.core.model.Pair;
 
 public interface IHeader {
 

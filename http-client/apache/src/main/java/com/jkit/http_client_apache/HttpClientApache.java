@@ -1,16 +1,16 @@
-package jkit.http_client_apache;
+package com.jkit.http_client_apache;
 
+import com.jkit.core.JKitData;
 import io.vavr.Function1;
-import jkit.core.JKitData;
-import jkit.http_client.JKitHttpClient;
-import jkit.http_client.context.IContext;
+import com.jkit.http.JKitHttpClient;
+import com.jkit.http.context.IContext;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 
-import jkit.core.ext.*;
+import com.jkit.core.ext.*;
 
 import lombok.*;
 
@@ -21,11 +21,11 @@ public interface HttpClientApache {
         IRequestExecutor { }
 
     static <J> Client create(
-        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain,
+        JKitData.IObjMapper<?> objMapper,
         HttpClient httpClient
     ) {
         return HttpClientImpl.create(
-            new IContext.Context(objMapperMain),
+            new IContext.Context(objMapper),
             httpClient
         );
     }

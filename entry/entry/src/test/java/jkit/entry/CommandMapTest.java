@@ -1,6 +1,6 @@
 package jkit.entry;
 
-import jkit.core.ext.IOExt;
+import com.jkit.core.ext.IOExt;
 import lombok.val;
 import org.junit.jupiter.api.*;
 import reactor.core.publisher.Flux;
@@ -22,7 +22,7 @@ class CommandMapTest implements Deps {
                 .build()
         );
 
-        assertTrue(actual.isRight());
+        assertTrue(actual.isSuccess());
 
         val readyCommand = actual.get();
 
@@ -32,7 +32,7 @@ class CommandMapTest implements Deps {
 
         val res = commandMap.execute(readyCommand);
 
-        assertTrue(res.isRight());
+        assertTrue(res.isSuccess());
 
     }
 

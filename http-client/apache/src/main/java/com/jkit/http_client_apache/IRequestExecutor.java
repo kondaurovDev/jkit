@@ -1,12 +1,12 @@
-package jkit.http_client_apache;
+package com.jkit.http_client_apache;
 
 import io.vavr.control.Either;
-import jkit.core.ext.StreamExt;
-import jkit.http_client.HttpRequest;
-import jkit.http_client.HttpResponse;
-import jkit.http_client.JKitHttpClient;
-import jkit.core.ext.TryExt;
-import jkit.core.model.JKitError;
+import com.jkit.core.ext.StreamExt;
+import com.jkit.http.HttpRequest;
+import com.jkit.http.HttpResponse;
+import com.jkit.http.JKitHttpClient;
+import com.jkit.core.ext.TryExt;
+import io.vavr.control.Try;
 import lombok.val;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -27,11 +27,11 @@ interface IRequestExecutor extends
         return r -> TryExt.get(() -> getHttpClient().execute(r), "Execute http request");
     }
 
-    default Either<JKitError, HttpResponse> castResponse(
+    default Try<HttpResponse> castResponse(
         org.apache.http.HttpResponse response
     ) {
         return TryExt
-            .get(() -> response.getEntity().getContent(), "read input stream")
+            .get(() -> response.getEntity().getContent(), "Convert http response (apache)")
             .map(body -> HttpResponse.create(
                 response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase(),
@@ -41,11 +41,10 @@ interface IRequestExecutor extends
                     NameValuePair::getName,
                     NameValuePair::getValue
                 )
-            ))
-            .mapLeft(e -> e.withError("Convert http response (apache)"));
+            ));
     }
 
-    default Either<JKitError, HttpUriRequest> castRequest(HttpRequest request) {
+    default Try<HttpUriRequest> castRequest(HttpRequest request) {
 
         return request
             .getUrl().createURI()
@@ -56,16 +55,10 @@ interface IRequestExecutor extends
 
                 if (request.getEntity() != null) {
                     val e = TryExt.get(request.getEntity(), "read entity");
-                    if (e.isLeft()) return e.map(r -> null);
+                    if (e.isFailure()) return e.map(r -> null);
                     val entity = new ByteArrayEntity(e.get().getBody());
                     entity.setContentType(e.get().getContentType());
                     builder.setEntity(entity);
-//                    TryExt
-//                        .get(() -> new StringEntity("hey"), "")
-//                        .forEach(entity -> {
-//                            entity.setContentType("asd");
-//                            builder.setEntity(entity);
-//                        });
                 }
 
                 builder.setHeader("surname", "alex");
@@ -76,7 +69,7 @@ interface IRequestExecutor extends
                     .getHeaders()
                     .forEach(p -> builder.setHeader(p.getFirst(), p.getSecond()));
 
-                return Either.right(builder.build());
+                return Try.success(builder.build());
             });
 
     }
