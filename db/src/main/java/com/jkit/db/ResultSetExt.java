@@ -37,14 +37,12 @@ public interface ResultSetExt {
 
         return ListExt.applyToEach(
             tableInfo.getColumnMap().values(),
-            c -> TryExt.get(
-                () -> {
-                    val o = rs.getObject(c.getColumnName());
-                    return transformKey.apply(c, getColumnValue(o));
-                },
-                "extract row value and transform"
-            ).map(o -> Tuple.of(c, o)),
-            "extract row from result set"
+            c -> Try
+                .of(() -> rs.getObject(c.getColumnName()))
+                .flatMap(ResultSetExt::getColumnValue)
+                .map(v -> Tuple.of(c, transformKey.apply(c, v))),
+            "extract row from result set",
+            true
         );
 
     }
