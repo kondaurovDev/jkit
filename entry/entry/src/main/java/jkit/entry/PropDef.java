@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import com.jkit.core.JKitEntry;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import com.jkit.core.ext.ListExt;
@@ -7,7 +8,7 @@ import lombok.*;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PropDef<A> {
+public class PropDef<A> implements JKitEntry.IPropDef<A> {
 
     @EqualsAndHashCode.Include
     String name;
@@ -45,20 +46,12 @@ public class PropDef<A> {
         ));
     }
 
-    public Try<?> validateObj(Object obj) {
-
-        if (Boolean.TRUE.equals(isList)) {
-            if (obj instanceof java.util.List<?>) {
-                return validateList(obj);
-            } else {
-                return Try.failure(wrongType(obj, "List"));
-            }
-        }
+    public Try<A> validateObj(Object obj) {
 
         if (!paramClass.isInstance(obj))
             return Try.failure(wrongType(obj, paramClass.getCanonicalName()));
 
-        return Try.success(obj);
+        return Try.success(paramClass.cast(obj));
 
     }
 

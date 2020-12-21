@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import com.jkit.core.JKitEntry;
 import io.vavr.control.Option;
 import com.jkit.core.ext.*;
 import io.vavr.control.Try;
@@ -10,19 +11,11 @@ import java.util.function.Consumer;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Command {
+public class Command implements JKitEntry.ICommand {
 
-    CommandDef commandDef;
-    AccessChecker accessChecker;
-    Executor executor;
-
-    interface Executor {
-        Try<?> execute(MethodContext methodContext);
-    }
-
-    interface AccessChecker {
-        Boolean check(MethodContext ctx);
-    }
+    JKitEntry.ICommandDef commandDef;
+    JKitEntry.AccessChecker accessChecker;
+    JKitEntry.Executor executor;
 
     private static final HashSet<String> inProgress = new HashSet<>();
 
@@ -36,13 +29,13 @@ public class Command {
     }
 
     public Try<?> executeBlocking(
-        MethodContext methodContext
+        JKitEntry.IMethodContext methodContext
     ) {
        return this.executeBlocking(methodContext, c -> {});
     }
 
     public Try<?> executeBlocking(
-        MethodContext methodContext,
+        JKitEntry.IMethodContext methodContext,
         Consumer<CommandEvent> onSave
     ) {
 

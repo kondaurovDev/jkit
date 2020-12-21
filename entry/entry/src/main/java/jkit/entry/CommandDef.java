@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import com.jkit.core.JKitEntry;
 import io.vavr.Tuple;
 import io.vavr.control.Try;
 import com.jkit.core.ext.ListExt;
@@ -12,14 +13,14 @@ import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder @Value
-public class CommandDef {
+public class CommandDef implements JKitEntry.ICommandDef {
 
     @EqualsAndHashCode.Include
     String name;
     @Builder.Default
-    CommandFlag flag = CommandFlag.simpleTask;
+    JKitEntry.ICommandFlag flag = CommandFlag.simpleTask;
     @Singular
-    List<PropDef<?>> props;
+    List<JKitEntry.IPropDef<?>> props;
     @Singular(value = "required")
     Set<String> requiredProps;
 
@@ -34,8 +35,8 @@ public class CommandDef {
 
     public Command register(
         CommandMap commandMap,
-        Command.AccessChecker accessChecker,
-        Command.Executor executor
+        JKitEntry.AccessChecker accessChecker,
+        JKitEntry.Executor executor
     ) {
         val cmd = Command.of(
             this,
@@ -47,7 +48,7 @@ public class CommandDef {
     }
 
     public Try<PropMap> parseMap(
-        PropMap propMap
+        JKitEntry.IPropMap propMap
     ) {
         return ListExt.applyToEach(
             props,
@@ -64,9 +65,9 @@ public class CommandDef {
         ).map(lst -> PropMap.create().props(lst.toJavaMap(t -> t)).build());
     }
 
-    public Try<MethodContext> createContext(
-        PropMap payload,
-        PropMap user
+    public Try<JKitEntry.IMethodContext> createContext(
+        JKitEntry.IPropMap payload,
+        JKitEntry.IPropMap user
     ) {
         return this
             .parseMap(payload)
@@ -79,9 +80,9 @@ public class CommandDef {
             );
     }
 
-    public Try<ReadyCommand> createReadyCommand(
-        PropMap payload,
-        PropMap user
+    public Try<JKitEntry.IReadyCommand> createReadyCommand(
+        JKitEntry.IPropMap payload,
+        JKitEntry.IPropMap user
     ) {
         return this
             .createContext(

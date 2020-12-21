@@ -30,11 +30,11 @@ public interface IAuthRoute extends ICompleteRoute {
 
     default Route withJWT(
         String paramName,
-        Function1<DecodedJWT, Route> inner
+        Function1<Map<String, Object>, Route> inner
     ) {
         return withToken(paramName, t ->
             withSuccess(
-                getJwtHMAC().verify(t, "Wrong auth token"),
+                getJwtHMAC().verifyAndExtract(t, "Wrong auth token"),
                 inner
             )
         );

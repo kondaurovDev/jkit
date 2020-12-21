@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import com.jkit.core.JKitEntry;
 import io.vavr.control.Try;
 import lombok.*;
 
@@ -8,9 +9,9 @@ import java.util.Map;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CommandMap {
+public class CommandMap implements JKitEntry.ICommandMap {
 
-    Map<String, Command> map;
+    Map<String, JKitEntry.ICommand> map;
 
     public static CommandMap create() {
         return CommandMap.of(
@@ -18,7 +19,7 @@ public class CommandMap {
         );
     }
 
-    public void register(Command command) {
+    public void register(JKitEntry.ICommand command) {
         if (map.containsKey(command.getCommandDef().getName())) {
             throw new java.lang.Error("Command '" + command.getCommandDef().getName() + "' has been registered already");
         } else {
@@ -26,7 +27,7 @@ public class CommandMap {
         }
     }
 
-    public Try<Command> getCommand(
+    public Try<JKitEntry.ICommand> getCommand(
         String commandName
     ) {
         val cmd = this.map.get(commandName);
@@ -36,8 +37,8 @@ public class CommandMap {
         return Try.success(cmd);
     }
 
-    public Try<ReadyCommand> getReadyCommand(
-        CommandRequest commandRequest
+    public Try<JKitEntry.IReadyCommand> getReadyCommand(
+        JKitEntry.ICommandRequest commandRequest
     ) {
         return getCommand(commandRequest.getCommandName())
             .flatMap(cmd -> cmd.getCommandDef().createReadyCommand(
@@ -47,7 +48,7 @@ public class CommandMap {
     }
 
     public Try<Object> execute(
-        ReadyCommand readyCommand
+        JKitEntry.IReadyCommand readyCommand
     ) {
         return getCommand(readyCommand.getCommandDef().getName())
             .flatMap(cmd -> cmd

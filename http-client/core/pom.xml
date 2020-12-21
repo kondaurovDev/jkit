@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
 
     <properties>
         <bintray.package>jkit-http</bintray.package>

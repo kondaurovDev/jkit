@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.jkit.core.JKitSecure;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import com.jkit.core.ext.TryExt;
@@ -13,10 +13,11 @@ import com.jkit.core.JKitData;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Value(staticConstructor = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class JwtHMAC {
+public class JwtHMAC implements JKitSecure.IJwtHMAC {
 
     JKitData.IObjMapper<?> objMapper;
     Algorithm algorithm;
@@ -60,14 +61,18 @@ public class JwtHMAC {
             .flatMap(map -> sign(b -> b.withClaim("data", map)));
     }
 
-    public Try<Claim> verifyAndExtract(String token, String error) {
+    public Try<Map<String, Object>> verifyAndExtract(
+        String token,
+        String claimName,
+        String error
+    ) {
         return verify(token, error)
             .flatMap(t -> {
                 val claim = t.getClaim("data");
                 if (claim.isNull()) {
                     return Try.failure(new Error("No 'data' claim"));
                 }
-                return Try.success(claim);
+                return Try.success(claim.asMap());
             });
     }
 

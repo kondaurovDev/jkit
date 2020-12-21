@@ -1,13 +1,17 @@
 package jkit.entry.akka_http;
 
 import akka.http.javadsl.server.AllDirectives;
-import io.vavr.control.Either;
-import jkit.core.JKitData;
+import com.jkit.akka_http.route.ICommandRoute;
+import com.jkit.core.JKitData;
+import io.vavr.control.Try;
 import jkit.entry.Command;
 import jkit.entry.CommandDef;
+import jkit.entry.CommandEvent;
 import jkit.entry.CommandMap;
-import jkit.jwt.JwtHMAC;
+import com.jkit.jwt.JwtHMAC;
 import lombok.*;
+
+import java.util.function.Consumer;
 
 @Value(staticConstructor = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -16,9 +20,9 @@ class Router extends AllDirectives implements ICommandRoute {
     CommandMap commandMap;
     JwtHMAC jwtHMAC;
     String jwtClaimName;
-    JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain;
+    JKitData.IObjMapper<?> objMapperMain;
 
-    public Consumer<JKitEntry.ICommandEvent> onCommandExecute() {
+    public Consumer<CommandEvent> onCommandExecute() {
         return null;
     }
 
@@ -27,21 +31,21 @@ class Router extends AllDirectives implements ICommandRoute {
     }
 
     public static Router create(
-        JKitData.IObjMapperMain<?, ? extends JKitData.IObjMapper<?>> objMapperMain
+        JKitData.IObjMapper<?> objMapper
     ) {
         val commandMap = CommandMap.create();
         commandMap.register(
             Command.of(
                 CommandDef.of("test"),
                 u -> true,
-                ctx -> Either.right("Test command")
+                ctx -> Try.success("Test command")
             )
         );
         return new Router(
             commandMap,
-            JwtHMAC.create(objMapperMain.getJson(), "asd"),
+            JwtHMAC.create(objMapper, "asd"),
             "user",
-            objMapperMain
+            objMapper
         );
     }
 }

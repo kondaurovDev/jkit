@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 
 public interface Deps {
 
-    JKitJackson json = JKitJackson.create(
+    JKitJackson<?> json = JKitJackson.create(
         Validator.of(),
         (module, mapper, factory) ->
             factory

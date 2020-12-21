@@ -1,5 +1,6 @@
 package jkit.entry;
 
+import com.jkit.core.JKitEntry;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import com.jkit.core.ext.MapExt;
@@ -10,7 +11,7 @@ import java.util.Map;
 @Value
 @Builder(builderMethodName = "create")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PropMap {
+public class PropMap implements JKitEntry.IPropMap {
 
     @Singular
     Map<String, Object> props;
@@ -19,7 +20,7 @@ public class PropMap {
         return this.props;
     }
 
-    public <A> Try<A> propOpt(PropDef<A> prop) {
+    public <A> Try<A> propOpt(JKitEntry.IPropDef<A> prop) {
         return MapExt
             .get(prop.getName(), props, String.format("Param '%s' not found", prop.getName()))
             .flatMap(v -> {
@@ -29,7 +30,7 @@ public class PropMap {
             });
     }
 
-    public <A> A prop(PropDef<A> prop) {
+    public <A> A prop(JKitEntry.IPropDef<A> prop) {
         val v = propOpt(prop);
 
         if (v.isEmpty())
@@ -43,7 +44,7 @@ public class PropMap {
         return v.get();
     }
 
-    public <A> List<A> propList(PropDef<A> propDef) {
+    public <A> List<A> propList(JKitEntry.IPropDef<A> propDef) {
         return propDef
             .validateList(prop(propDef))
             .getOrElseThrow(e -> (Error)e);

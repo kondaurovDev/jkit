@@ -37,6 +37,9 @@
             <id>bintray-jkit-maven</id>
             <name>bintray</name>
             <url>https://dl.bintray.com/jkit/maven</url>
+            <releases>
+                <updatePolicy>always</updatePolicy>
+            </releases>
         </repository>
     </repositories>
 

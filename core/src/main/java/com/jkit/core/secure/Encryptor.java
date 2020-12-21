@@ -1,5 +1,6 @@
 package com.jkit.core.secure;
 
+import com.jkit.core.JKitSecure;
 import io.vavr.API;
 import io.vavr.control.Try;
 import com.jkit.core.ext.TryExt;
@@ -15,7 +16,7 @@ import lombok.*;
 
 @Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Encryptor {
+public class Encryptor implements JKitSecure.SymmetricEncryptor {
 
     Cipher encryptCipher;
     Cipher decryptCipher;
